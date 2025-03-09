@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  
+  baysesian:
+    build: 
+     context: .
+     dockerfile: Dockerfile
+
+    volumes:
+      - ../:/home/work
+
+    env_file:
+      - env
+
+    user: 1000:1000
+
+    restart: always
+    container_name: basesian
+    runtime: nvidia
+
+    ports:
+      - 19000:8888
+        #command: poetry run jupyter-lab --no-browser --port=8888 --ip=0.0.0.0 --allow-root --NotebookApp.token='' --NotebookApp.notebook_dir='/home/work'
+    command: sleep 4000000
+
+    
+
+
+
+
