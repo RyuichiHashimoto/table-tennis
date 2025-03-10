@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   
-  baysesian:
+  table_tennis:
     build: 
      context: .
      dockerfile: Dockerfile
@@ -15,7 +15,7 @@ services:
     user: 1000:1000
 
     restart: always
-    container_name: basesian
+    container_name: table_tennis
     runtime: nvidia
 
     ports:
