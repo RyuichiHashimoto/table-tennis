@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "work"
+version = "0.1.0"
+description = ""
+authors = ["hashimoto <ryuichi.hashimoto.git@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+ipykernel = "^6.29.5"
+moviepy = "2.0.0.dev2"
+opencv-python = "^4.11.0.86"
+mediapipe = "^0.10.21"
+pytube = "^15.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -15,7 +15,7 @@ RUN groupadd -g $GID $GROUPNAME && \
     echo "$USERNAME   ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 WORKDIR /home/work
 
-RUN apt update && apt install vim graphviz wget git curl -y
+RUN apt update && apt install vim graphviz wget git curl build-essential libgl1 -y
 
 # Step1: Python 3.11のインストール
 RUN apt install software-properties-common -y && \
@@ -31,6 +31,3 @@ RUN curl -sSL https://install.python-poetry.org | python3.11 - && \
     ln -s /opt/poetry/bin/poetry /usr/local/bin/poetry && \
     poetry config --local virtualenvs.in-project true
 
-
-# 必要に応じて以下の行を有効化
-RUN apt install build-essential graphviz graphviz-dev  -y
