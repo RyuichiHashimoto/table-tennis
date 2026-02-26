@@ -1,0 +1,8 @@
+[user]
+	email = ryuichi.hashimoto.git@gmail.com
+	name = hashimoto
+[safe]
+	directory = /home/ryuichi/work/paper_summaizer
+	directory = /home/ryuichi/work/ctf
+[credential]
+	helper = "!f() { /home/work/.vscode-server/bin/6609ac3d66f4eade5cf376d1cb76f13985724bcb/node /tmp/vscode-remote-containers-83302ed8-79a7-4f58-a9be-bbea57935a4b.js git-credential-helper $*; }; f"
