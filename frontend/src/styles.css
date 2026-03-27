@@ -1,0 +1,27 @@
+:root {
+  --bg: #f2f4f7;
+  --card: #ffffff;
+  --line: #d7dee6;
+  --text: #202833;
+  --sub: #546271;
+  --acc: #0f6d4e;
+  --acc-2: #1f8a63;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  background: radial-gradient(circle at 15% 10%, #eaf6ef 0%, #f2f4f7 40%), var(--bg);
+  color: var(--text);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
