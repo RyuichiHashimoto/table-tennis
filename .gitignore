@@ -2,4 +2,9 @@
 .local/
 .dotnet/
 .vscode-server/
-
+data/
+backend/__pycache__/
+frontend/.angular/
+uv.lock
+.env
+tt_analyzer.db
