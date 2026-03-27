@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+.uv/
+.env
+.tt_analyzer.db
+tt_analyzer.db
+data/
+.streamlit/secrets.toml

@@ -1,0 +1,16 @@
+[project]
+name = "tt-analyzer"
+version = "0.1.0"
+description = "Table tennis match note & analytics tool (Streamlit)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "streamlit>=1.32",
+  "pandas>=2.2",
+  "yt-dlp>=2025.1.0",
+  "opencv-python-headless>=4.10.0.84",
+  "fastapi>=0.115.0",
+  "uvicorn>=0.30.0",
+]
+
+[tool.uv]
