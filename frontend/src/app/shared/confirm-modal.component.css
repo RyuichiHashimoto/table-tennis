@@ -1,0 +1,56 @@
+:host {
+  display: contents;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 8, 8, 0.42);
+}
+
+.modal-card {
+  width: min(480px, 100%);
+  display: grid;
+  gap: 20px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  background: #fff;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.18);
+}
+
+.modal-head h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.modal-body p {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-button {
+  border: 1px solid var(--line);
+  padding: 10px 16px;
+  background: #fff;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.modal-button.danger {
+  border-color: #b24545;
+  background: #fff6f6;
+  color: #912f2f;
+}

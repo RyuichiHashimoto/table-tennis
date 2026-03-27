@@ -1,0 +1,27 @@
+<section class="settings-layout">
+  <aside class="settings-menu">
+    <div class="settings-menu-list">
+      <button
+        *ngFor="let section of sections"
+        type="button"
+        [class.active]="section.id === selectedSectionId"
+        (click)="selectSection(section.id)"
+      >
+        {{ section.label }}
+      </button>
+    </div>
+  </aside>
+
+  <article class="settings-content">
+    <section class="settings-detail">
+      <header>
+        <h3>{{ selectedSection.title }}</h3>
+        <p>{{ selectedSection.description }}</p>
+      </header>
+
+      <div class="settings-placeholder-grid">
+        <app-settings-tag-definitions></app-settings-tag-definitions>
+      </div>
+    </section>
+  </article>
+</section>

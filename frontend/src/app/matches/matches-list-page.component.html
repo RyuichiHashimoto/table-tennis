@@ -1,0 +1,35 @@
+<section class="panel-stack">
+  <article class="panel">
+    <div class="section-head">
+      <h2>試合一覧</h2>
+      <button type="button" class="icon-button" (click)="createMatch()">+</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>タイトル</th><th>作成日時</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let m of matches">
+            <td>{{ m.id }}</td>
+            <td>{{ m.title }}</td>
+            <td>{{ m.createdAt }}</td>
+            <td class="row-actions">
+              <button type="button" (click)="openMatch(m.uuid)">edit</button>
+              <button type="button" (click)="deleteMatch(m.uuid)">delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+<app-confirm-modal
+  [open]="!!pendingDeleteMatch"
+  title="試合を削除"
+  [message]="'「' + pendingDeleteMatch?.title + '」を削除します。\n関連するラリーと保存内容も削除されます。'"
+  confirmLabel="削除する"
+  cancelLabel="キャンセル"
+  tone="danger"
+  (cancelled)="cancelDelete()"
+  (confirmed)="confirmDelete()"
+></app-confirm-modal>

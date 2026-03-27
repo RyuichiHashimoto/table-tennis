@@ -1,0 +1,114 @@
+:host {
+  display: block;
+  min-width: 0;
+  min-height: 0;
+}
+
+.panel {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.timeline-panel {
+  min-height: 0;
+  align-content: start;
+}
+
+h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.set-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.set-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.set-tab span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  min-height: 22px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.set-tab.active {
+  background: var(--text);
+  color: #fff;
+  border-color: var(--text);
+}
+
+.set-tab.active span {
+  border-color: currentColor;
+}
+
+.table-wrap {
+  max-height: 520px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid var(--line);
+  padding: 10px;
+  text-align: left;
+  font-size: 13px;
+  vertical-align: top;
+}
+
+td:last-child {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tag-display {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 12px;
+}
+
+.tag-display.empty {
+  color: var(--sub);
+}
+
+.tag-display.selected {
+  background: #1f3a5f;
+  color: #fff;
+  border-color: #1f3a5f;
+}
+
+button {
+  border: 1px solid var(--line);
+  border-radius: 0;
+  padding: 6px 10px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.empty-row {
+  text-align: center;
+  color: var(--sub);
+}

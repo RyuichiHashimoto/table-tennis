@@ -1,0 +1,116 @@
+.settings-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 0;
+  height: 100%;
+  min-height: 0;
+  padding: 0 18px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.settings-menu,
+.settings-content {
+  display: grid;
+  align-content: start;
+  gap: 24px;
+  min-height: 0;
+  padding-top: 56px;
+  padding-bottom: 24px;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.settings-menu {
+  overflow: hidden;
+  padding-right: 24px;
+  border-right: 2px solid #121212;
+}
+
+.settings-content {
+  min-width: 0;
+  overflow-y: auto;
+  padding-left: 54px;
+}
+
+.settings-menu-list {
+  display: grid;
+  gap: 12px;
+  min-height: 0;
+  align-content: start;
+}
+
+.settings-menu-list button {
+  justify-content: flex-start;
+  border: 0;
+  padding: 10px 0;
+  background: transparent;
+  font-size: 18px;
+}
+
+.settings-menu-list button.active {
+  color: #121212;
+  text-decoration: underline;
+  text-underline-offset: 8px;
+}
+
+.settings-detail {
+  display: grid;
+  align-content: start;
+  gap: 28px;
+  min-height: 0;
+}
+
+.settings-detail header {
+  display: grid;
+  gap: 10px;
+}
+
+.settings-detail h3 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.settings-detail p {
+  margin: 0;
+  color: var(--sub);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.settings-placeholder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .settings-layout {
+    grid-template-columns: 1fr;
+    overflow: auto;
+  }
+
+  .settings-menu,
+  .settings-content {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+
+  .settings-menu {
+    overflow: visible;
+    padding-right: 0;
+    padding-bottom: 18px;
+    border-right: 0;
+    border-bottom: 2px solid #121212;
+  }
+
+  .settings-content {
+    overflow: visible;
+    padding-left: 0;
+  }
+
+  .settings-menu-list {
+    gap: 8px;
+  }
+}

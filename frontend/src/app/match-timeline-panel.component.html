@@ -1,0 +1,60 @@
+<article class="panel timeline-panel">
+  <h2>イベントタイムライン</h2>
+  <div class="set-tabs">
+    <button
+      *ngFor="let group of setGroups"
+      type="button"
+      class="set-tab"
+      [class.active]="group.setNo === activeSetNo"
+      (click)="selectSet(group.setNo)"
+    >
+      セット {{ group.setNo }}
+      <span>{{ group.myPoints }} - {{ group.opPoints }}</span>
+    </button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>セット数</th>
+          <th>得点</th>
+          <th>サーバー</th>
+          <th>タグ</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of activeRows; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ row.mySets }} - {{ row.opSets }}</td>
+          <td>{{ row.myPoints }} - {{ row.opPoints }}</td>
+          <td>{{ row.rally.server === 'me' ? '自分' : '相手' }}</td>
+          <td>
+            <button
+              type="button"
+              class="tag-display"
+              [class.empty]="!row.rally.resultTag"
+              [class.selected]="row.rally.id === selectedRallyId"
+              (click)="onSelectRally(row.rally)"
+            >
+              {{ row.rally.resultTag || 'タグ未設定' }}
+            </button>
+          </td>
+          <td>
+            <button type="button" (click)="onToggleStar(row.rally)">{{ row.rally.starred ? '★' : '☆' }}</button>
+            <button type="button" (click)="onSelectRally(row.rally)">選択</button>
+            <button type="button" (click)="onEditRally(row.rally)">編集</button>
+            <button type="button" (click)="onInsertAfter(row.rally)">この後に挿入</button>
+            <button type="button" (click)="onSeek(row.rally)">ラリー開始</button>
+            <button type="button" (click)="onSeekAfter(row.rallyIndex)">ラリー完了後</button>
+            <button type="button" (click)="onDelete(row.rally)">削除</button>
+          </td>
+        </tr>
+        <tr *ngIf="!activeRows.length">
+          <td colspan="6" class="empty-row">このセットにはまだイベントがありません。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</article>

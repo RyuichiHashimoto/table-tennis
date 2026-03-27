@@ -1,0 +1,16 @@
+<div class="app-shell">
+  <header class="top-pane">
+    <div class="brand">YTC</div>
+    <nav class="header-tabs">
+      <a routerLink="/matches" routerLinkActive="active">試合一覧</a>
+      <a routerLink="/analysis" routerLinkActive="active">分析</a>
+    </nav>
+    <a class="settings-toggle" routerLink="/settings" routerLinkActive="active">設定</a>
+  </header>
+
+  <main class="bottom-pane">
+    <section class="workspace">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+</div>

@@ -1,0 +1,159 @@
+.settings-card {
+  display: grid;
+  gap: 8px;
+  min-height: 132px;
+  padding: 18px;
+  border: 1px solid #d9d4c8;
+  background: linear-gradient(180deg, #ffffff 0%, #f2f0e8 100%);
+}
+
+.settings-card-wide {
+  grid-column: 1 / -1;
+}
+
+.settings-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.settings-card strong {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.settings-card span {
+  color: var(--sub);
+  line-height: 1.6;
+}
+
+.tag-add-button {
+  min-width: 72px;
+}
+
+.tag-table-wrap {
+  overflow: auto;
+}
+
+.tag-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.tag-table th,
+.tag-table td {
+  border: 1px solid #d9d4c8;
+  padding: 12px 14px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tag-table th {
+  background: #f5f1e7;
+  font-weight: 600;
+}
+
+.tag-scope-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-scope-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 4px 10px;
+  border: 1px solid #d9d4c8;
+  background: #f5f1e7;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.tag-action-cell {
+  width: 168px;
+}
+
+.tag-edit-button {
+  min-width: 72px;
+}
+
+.tag-row-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.tag-delete-button {
+  min-width: 72px;
+  border-color: #ad3c3c;
+  color: #8b2727;
+}
+
+.tag-edit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 8, 8, 0.42);
+}
+
+.tag-edit-modal {
+  width: min(560px, 100%);
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #d9d4c8;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.18);
+}
+
+.tag-edit-head h3 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.tag-edit-body {
+  display: grid;
+  gap: 18px;
+}
+
+.tag-edit-body > label {
+  display: grid;
+  gap: 8px;
+}
+
+.tag-edit-fieldset {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid #d9d4c8;
+}
+
+.tag-edit-fieldset legend {
+  padding: 0 6px;
+  font-weight: 600;
+}
+
+.tag-edit-fieldset label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+
+.tag-edit-fieldset input {
+  width: auto;
+  margin: 0;
+}
+
+.tag-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

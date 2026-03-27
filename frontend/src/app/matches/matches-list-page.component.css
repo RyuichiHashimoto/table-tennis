@@ -1,0 +1,51 @@
+.panel-stack {
+  display: grid;
+  min-height: 0;
+}
+
+.panel {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.icon-button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid var(--line);
+  padding: 10px;
+  text-align: left;
+  font-size: 13px;
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+  white-space: nowrap;
+}
