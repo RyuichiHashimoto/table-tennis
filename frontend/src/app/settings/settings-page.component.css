@@ -24,7 +24,7 @@
 .settings-menu {
   overflow: hidden;
   padding-right: 24px;
-  border-right: 2px solid #121212;
+  border-right: 2px solid var(--border-strong);
 }
 
 .settings-content {
@@ -40,16 +40,18 @@
   align-content: start;
 }
 
-.settings-menu-list button {
+.settings-menu-list a {
+  display: inline-flex;
   justify-content: flex-start;
   border: 0;
   padding: 10px 0;
   background: transparent;
-  font-size: 18px;
+  font-size: calc(var(--font-size-body-lg) + 2px);
+  text-decoration: none;
 }
 
-.settings-menu-list button.active {
-  color: #121212;
+.settings-menu-list a.active {
+  color: var(--primary);
   text-decoration: underline;
   text-underline-offset: 8px;
 }
@@ -68,21 +70,15 @@
 
 .settings-detail h3 {
   margin: 0;
-  font-size: 28px;
+  font-size: var(--font-size-title);
   font-weight: 500;
 }
 
 .settings-detail p {
   margin: 0;
   color: var(--sub);
-  font-size: 16px;
+  font-size: var(--font-size-body-lg);
   line-height: 1.6;
-}
-
-.settings-placeholder-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
 }
 
 @media (max-width: 900px) {
@@ -102,7 +98,7 @@
     padding-right: 0;
     padding-bottom: 18px;
     border-right: 0;
-    border-bottom: 2px solid #121212;
+    border-bottom: 2px solid var(--border-strong);
   }
 
   .settings-content {

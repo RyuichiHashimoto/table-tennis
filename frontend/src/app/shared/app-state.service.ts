@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Match, Rally, RallyResultTag, RallySegment, RallyTagDefinition, Segment, Summary } from './models';
+import { Match, Rally, RallyResultTag, RallySegment, RallyTagDefinition, ScoringPatternSlice, Segment, Summary } from './models';
+import { runtimeConfig } from './runtime-config';
 
 export interface MatchVideoState {
   youtubeUrl: string;
@@ -42,7 +43,7 @@ const LEGACY_MIGRATED_KEY = 'tt_analyzer_frontend_store_v1_backend_migrated';
 
 @Injectable({ providedIn: 'root' })
 export class AppStateService {
-  private readonly apiBase = 'http://localhost:8000';
+  private readonly apiBase = runtimeConfig.apiBase;
   private matches: Match[] = [];
   private ralliesByMatch = new Map<string, Rally[]>();
   private inputStates = new Map<string, MatchInputState>();
@@ -97,6 +98,17 @@ export class AppStateService {
     const rows = await this.requestJson<Array<Record<string, unknown>>>('/tag-definitions');
     this.tagDefinitions = rows.map((row) => this.mapTagDefinition(row));
     return [...this.tagDefinitions];
+  }
+
+  async getScoringPatterns(matchUuid: string, limit = 6): Promise<ScoringPatternSlice[]> {
+    const response = await this.requestJson<{ patterns?: Array<Record<string, unknown>> }>(
+      `/matches/${matchUuid}/analysis/scoring-patterns?limit=${limit}`,
+    );
+    return (response.patterns ?? []).map((row) => ({
+      label: String(row['label'] ?? ''),
+      count: Number(row['count'] ?? 0),
+      ratio: Number(row['ratio'] ?? 0),
+    }));
   }
 
   getTagDefinitions(): RallyTagDefinition[] {
@@ -207,6 +219,21 @@ export class AppStateService {
       this.matches = [match, ...this.matches];
     }
     await this.loadRallies(matchUuid);
+    return match;
+  }
+
+  async updateMatchTitle(matchUuid: string, title: string): Promise<Match | undefined> {
+    const row = await this.requestJson<Record<string, unknown>>(`/matches/${matchUuid}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ title }),
+    });
+    const match = this.mapMatch(row);
+    const index = this.matches.findIndex((existing) => existing.uuid === match.uuid);
+    if (index !== -1) {
+      this.matches[index] = match;
+    } else {
+      this.matches = [match, ...this.matches];
+    }
     return match;
   }
 

@@ -1,14 +1,14 @@
 <section class="settings-layout">
   <aside class="settings-menu">
     <div class="settings-menu-list">
-      <button
+      <a
         *ngFor="let section of sections"
-        type="button"
-        [class.active]="section.id === selectedSectionId"
-        (click)="selectSection(section.id)"
+        [routerLink]="section.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
       >
         {{ section.label }}
-      </button>
+      </a>
     </div>
   </aside>
 
@@ -19,9 +19,7 @@
         <p>{{ selectedSection.description }}</p>
       </header>
 
-      <div class="settings-placeholder-grid">
-        <app-settings-tag-definitions></app-settings-tag-definitions>
-      </div>
+      <router-outlet></router-outlet>
     </section>
   </article>
 </section>

@@ -3,17 +3,20 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppStateService } from '../shared/app-state.service';
 import { ConfirmModalComponent } from '../shared/confirm-modal.component';
-import { Match } from '../shared/models';
+import { InputModalComponent } from '../shared/input-modal.component';
+import { InputModalField, Match } from '../shared/models';
 
 @Component({
   selector: 'app-matches-list-page',
   standalone: true,
-  imports: [CommonModule, ConfirmModalComponent],
+  imports: [CommonModule, ConfirmModalComponent, InputModalComponent],
   templateUrl: './matches-list-page.component.html',
   styleUrl: './matches-list-page.component.css',
 })
 export class MatchesListPageComponent implements OnInit {
   pendingDeleteMatch?: Match;
+  pendingEditMatch?: Match;
+  editFields: InputModalField[] = [];
 
   constructor(
     private readonly state: AppStateService,
@@ -39,6 +42,24 @@ export class MatchesListPageComponent implements OnInit {
     void this.router.navigate(['/match', matchUuid]);
   }
 
+  editMatch(matchUuid: string): void {
+    const match = this.state.getMatchByUuid(matchUuid);
+    if (!match) {
+      return;
+    }
+    this.pendingEditMatch = match;
+    this.editFields = [
+      {
+        key: 'title',
+        label: '試合タイトル',
+        type: 'text',
+        required: true,
+        value: match.title,
+        placeholder: '試合タイトルを入力',
+      },
+    ];
+  }
+
   deleteMatch(matchUuid: string): void {
     const match = this.state.getMatchByUuid(matchUuid);
     if (!match) {
@@ -49,6 +70,22 @@ export class MatchesListPageComponent implements OnInit {
 
   cancelDelete(): void {
     this.pendingDeleteMatch = undefined;
+  }
+
+  cancelEdit(): void {
+    this.pendingEditMatch = undefined;
+    this.editFields = [];
+  }
+
+  async confirmEdit(values: Record<string, string | number>): Promise<void> {
+    const matchUuid = this.pendingEditMatch?.uuid;
+    const title = `${values['title'] ?? ''}`.trim();
+    if (!matchUuid || !title) {
+      return;
+    }
+    await this.state.updateMatchTitle(matchUuid, title);
+    this.pendingEditMatch = undefined;
+    this.editFields = [];
   }
 
   async confirmDelete(): Promise<void> {

@@ -5,23 +5,12 @@
 }
 
 .panel {
-  display: grid;
-  align-content: start;
   gap: 16px;
-  padding: 18px;
-  border: 1px solid var(--line);
-  background: #fff;
 }
 
 .timeline-panel {
   min-height: 0;
   align-content: start;
-}
-
-h2 {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 500;
 }
 
 .set-tabs {
@@ -44,14 +33,14 @@ h2 {
   min-height: 22px;
   padding: 0 6px;
   border: 1px solid var(--line);
-  font-size: 11px;
+  font-size: var(--font-size-caption);
   line-height: 1;
 }
 
 .set-tab.active {
-  background: var(--text);
-  color: #fff;
-  border-color: var(--text);
+  background: var(--bg-selection);
+  color: var(--text-strong);
+  border-color: var(--primary);
 }
 
 .set-tab.active span {
@@ -60,21 +49,14 @@ h2 {
 
 .table-wrap {
   max-height: 520px;
-  overflow: auto;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+.ui-table tbody tr.active-row td {
+  background: var(--bg-selection);
 }
 
-th,
-td {
-  border: 1px solid var(--line);
-  padding: 10px;
-  text-align: left;
-  font-size: 13px;
-  vertical-align: top;
+.ui-table tbody tr.active-row td:first-child {
+  box-shadow: inset 3px 0 0 var(--primary);
 }
 
 td:last-child {
@@ -87,7 +69,6 @@ td:last-child {
   width: 100%;
   justify-content: flex-start;
   text-align: left;
-  font-size: 12px;
 }
 
 .tag-display.empty {
@@ -95,17 +76,9 @@ td:last-child {
 }
 
 .tag-display.selected {
-  background: #1f3a5f;
-  color: #fff;
-  border-color: #1f3a5f;
-}
-
-button {
-  border: 1px solid var(--line);
-  border-radius: 0;
-  padding: 6px 10px;
-  background: #fff;
-  cursor: pointer;
+  background: var(--bg-selection);
+  color: var(--text-strong);
+  border-color: var(--primary);
 }
 
 .empty-row {

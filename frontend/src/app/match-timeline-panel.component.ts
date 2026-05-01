@@ -111,7 +111,16 @@ export class MatchTimelinePanelComponent {
     this.selectedSetChange.emit(setNo);
   }
 
+  trackBySetNo(_index: number, group: TimelineSetGroup): number {
+    return group.setNo;
+  }
+
+  trackByRallyId(_index: number, row: TimelineRow): number {
+    return row.rally.id;
+  }
+
   onSeek(rally: Rally): void {
+    this.selectRally.emit(rally.id);
     this.seekToTime.emit(rally.tStart ?? 0);
   }
 

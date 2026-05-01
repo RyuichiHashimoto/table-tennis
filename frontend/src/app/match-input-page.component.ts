@@ -3,6 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppStateService, MatchInputState } from './shared/app-state.service';
 import { Match, Rally, RallyResultTag, RallyTagDefinition, Segment } from './shared/models';
+import { runtimeConfig } from './shared/runtime-config';
 import { MatchTimelinePanelComponent } from './match-timeline-panel.component';
 import { MatchVideoPanelComponent } from './match-video-panel.component';
 
@@ -16,7 +17,7 @@ import { MatchVideoPanelComponent } from './match-video-panel.component';
 export class MatchInputPageComponent implements OnInit {
   @ViewChild(MatchVideoPanelComponent) videoPanel?: MatchVideoPanelComponent;
 
-  readonly apiBase = 'http://localhost:8000';
+  readonly apiBase = runtimeConfig.apiBase;
 
   match?: Match;
   currentVideoTime = 0;

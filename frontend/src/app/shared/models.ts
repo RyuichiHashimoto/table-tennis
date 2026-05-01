@@ -65,3 +65,27 @@ export interface RallyTagDefinition {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ScoringPatternSlice {
+  label: string;
+  count: number;
+  ratio: number;
+}
+
+export type InputModalFieldType = 'text' | 'textarea' | 'number' | 'select';
+
+export interface InputModalOption {
+  label: string;
+  value: string;
+}
+
+export interface InputModalField {
+  key: string;
+  label: string;
+  type: InputModalFieldType;
+  placeholder?: string;
+  required?: boolean;
+  rows?: number;
+  value?: string | number;
+  options?: InputModalOption[];
+}

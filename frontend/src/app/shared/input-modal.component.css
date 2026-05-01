@@ -12,8 +12,8 @@
   background: var(--bg-overlay);
 }
 
-.modal-card {
-  width: min(480px, 100%);
+.input-modal-card {
+  width: min(560px, 100%);
   gap: 20px;
   box-shadow: 0 24px 56px rgba(0, 0, 0, 0.18);
 }
@@ -24,11 +24,32 @@
   font-weight: 500;
 }
 
-.modal-body p {
+.input-modal-body {
+  display: grid;
+  gap: 18px;
+}
+
+.input-modal-body p {
   margin: 0;
   color: var(--text);
   line-height: 1.7;
   white-space: pre-line;
+}
+
+.input-modal-fields {
+  display: grid;
+  gap: 14px;
+}
+
+.input-modal-field {
+  display: grid;
+  gap: 8px;
+}
+
+.input-modal-field span {
+  color: var(--text-strong);
+  font-size: var(--font-size-body);
+  font-weight: 600;
 }
 
 .modal-actions {

@@ -13,17 +13,17 @@
         (currentTimeChange)="onVideoCurrentTimeChange($event)"
       ></app-match-video-panel>
 
-      <article class="panel control-panel control-pane">
+      <article class="panel control-panel control-pane ui-panel">
         <div class="control-panel-body">
-          <div class="section-head">
+          <div class="section-head ui-section-head">
             <h2>解析コントロール</h2>
-            <button type="button" (click)="saveInputScreenState()">保存</button>
+            <button type="button" class="ui-button" (click)="saveInputScreenState()">保存</button>
           </div>
           <div class="control-actions">
-            <button type="button" (click)="startMatch()">試合開始</button>
-            <button type="button" (click)="startRally()">ラリー開始</button>
-            <button type="button" (click)="scorePoint('me')">得点</button>
-            <button type="button" (click)="scorePoint('op')">失点</button>
+            <button type="button" class="ui-button" (click)="startMatch()">試合開始</button>
+            <button type="button" class="ui-button" (click)="startRally()">ラリー開始</button>
+            <button type="button" class="ui-button" (click)="scorePoint('me')">得点</button>
+            <button type="button" class="ui-button ui-button-danger" (click)="scorePoint('op')">失点</button>
           </div>
           <section class="tag-control-panel">
             <div class="tag-control-head">
@@ -33,6 +33,8 @@
             <div class="tag-control-actions">
               <button
                 type="button"
+                class="ui-button"
+                [class.ui-button-active]="initialServer === 'me'"
                 [class.active]="initialServer === 'me'"
                 (click)="updateInitialServer('me')"
               >
@@ -40,6 +42,8 @@
               </button>
               <button
                 type="button"
+                class="ui-button"
+                [class.ui-button-active]="initialServer === 'op'"
                 [class.active]="initialServer === 'op'"
                 (click)="updateInitialServer('op')"
               >
@@ -71,6 +75,8 @@
             <div class="tag-control-actions">
               <button
                 type="button"
+                class="ui-button"
+                [class.ui-button-active]="editingRally?.pointWinner === 'me'"
                 [class.active]="editingRally?.pointWinner === 'me'"
                 [disabled]="!editingRally"
                 (click)="updateSelectedRallyPointWinner('me')"
@@ -79,6 +85,8 @@
               </button>
               <button
                 type="button"
+                class="ui-button ui-button-danger"
+                [class.ui-button-active]="editingRally?.pointWinner === 'op'"
                 [class.active]="editingRally?.pointWinner === 'op'"
                 [disabled]="!editingRally"
                 (click)="updateSelectedRallyPointWinner('op')"
@@ -101,7 +109,8 @@
               <button
                 *ngFor="let tag of selectedRallyTags"
                 type="button"
-                class="tag-control-chip"
+                class="tag-control-chip ui-chip ui-button"
+                [class.ui-button-active]="selectedRally?.resultTag === tag"
                 [class.active]="selectedRally?.resultTag === tag"
                 [disabled]="!selectedRally"
                 (click)="applyTagToSelectedRally(tag)"

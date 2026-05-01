@@ -10,8 +10,8 @@
   gap: 16px;
   min-height: 86px;
   padding: 0 18px;
-  background: #050505;
-  color: #f4f4f4;
+  background: var(--chrome-edge);
+  color: var(--text-main);
 }
 
 .brand,
@@ -60,14 +60,14 @@
 }
 
 .header-tabs a.active {
-  border-bottom-color: #f4f4f4;
-  color: #fff;
+  border-bottom-color: var(--primary);
+  color: var(--text-strong);
 }
 
 .bottom-pane {
   min-height: calc(100vh - 102px);
   border: 1px solid var(--chrome-edge);
-  background: #f8f8f6;
+  background: var(--bg-section);
   overflow: hidden;
 }
 
@@ -83,49 +83,28 @@
 
 .workspace button {
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--bg-card);
   color: var(--text);
   border-radius: 0;
   padding: 10px 16px;
   cursor: pointer;
 }
 
-.panel-stack {
-  display: grid;
-  min-height: 0;
-}
-
-.section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
 .icon-button {
   min-width: 44px;
   min-height: 44px;
   padding: 0;
-  font-size: 28px;
+  font-size: var(--font-size-title);
   line-height: 1;
 }
 
-.panel {
-  display: grid;
-  align-content: start;
-  gap: 16px;
-  padding: 18px;
-  border: 1px solid var(--line);
-  background: #fff;
-}
-
 .panel-strong {
-  background: linear-gradient(180deg, #ffffff 0%, #f3f3ef 100%);
+  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-card) 100%);
 }
 
 h2 {
   margin: 0;
-  font-size: 22px;
+  font-size: var(--font-size-section);
   font-weight: 500;
 }
 
@@ -143,7 +122,7 @@ label {
   display: grid;
   gap: 6px;
   color: var(--sub);
-  font-size: 13px;
+  font-size: var(--font-size-label);
 }
 
 input,
@@ -153,7 +132,7 @@ textarea {
   border: 1px solid var(--line);
   border-radius: 0;
   padding: 10px 12px;
-  background: #fff;
+  background: var(--bg-surface);
 }
 
 textarea {
@@ -162,50 +141,14 @@ textarea {
 }
 
 button.warn {
-  border-color: #ad3c3c;
-  color: #8b2727;
-}
-
-.metrics {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.metrics div {
-  display: grid;
-  gap: 6px;
-  padding: 14px;
-  border: 1px solid var(--line);
-  background: #fafaf8;
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 .metrics span,
 .hint {
   color: var(--sub);
-  font-size: 13px;
-}
-
-.metrics strong {
-  font-size: 24px;
-  font-weight: 500;
-}
-
-.table-wrap {
-  overflow: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  border: 1px solid var(--line);
-  padding: 10px;
-  text-align: left;
-  font-size: 13px;
+  font-size: var(--font-size-label);
 }
 
 .row-actions {

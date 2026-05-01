@@ -182,6 +182,8 @@ def _fetch_match_row(match_ref: int | str) -> sqlite3.Row | None:
         cur.execute("SELECT id, uuid, title, initial_server, created_at FROM matches WHERE uuid = ?", (match_ref,))
     row = cur.fetchone()
     conn.close()
+    if row:
+        _init_match_db(str(row["uuid"]))
     return row
 
 

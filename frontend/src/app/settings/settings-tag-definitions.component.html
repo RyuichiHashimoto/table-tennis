@@ -1,10 +1,10 @@
-<section class="settings-card settings-card-wide">
+<section class="settings-card settings-card-wide ui-card">
   <div class="settings-card-head">
     <strong>タグ一覧</strong>
-    <button type="button" class="tag-add-button" (click)="openCreateModal()">追加</button>
+    <button type="button" class="tag-add-button ui-button" (click)="openCreateModal()">追加</button>
   </div>
-  <div class="tag-table-wrap">
-    <table class="tag-table">
+  <div class="tag-table-wrap ui-table-wrap">
+    <table class="tag-table ui-table">
       <thead>
         <tr>
           <th>タグ</th>
@@ -18,18 +18,18 @@
           <td>{{ tag.tag }}</td>
           <td>
             <div class="tag-scope-summary">
-              <span class="tag-scope-chip" *ngFor="let scope of getRallyScopeLabels(tag)">{{ scope }}</span>
+              <span class="tag-scope-chip ui-chip" *ngFor="let scope of getRallyScopeLabels(tag)">{{ scope }}</span>
             </div>
           </td>
           <td>
             <div class="tag-scope-summary">
-              <span class="tag-scope-chip" *ngFor="let scope of getPointScopeLabels(tag)">{{ scope }}</span>
+              <span class="tag-scope-chip ui-chip" *ngFor="let scope of getPointScopeLabels(tag)">{{ scope }}</span>
             </div>
           </td>
           <td class="tag-action-cell">
             <div class="tag-row-actions">
-              <button type="button" class="tag-edit-button" (click)="openEditModal(tag)">edit</button>
-              <button type="button" class="tag-delete-button" (click)="deleteTag(tag)">delete</button>
+              <button type="button" class="tag-edit-button ui-button ui-button-sm" (click)="openEditModal(tag)">edit</button>
+              <button type="button" class="tag-delete-button ui-button ui-button-sm ui-button-danger" (click)="deleteTag(tag)">delete</button>
             </div>
           </td>
         </tr>
@@ -39,7 +39,7 @@
 </section>
 
 <div class="tag-edit-overlay" *ngIf="editModalOpen" (click)="closeEditModal()">
-  <section class="tag-edit-modal" role="dialog" aria-modal="true" aria-label="タグ編集" (click)="$event.stopPropagation()">
+  <section class="tag-edit-modal ui-panel" role="dialog" aria-modal="true" aria-label="タグ編集" (click)="$event.stopPropagation()">
     <header class="tag-edit-head">
       <h3>{{ isCreatingTag ? 'タグ追加' : 'タグ編集' }}</h3>
     </header>
@@ -47,7 +47,7 @@
     <div class="tag-edit-body">
       <label>
         <span>タグ名</span>
-        <input type="text" [(ngModel)]="editForm.tag" />
+        <input type="text" class="ui-input" [(ngModel)]="editForm.tag" />
       </label>
 
       <fieldset class="tag-edit-fieldset">
@@ -76,8 +76,8 @@
     </div>
 
     <footer class="tag-edit-actions">
-      <button type="button" (click)="closeEditModal()">キャンセル</button>
-      <button type="button" (click)="saveEdit()">保存</button>
+      <button type="button" class="ui-button" (click)="closeEditModal()">キャンセル</button>
+      <button type="button" class="ui-button btn-primary" (click)="saveEdit()">保存</button>
     </footer>
   </section>
 </div>

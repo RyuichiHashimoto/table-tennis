@@ -12,12 +12,14 @@ docker compose up api
 ## Main endpoints
 
 - `GET /health`
+- `GET /status`
 - `GET /matches`
 - `POST /matches`
 - `GET /matches/{match_id}/rallies`
 - `POST /matches/{match_id}/rallies`
 - `DELETE /matches/{match_id}/rallies/last`
 - `GET /matches/{match_id}/summary`
+- `GET /matches/{match_id}/analysis/scoring-patterns`
 - `GET /videos`
 - `POST /videos/info`
 - `POST /videos/download`

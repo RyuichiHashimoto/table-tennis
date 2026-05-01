@@ -1,0 +1,36 @@
+.chart-card {
+  display: grid;
+  gap: 14px;
+}
+
+.chart-head h3 {
+  margin: 0;
+  font-size: calc(var(--font-size-body-lg) + 2px);
+  font-weight: 500;
+}
+
+.chart-body {
+  min-height: 320px;
+}
+
+.chart-canvas-wrap {
+  position: relative;
+  min-height: 320px;
+}
+
+.chart-empty {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  border: 1px dashed var(--line);
+  color: var(--sub);
+  font-size: var(--font-size-body);
+  background: var(--bg-surface-soft);
+}
+
+@media (max-width: 1024px) {
+  .chart-body,
+  .chart-canvas-wrap {
+    min-height: 280px;
+  }
+}

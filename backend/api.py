@@ -4,12 +4,12 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
-from backend.analytics import summarize
+from backend.analytics import scoring_patterns, summarize
 from backend.clip_utils import (
     build_rally_clip_segments,
     build_set_segments_from_boundaries,
@@ -227,6 +227,11 @@ def health() -> dict:
     return {"status": "ok"}
 
 
+@app.get("/status")
+def status() -> dict[str, str]:
+    return {"status": "success"}
+
+
 @app.get("/matches")
 def list_matches() -> list[dict[str, Any]]:
     return _safe_records(fetch_matches())
@@ -386,6 +391,21 @@ def summary_api(match_uuid: str) -> dict:
     data["by_len"] = by_len.to_dict(orient="records") if isinstance(by_len, pd.DataFrame) else []
     data["by_reason"] = by_reason.to_dict(orient="records") if isinstance(by_reason, pd.DataFrame) else []
     return data
+
+
+@app.get("/matches/{match_uuid}/analysis/scoring-patterns")
+def scoring_patterns_api(match_uuid: str, limit: int = Query(default=6, ge=1, le=12)) -> dict[str, Any]:
+    match = fetch_match(match_uuid)
+    if not match:
+        raise HTTPException(status_code=404, detail="match not found")
+    df = fetch_rallies(match_uuid)
+    patterns = scoring_patterns(df, limit=limit)
+    total_points = int((df["point_winner"] == "me").sum()) if not df.empty else 0
+    return {
+        "match_uuid": match_uuid,
+        "total_points": total_points,
+        "patterns": patterns,
+    }
 
 
 @app.get("/videos")

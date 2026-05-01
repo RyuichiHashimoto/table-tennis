@@ -1,0 +1,15 @@
+<section class="chart-card">
+  <div class="chart-head">
+    <h3>{{ title }}</h3>
+  </div>
+
+  <div class="chart-body" *ngIf="hasData; else emptyState">
+    <div class="chart-canvas-wrap">
+      <canvas #canvas></canvas>
+    </div>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="chart-empty">{{ emptyMessage }}</div>
+  </ng-template>
+</section>

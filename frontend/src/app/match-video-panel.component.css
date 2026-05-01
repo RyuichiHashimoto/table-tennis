@@ -5,12 +5,7 @@
 }
 
 .panel {
-  display: grid;
-  align-content: start;
   gap: 16px;
-  padding: 18px;
-  border: 1px solid var(--line);
-  background: #fff;
 }
 
 .video-panel {
@@ -36,12 +31,12 @@
   max-width: 100%;
   min-height: 0;
   object-fit: contain;
-  background: #000;
+  background: var(--chrome-edge);
 }
 
 .video-caption {
   color: var(--sub);
-  font-size: 14px;
+  font-size: var(--font-size-body);
 }
 
 .video-placeholder {
@@ -53,19 +48,19 @@
   min-height: 320px;
   padding: 24px;
   text-align: center;
-  font-size: 22px;
-  color: #222;
+  font-size: var(--font-size-section);
+  color: var(--text-main);
 }
 
 .video-placeholder strong {
-  font-size: 28px;
+  font-size: var(--font-size-title);
   font-weight: 500;
 }
 
 .video-placeholder span {
   max-width: 420px;
   color: var(--sub);
-  font-size: 16px;
+  font-size: var(--font-size-body-lg);
   line-height: 1.6;
 }
 
@@ -75,8 +70,6 @@
   justify-content: center;
   min-width: 180px;
   padding: 12px 18px;
-  border: 1px solid var(--line);
-  background: #fff;
   color: var(--text);
   cursor: pointer;
 }
@@ -102,16 +95,7 @@ label {
   display: grid;
   gap: 6px;
   color: var(--sub);
-  font-size: 13px;
-}
-
-input,
-button {
-  width: 100%;
-  border: 1px solid var(--line);
-  border-radius: 0;
-  padding: 10px 12px;
-  background: #fff;
+  font-size: var(--font-size-label);
 }
 
 button {

@@ -1,0 +1,44 @@
+<div class="modal-overlay" *ngIf="open" (click)="onBackdropClick($event)">
+  <section class="modal-card ui-panel input-modal-card" role="dialog" aria-modal="true" [attr.aria-label]="title">
+    <header class="modal-head">
+      <h2>{{ title }}</h2>
+    </header>
+
+    <div class="modal-body input-modal-body">
+      <p *ngIf="message">{{ message }}</p>
+
+      <div class="input-modal-fields">
+        <label class="input-modal-field" *ngFor="let field of fields">
+          <span>{{ field.label }}</span>
+
+          <input
+            *ngIf="field.type === 'text' || field.type === 'number'"
+            class="ui-input"
+            [type]="field.type"
+            [placeholder]="field.placeholder || ''"
+            [(ngModel)]="values[field.key]"
+          />
+
+          <textarea
+            *ngIf="field.type === 'textarea'"
+            class="ui-input"
+            [rows]="field.rows || 4"
+            [placeholder]="field.placeholder || ''"
+            [(ngModel)]="values[field.key]"
+          ></textarea>
+
+          <select *ngIf="field.type === 'select'" class="ui-input" [(ngModel)]="values[field.key]">
+            <option *ngFor="let option of field.options || []" [ngValue]="option.value">{{ option.label }}</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <footer class="modal-actions">
+      <button type="button" class="modal-button ui-button" (click)="cancelled.emit()">{{ cancelLabel }}</button>
+      <button type="button" class="modal-button ui-button btn-primary" [disabled]="!canSubmit()" (click)="submit()">
+        {{ confirmLabel }}
+      </button>
+    </footer>
+  </section>
+</div>

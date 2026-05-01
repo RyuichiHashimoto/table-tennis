@@ -47,3 +47,47 @@ def summarize(df: pd.DataFrame) -> dict:
         "third_attack_point_rate": rate(third_attack_point, len(third_attack)),
         "third_attack_miss_rate": rate(third_attack_miss, len(third_attack)),
     }
+
+
+def scoring_patterns(df: pd.DataFrame, *, limit: int = 6) -> list[dict]:
+    if df.empty:
+        return []
+
+    wins = df[df["point_winner"] == "me"].copy()
+    if wins.empty:
+        return []
+
+    labels = wins["result_tag"].fillna("").astype(str).str.strip()
+    wins["pattern_label"] = labels.where(labels != "", "未分類得点")
+
+    grouped = (
+        wins.groupby("pattern_label")
+        .size()
+        .reset_index(name="count")
+        .sort_values(["count", "pattern_label"], ascending=[False, True])
+        .reset_index(drop=True)
+    )
+
+    total = int(grouped["count"].sum())
+    top = grouped.head(max(limit, 1)).copy()
+    rest = grouped.iloc[len(top):]
+    if not rest.empty:
+        top = pd.concat(
+            [
+                top,
+                pd.DataFrame(
+                    [{"pattern_label": "その他", "count": int(rest["count"].sum())}]
+                ),
+            ],
+            ignore_index=True,
+        )
+
+    top["ratio"] = top["count"].apply(lambda count: rate(count, total))
+    return [
+        {
+            "label": str(row["pattern_label"]),
+            "count": int(row["count"]),
+            "ratio": float(row["ratio"]),
+        }
+        for _, row in top.iterrows()
+    ]

@@ -1,22 +1,160 @@
+@import "./styles/ui.css";
+
 :root {
-  --bg: #f2f4f7;
-  --card: #ffffff;
-  --line: #d7dee6;
-  --text: #202833;
-  --sub: #546271;
-  --acc: #0f6d4e;
-  --acc-2: #1f8a63;
+  --font-size-caption: 11px;
+  --font-size-label: 13px;
+  --font-size-body: 14px;
+  --font-size-body-lg: 16px;
+  --font-size-section: 22px;
+  --font-size-title: 28px;
+  --font-size-metric: 24px;
+
+  --primary: #00ff9c;
+  --primary-soft: #00e68a;
+  --primary-deep: #0bbd78;
+  --primary-glow: rgba(0, 255, 156, 0.35);
+
+  --bg-main: #0a0a0a;
+  --bg-section: #121212;
+  --bg-card: #1a1a1a;
+  --bg-card-soft: #202020;
+  --bg-elevated: #242424;
+  --bg-overlay: rgba(8, 8, 8, 0.72);
+  --bg-surface: #161616;
+  --bg-surface-soft: #1e1e1e;
+  --bg-highlight: #123427;
+  --bg-selection: #123427;
+
+  --text-main: #eaeaea;
+  --text-sub: #a0a0a0;
+  --text-muted: #7a7a7a;
+  --text-strong: #ffffff;
+
+  --border: #2a2a2a;
+  --border-strong: #3a3a3a;
+  --chrome-edge: #050505;
+  --danger: #ff7a7a;
+  --danger-soft: #3b1f1f;
+
+  --shadow-neon-soft: 0 0 12px rgba(0, 255, 156, 0.12);
+  --shadow-neon-strong: 0 0 18px rgba(0, 255, 156, 0.22);
+
+  /* Backward-compatible aliases for existing component CSS */
+  --bg: var(--bg-main);
+  --card: var(--bg-card);
+  --line: var(--border);
+  --text: var(--text-main);
+  --sub: var(--text-sub);
+  --acc: var(--primary);
+  --acc-2: var(--primary-soft);
 }
 
 * {
   box-sizing: border-box;
 }
 
+html,
+body {
+  min-height: 100%;
+}
+
 body {
   margin: 0;
   font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-  background: radial-gradient(circle at 15% 10%, #eaf6ef 0%, #f2f4f7 40%), var(--bg);
+  font-size: var(--font-size-body);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(0, 255, 156, 0.12) 0%, rgba(0, 255, 156, 0) 28%),
+    radial-gradient(circle at 85% 0%, rgba(0, 255, 156, 0.08) 0%, rgba(0, 255, 156, 0) 24%),
+    linear-gradient(180deg, #080808 0%, #0a0a0a 100%);
   color: var(--text);
+  accent-color: var(--primary);
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-main);
+}
+
+button {
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-card) 100%);
+  color: var(--text-main);
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    color 140ms ease;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--primary-deep);
+  box-shadow: var(--shadow-neon-soft);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+input,
+select,
+textarea {
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary-glow);
+}
+
+table {
+  background: var(--bg-card);
+}
+
+th {
+  background: var(--bg-card-soft);
+  color: var(--text-main);
+}
+
+td {
+  color: var(--text-main);
+}
+
+.neon {
+  color: var(--primary);
+  text-shadow: 0 0 6px var(--primary-glow), 0 0 12px rgba(0, 255, 156, 0.18);
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-soft) 100%);
+  border-color: var(--primary-soft);
+  color: #03140e;
+  font-weight: 600;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(180deg, #39ffb1 0%, var(--primary) 100%);
+  border-color: #39ffb1;
+  box-shadow: var(--shadow-neon-strong);
 }
 
 button,

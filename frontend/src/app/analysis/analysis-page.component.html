@@ -1,19 +1,27 @@
-<section class="panel-stack">
-  <article class="panel">
+<section class="panel-stack ui-stack">
+  <article class="panel ui-panel">
     <h2>集計ダッシュボード</h2>
     <div class="match-caption">{{ match?.title || '試合未選択' }}</div>
-    <div class="metrics">
-      <div><span>総ポイント</span><strong>{{ summary.total }}</strong></div>
-      <div><span>勝ち / 負け</span><strong>{{ summary.win }} / {{ summary.lose }}</strong></div>
-      <div><span>勝率</span><strong>{{ (summary.winRate * 100).toFixed(1) }}%</strong></div>
-      <div><span>相手サーブ時 得点率</span><strong>{{ (summary.opServeWinRate * 100).toFixed(1) }}%</strong></div>
+    <div class="metrics ui-metrics">
+      <div class="ui-card ui-metric-card"><span>総ポイント</span><strong>{{ summary.total }}</strong></div>
+      <div class="ui-card ui-metric-card"><span>勝ち / 負け</span><strong>{{ summary.win }} / {{ summary.lose }}</strong></div>
+      <div class="ui-card ui-metric-card"><span>勝率</span><strong>{{ (summary.winRate * 100).toFixed(1) }}%</strong></div>
+      <div class="ui-card ui-metric-card"><span>相手サーブ時 得点率</span><strong>{{ (summary.opServeWinRate * 100).toFixed(1) }}%</strong></div>
     </div>
   </article>
 
-  <article class="panel">
+  <article class="panel ui-panel">
+    <app-scoring-pattern-pie-chart
+      title="代表的な得点パターン"
+      [data]="scoringPatterns"
+      emptyMessage="得点ラリーにタグがまだ付いていません。"
+    ></app-scoring-pattern-pie-chart>
+  </article>
+
+  <article class="panel ui-panel">
     <h2>ラリーデータ</h2>
-    <div class="table-wrap">
-      <table>
+    <div class="table-wrap ui-table-wrap">
+      <table class="ui-table">
         <thead><tr><th>ID</th><th>UUID</th><th>Set</th><th>Winner</th><th>タグ</th><th>t_start</th><th>t_end</th><th>note</th></tr></thead>
         <tbody>
           <tr *ngFor="let r of rallies">
@@ -21,7 +29,9 @@
             <td>{{ r.uuid }}</td>
             <td>{{ r.setNo }}</td>
             <td>{{ r.pointWinner }}</td>
-            <td>{{ r.resultTag || '-' }}</td>
+            <td>
+              <span class="ui-chip">{{ r.resultTag || '-' }}</span>
+            </td>
             <td>{{ r.tStart }}</td>
             <td>{{ r.tEnd }}</td>
             <td>{{ r.note }}</td>
