@@ -1,15 +1,6 @@
 services:
-  app:
-    build: .
-    ports:
-      - "8501:8501"
-    volumes:
-      - ./:/app
-    env_file:
-      - .env
-    command: uv run streamlit run backend/app.py --server.port=8501 --server.address=0.0.0.0
 
-  api:
+  table-tennis-backend:
     build: .
     ports:
       - "8000:8000"
@@ -18,13 +9,14 @@ services:
     env_file:
       - .env
     command: uv run uvicorn backend.api:app --host 0.0.0.0 --port 8000 --reload
+    container_name: table-tennis-backend
 
-  frontend:
+  table-tennis-frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "4200:4200"
+      - "42000:4200"
     volumes:
       - ./frontend:/app
       - frontend_node_modules:/app/node_modules
@@ -32,7 +24,8 @@ services:
       - .env
     command: sh /app/docker-entrypoint.sh
     depends_on:
-      - api
+      - table-tennis-backend
+    container_name: table-tennis-frontned
 
 #  60.00s / 終了 744.00s
 
