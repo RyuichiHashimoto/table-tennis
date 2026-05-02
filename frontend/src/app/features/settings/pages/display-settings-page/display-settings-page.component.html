@@ -1,0 +1,28 @@
+<section class="display-settings">
+  <article class="ui-panel">
+    <h3>テーマ</h3>
+    <div class="theme-options" role="group" aria-label="テーマ">
+      <button
+        type="button"
+        class="theme-option"
+        [class.active]="selectedTheme === 'light'"
+        [attr.aria-pressed]="selectedTheme === 'light'"
+        (click)="setTheme('light')"
+      >
+        <span>ライト</span>
+        <small>白基調と緑のハイライト</small>
+      </button>
+
+      <button
+        type="button"
+        class="theme-option"
+        [class.active]="selectedTheme === 'dark'"
+        [attr.aria-pressed]="selectedTheme === 'dark'"
+        (click)="setTheme('dark')"
+      >
+        <span>ダーク</span>
+        <small>暗い背景と緑のハイライト</small>
+      </button>
+    </div>
+  </article>
+</section>

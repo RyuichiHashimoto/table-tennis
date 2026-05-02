@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+.table-shell {
+  display: grid;
+  gap: 12px;
+}
+
+.table-empty {
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+  color: var(--sub);
+  font-size: var(--font-size-body);
+}

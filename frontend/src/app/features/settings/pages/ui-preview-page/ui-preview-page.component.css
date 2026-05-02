@@ -1,0 +1,131 @@
+.ui-preview-page {
+  padding: 18px;
+}
+
+.ui-preview-head p {
+  margin: 6px 0 0;
+  color: var(--sub);
+}
+
+.ui-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.card-samples,
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.button-showcase {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.button-sample {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.button-sample span {
+  color: var(--sub);
+  font-size: var(--font-size-label);
+}
+
+.card-sample {
+  min-width: 180px;
+}
+
+.card-sample span {
+  color: var(--sub);
+  font-size: var(--font-size-label);
+}
+
+.input-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.input-grid label {
+  display: grid;
+  gap: 8px;
+}
+
+.input-wide {
+  grid-column: 1 / -1;
+}
+
+.ui-preview-table-panel {
+  grid-column: 1 / -1;
+}
+
+.ui-preview-trash-button {
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.button-icon-trash {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  mask-image: url("/assets/icons/danger-trashbox.svg");
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-image: url("/assets/icons/danger-trashbox.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+.ui-preview-table-panel td:last-child {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ui-preview-modal-fields {
+  display: grid;
+  gap: 14px;
+}
+
+.ui-preview-modal-fields label {
+  display: grid;
+  gap: 8px;
+}
+
+.ui-preview-modal-fields span {
+  color: var(--text-strong);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+}
+
+.modal-button {
+  cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .ui-preview-grid,
+  .input-grid,
+  .button-showcase {
+    grid-template-columns: 1fr;
+  }
+
+  .input-wide,
+  .ui-preview-table-panel {
+    grid-column: auto;
+  }
+}

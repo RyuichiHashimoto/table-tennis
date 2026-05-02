@@ -1,0 +1,133 @@
+<section class="summary-page">
+  <header class="summary-header">
+    <h1>試合サマリー</h1>
+    <div class="mode-switch" *ngIf="match">
+      <a class="mode-button" [routerLink]="['/match', match.uuid]">編集モード</a>
+      <a class="mode-button active" [routerLink]="['/match', match.uuid, 'summary']">閲覧モード</a>
+    </div>
+    <div class="edit-hint">ⓘ 編集は編集モードで行えます</div>
+  </header>
+
+  <section class="summary-hero">
+    <article class="summary-card match-info-card">
+      <h2>試合情報</h2>
+      <div class="match-info-body">
+        <div class="video-thumb">
+          <span class="video-play">▶</span>
+          <small>{{ matchDurationLabel }}</small>
+        </div>
+        <dl class="match-meta">
+          <div><dt>日時</dt><dd>{{ matchDateLabel }}</dd></div>
+          <div><dt>試合名</dt><dd>{{ match?.title || '-' }}</dd></div>
+          <div><dt>セット数</dt><dd>{{ setSummaries.length }}セット</dd></div>
+          <div><dt>試合時間</dt><dd>{{ matchDurationLabel }}</dd></div>
+          <div><dt>タグ</dt><dd><span class="ui-chip" *ngFor="let tag of topTags.slice(0, 3)">{{ tag.tag }}</span></dd></div>
+        </dl>
+      </div>
+    </article>
+
+    <article class="summary-card result-card">
+      <div class="card-head">
+        <h2>試合結果サマリー</h2>
+        <span class="status-pill">試合終了</span>
+      </div>
+      <div class="set-score-row">
+        <div class="set-score-box" *ngFor="let set of setSummaries">
+          <span>セット {{ set.setNo }}</span>
+          <strong>
+            <em [class.win]="set.myPoints > set.opPoints">{{ set.myPoints }}</em>
+            -
+            <em [class.win]="set.opPoints > set.myPoints">{{ set.opPoints }}</em>
+          </strong>
+        </div>
+        <div class="set-score-empty" *ngIf="!setSummaries.length">記録されたセットがありません</div>
+      </div>
+      <div class="reader-notice">閲覧モードでは統計情報を確認できます</div>
+    </article>
+  </section>
+
+  <section class="metric-grid">
+    <article class="metric-card"><span>総イベント数</span><strong>{{ totalRallies }}</strong></article>
+    <article class="metric-card"><span>総ラリー数</span><strong>{{ totalRallies }}</strong></article>
+    <article class="metric-card"><span>自分の得点</span><strong>{{ myPoints }}</strong></article>
+    <article class="metric-card"><span>相手の得点</span><strong>{{ opPoints }}</strong></article>
+    <article class="metric-card"><span>サービスエース</span><strong>{{ serviceAceCount }}</strong></article>
+    <article class="metric-card"><span>ウィナー</span><strong>{{ winnerCount }}</strong></article>
+    <article class="metric-card"><span>ミス</span><strong>{{ missCount }}</strong></article>
+    <article class="metric-card"><span>最長ラリー</span><strong>{{ longestRallySeconds }}秒</strong></article>
+  </section>
+
+  <section class="analysis-grid">
+    <article class="summary-card set-summary-card">
+      <h2>セット別サマリー</h2>
+      <table class="summary-table">
+        <thead><tr><th>セット</th><th>スコア</th><th>自分の得点</th><th>相手の得点</th><th>総ラリー数</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let set of setSummaries">
+            <td>セット {{ set.setNo }}</td>
+            <td>{{ set.myPoints }} - {{ set.opPoints }}</td>
+            <td>{{ set.myPoints }}</td>
+            <td>{{ set.opPoints }}</td>
+            <td>{{ set.rallyCount }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </article>
+
+    <article class="summary-card trend-card">
+      <h2>スコア推移（自分 - 相手）</h2>
+      <div class="trend-bars">
+        <div class="trend-row" *ngFor="let set of setSummaries">
+          <span>セット {{ set.setNo }}</span>
+          <div class="trend-track">
+            <i [style.width.%]="50 + ((set.myPoints - set.opPoints) * 5)"></i>
+          </div>
+          <strong>{{ set.myPoints - set.opPoints > 0 ? '+' : '' }}{{ set.myPoints - set.opPoints }}</strong>
+        </div>
+      </div>
+    </article>
+
+    <article class="summary-card tag-breakdown-card">
+      <h2>タグ別内訳（上位5）</h2>
+      <div class="tag-bars">
+        <div class="tag-bar-row" *ngFor="let tag of topTags">
+          <span>{{ tag.tag }}</span>
+          <div class="tag-track"><i [style.width.%]="tag.ratio * 100"></i></div>
+          <strong>{{ tag.count }} ({{ (tag.ratio * 100).toFixed(0) }}%)</strong>
+        </div>
+      </div>
+    </article>
+
+    <article class="summary-card serve-card">
+      <h2>サーブ・リターン分析</h2>
+      <div class="serve-row">
+        <span>自分サーブ時得点率</span>
+        <div class="serve-track"><i [style.width.%]="myServePointRate * 100"></i></div>
+        <strong>{{ (myServePointRate * 100).toFixed(0) }}%</strong>
+      </div>
+      <div class="serve-row muted">
+        <span>相手サーブ時の自分得点率</span>
+        <div class="serve-track"><i [style.width.%]="opServePointRate * 100"></i></div>
+        <strong>{{ (opServePointRate * 100).toFixed(0) }}%</strong>
+      </div>
+    </article>
+  </section>
+
+  <article class="summary-card recent-card">
+    <h2>直近イベント（最新 5 件）</h2>
+    <table class="summary-table recent-table">
+      <thead><tr><th>No.</th><th>時刻</th><th>スコア</th><th>得点者</th><th>サーバー</th><th>タグ</th></tr></thead>
+      <tbody>
+        <tr *ngFor="let rally of recentRallies">
+          <td>No.{{ rally.id }}</td>
+          <td>{{ formatClock(rally.tStart) }}</td>
+          <td>セット {{ rally.setNo }}</td>
+          <td><span class="score-tag" [class.loss]="rally.pointWinner === 'op'">{{ rally.pointWinner === 'me' ? '自分の得点' : '相手の得点' }}</span></td>
+          <td>{{ rally.server === 'me' ? '自分' : '相手' }}</td>
+          <td><span class="ui-chip">{{ rally.resultTag || '-' }}</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="recent-note">ⓘ すべてのイベントは「分析」または編集モードで確認できます</div>
+  </article>
+</section>

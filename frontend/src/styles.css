@@ -1,6 +1,7 @@
 @import "./styles/ui.css";
 
-:root {
+:root,
+:root[data-theme="light"] {
   --font-size-caption: 11px;
   --font-size-label: 13px;
   --font-size-body: 14px;
@@ -9,6 +10,52 @@
   --font-size-title: 28px;
   --font-size-metric: 24px;
 
+  --primary: #00b871;
+  --primary-soft: #15d78a;
+  --primary-deep: #008f58;
+  --primary-glow: rgba(0, 184, 113, 0.22);
+
+  --bg-main: #f7faf8;
+  --bg-section: #f1f5f2;
+  --bg-card: #ffffff;
+  --bg-card-soft: #f3f7f4;
+  --bg-elevated: #ffffff;
+  --bg-overlay: rgba(20, 34, 28, 0.28);
+  --bg-surface: #ffffff;
+  --bg-surface-soft: #eef6f1;
+  --bg-highlight: #dff7ea;
+  --bg-selection: #dff7ea;
+  --bg-video-placeholder: #f8faf9;
+  --notice-bg: #fff8e6;
+  --notice-border: #f1d89a;
+  --notice-text: #4d3a10;
+
+  --text-main: #14231d;
+  --text-sub: #5d6d66;
+  --text-muted: #8a9992;
+  --text-strong: #07130e;
+
+  --border: #d8e3dd;
+  --border-strong: #b7cac0;
+  --chrome-edge: #ffffff;
+  --chrome-surface: #ffffff;
+  --danger: #d44848;
+  --danger-soft: #fff0f0;
+
+  --shadow-neon-soft: 0 8px 22px rgba(0, 143, 88, 0.11);
+  --shadow-neon-strong: 0 12px 30px rgba(0, 143, 88, 0.18);
+
+  /* Backward-compatible aliases for existing component CSS */
+  --bg: var(--bg-main);
+  --card: var(--bg-card);
+  --line: var(--border);
+  --text: var(--text-main);
+  --sub: var(--text-sub);
+  --acc: var(--primary);
+  --acc-2: var(--primary-soft);
+}
+
+:root[data-theme="dark"] {
   --primary: #00ff9c;
   --primary-soft: #00e68a;
   --primary-deep: #0bbd78;
@@ -24,6 +71,10 @@
   --bg-surface-soft: #1e1e1e;
   --bg-highlight: #123427;
   --bg-selection: #123427;
+  --bg-video-placeholder: #181818;
+  --notice-bg: #2c2412;
+  --notice-border: #5e4a1b;
+  --notice-text: #f5dfa0;
 
   --text-main: #eaeaea;
   --text-sub: #a0a0a0;
@@ -33,20 +84,12 @@
   --border: #2a2a2a;
   --border-strong: #3a3a3a;
   --chrome-edge: #050505;
+  --chrome-surface: #050505;
   --danger: #ff7a7a;
   --danger-soft: #3b1f1f;
 
   --shadow-neon-soft: 0 0 12px rgba(0, 255, 156, 0.12);
   --shadow-neon-strong: 0 0 18px rgba(0, 255, 156, 0.22);
-
-  /* Backward-compatible aliases for existing component CSS */
-  --bg: var(--bg-main);
-  --card: var(--bg-card);
-  --line: var(--border);
-  --text: var(--text-main);
-  --sub: var(--text-sub);
-  --acc: var(--primary);
-  --acc-2: var(--primary-soft);
 }
 
 * {
@@ -62,10 +105,7 @@ body {
   margin: 0;
   font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
   font-size: var(--font-size-body);
-  background:
-    radial-gradient(circle at 15% 10%, rgba(0, 255, 156, 0.12) 0%, rgba(0, 255, 156, 0) 28%),
-    radial-gradient(circle at 85% 0%, rgba(0, 255, 156, 0.08) 0%, rgba(0, 255, 156, 0) 24%),
-    linear-gradient(180deg, #080808 0%, #0a0a0a 100%);
+  background: var(--bg-main);
   color: var(--text);
   accent-color: var(--primary);
 }
@@ -141,7 +181,7 @@ td {
 
 .neon {
   color: var(--primary);
-  text-shadow: 0 0 6px var(--primary-glow), 0 0 12px rgba(0, 255, 156, 0.18);
+  text-shadow: 0 0 6px var(--primary-glow);
 }
 
 .btn-primary {
@@ -152,8 +192,8 @@ td {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: linear-gradient(180deg, #39ffb1 0%, var(--primary) 100%);
-  border-color: #39ffb1;
+  background: linear-gradient(180deg, var(--primary-soft) 0%, var(--primary) 100%);
+  border-color: var(--primary-soft);
   box-shadow: var(--shadow-neon-strong);
 }
 

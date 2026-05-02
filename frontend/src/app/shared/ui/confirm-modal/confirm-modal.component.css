@@ -1,0 +1,14 @@
+:host {
+  display: contents;
+}
+
+p {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.modal-button {
+  cursor: pointer;
+}

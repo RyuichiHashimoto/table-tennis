@@ -1,6 +1,6 @@
 .app-shell {
   min-height: 100vh;
-  background: var(--chrome-edge);
+  background: var(--bg-main);
 }
 
 .top-pane {
@@ -10,34 +10,19 @@
   gap: 16px;
   min-height: 86px;
   padding: 0 18px;
-  background: var(--chrome-edge);
+  border-bottom: 1px solid var(--line);
+  background: var(--chrome-surface);
   color: var(--text-main);
+  box-shadow: 0 1px 0 rgba(0, 143, 88, 0.08);
 }
 
-.brand,
-.settings-toggle {
+.brand {
   letter-spacing: 0.08em;
   font-weight: 300;
 }
 
 .brand {
   font-size: clamp(28px, 4vw, 40px);
-}
-
-.settings-toggle {
-  justify-self: end;
-  border: 0;
-  padding: 0;
-  background: transparent;
-  color: inherit;
-  font-size: clamp(22px, 3vw, 30px);
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.settings-toggle.active {
-  text-decoration: underline;
-  text-underline-offset: 8px;
 }
 
 .header-tabs {
@@ -52,7 +37,7 @@
   border-bottom: 2px solid transparent;
   padding: 10px 4px;
   background: transparent;
-  color: rgba(244, 244, 244, 0.82);
+  color: var(--text-sub);
   font-size: clamp(18px, 2.2vw, 28px);
   letter-spacing: 0.08em;
   text-decoration: none;
@@ -66,7 +51,8 @@
 
 .bottom-pane {
   min-height: calc(100vh - 102px);
-  border: 1px solid var(--chrome-edge);
+  border: 1px solid var(--line);
+  border-top: 0;
   background: var(--bg-section);
   overflow: hidden;
 }
@@ -175,9 +161,9 @@ button.warn {
 
 @media (max-width: 1024px) {
   .top-pane {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
     grid-template-areas:
-      "brand settings"
+      "brand"
       "title title";
   }
 
@@ -189,10 +175,6 @@ button.warn {
     grid-area: title;
     justify-content: flex-start;
     overflow-x: auto;
-  }
-
-  .settings-toggle {
-    grid-area: settings;
   }
 
   .form-grid,

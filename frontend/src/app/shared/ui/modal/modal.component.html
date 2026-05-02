@@ -1,0 +1,21 @@
+<div class="modal-overlay" *ngIf="open" (click)="onBackdropClick($event)">
+  <section
+    class="modal-card ui-panel"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="title"
+    [style.--modal-width]="width"
+  >
+    <header class="modal-head" *ngIf="title">
+      <h2>{{ title }}</h2>
+    </header>
+
+    <div class="modal-body">
+      <ng-content select="[modal-content]"></ng-content>
+    </div>
+
+    <footer class="modal-actions">
+      <ng-content select="[modal-actions]"></ng-content>
+    </footer>
+  </section>
+</div>

@@ -1,0 +1,16 @@
+<app-modal [open]="open" [title]="title" (backdropClicked)="cancelled.emit()">
+  <p modal-content>{{ message }}</p>
+
+  <ng-container modal-actions>
+    <button type="button" class="modal-button ui-button" (click)="cancelled.emit()">{{ cancelLabel }}</button>
+    <button
+      type="button"
+      class="modal-button ui-button"
+      [class.ui-button-danger]="tone === 'danger'"
+      [class.danger]="tone === 'danger'"
+      (click)="confirmed.emit()"
+    >
+      {{ confirmLabel }}
+    </button>
+  </ng-container>
+</app-modal>

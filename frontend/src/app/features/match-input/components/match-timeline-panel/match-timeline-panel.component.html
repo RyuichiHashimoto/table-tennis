@@ -1,0 +1,91 @@
+<article class="panel timeline-panel ui-panel">
+  <header class="timeline-head">
+    <div class="timeline-title">
+      <span class="step-number">4</span>
+      <h2>直近イベント</h2>
+    </div>
+  </header>
+  <div class="event-toolbar">
+    <div class="event-filters">
+      <button type="button" class="filter-chip active">全て</button>
+      <button type="button" class="filter-chip">セット {{ activeSetNo }}</button>
+      <button type="button" class="filter-chip">得点のみ</button>
+      <button type="button" class="filter-chip">タグあり</button>
+    </div>
+    <label class="event-search">
+      <span>⌕</span>
+      <input type="text" placeholder="タグで検索（例: サーブ、ウィナー）" disabled />
+    </label>
+  </div>
+  <div class="set-tabs">
+    <button
+      *ngFor="let group of setGroups; trackBy: trackBySetNo"
+      type="button"
+      class="set-tab ui-button ui-button-sm"
+      [class.ui-button-active]="group.setNo === activeSetNo"
+      [class.active]="group.setNo === activeSetNo"
+      (click)="selectSet(group.setNo)"
+    >
+      セット {{ group.setNo }}
+      <span>{{ group.myPoints }} - {{ group.opPoints }}</span>
+    </button>
+  </div>
+  <div class="event-list-wrap ui-table-wrap">
+    <table class="event-table ui-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>No.</th>
+          <th>時刻</th>
+          <th>セット</th>
+          <th>得点</th>
+          <th>サーバー</th>
+          <th>タグ</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let row of recentRows; trackBy: trackByRallyId"
+          [class.active-row]="row.rally.id === selectedRallyId"
+          (click)="onSelectRally(row.rally)"
+        >
+          <td>
+            <button type="button" class="play-row-button" (click)="onSeek(row.rally); $event.stopPropagation()">▶</button>
+          </td>
+          <td>No.{{ row.rally.id }}</td>
+          <td>{{ formatClock(row.rally.tStart) }}</td>
+          <td>セット{{ row.setNo }}</td>
+          <td>{{ row.myPoints }} - {{ row.opPoints }}</td>
+          <td>{{ row.rally.server === 'me' ? '自分' : '相手' }}</td>
+          <td>
+            <button
+              type="button"
+              class="tag-display ui-chip ui-button ui-button-sm"
+              [class.ui-button-active]="row.rally.id === selectedRallyId"
+              [class.empty]="!row.rally.resultTag"
+              [class.selected]="row.rally.id === selectedRallyId"
+              [class.point-me]="row.rally.pointWinner === 'me'"
+              [class.point-op]="row.rally.pointWinner === 'op'"
+              (click)="onSelectRally(row.rally); $event.stopPropagation()"
+            >
+              {{ row.rally.resultTag || (row.rally.pointWinner === 'me' ? '自分の得点' : '相手の得点') }}
+            </button>
+          </td>
+          <td class="event-menu-cell">
+            <button type="button" class="event-menu-button" (click)="onEditRally(row.rally); $event.stopPropagation()">⋮</button>
+          </td>
+        </tr>
+        <tr *ngIf="!recentRows.length">
+          <td colspan="7" class="empty-row">
+            <div class="empty-state">
+              <span class="empty-icon">▣</span>
+              <strong>まだ記録がありません</strong>
+              <small>動画を再生し、ラリーを記録するとここにイベントが表示されます。</small>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</article>

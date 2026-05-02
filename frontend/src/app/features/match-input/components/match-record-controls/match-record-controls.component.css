@@ -1,0 +1,140 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.step-card {
+  min-width: 0;
+  border-color: #dde7e1;
+  border-radius: 8px;
+  background: var(--bg-card);
+  box-shadow: 0 8px 24px rgba(19, 35, 28, 0.08);
+}
+
+.step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step-head h2 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: var(--font-size-body-lg);
+  font-weight: 700;
+}
+
+.step-number {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--primary-deep);
+  color: #fff;
+  font-size: var(--font-size-label);
+  font-weight: 700;
+}
+
+.control-card {
+  align-content: start;
+}
+
+.record-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.record-button {
+  min-height: 42px;
+  border-radius: 6px;
+  background: var(--bg-card);
+  font-weight: 700;
+}
+
+.record-button-primary {
+  border-color: var(--primary-deep);
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-deep) 100%);
+  color: #fff;
+}
+
+.record-button-danger {
+  border-color: #ff5f6d;
+  color: #c92f3e;
+}
+
+.server-control,
+.edit-controls,
+.tag-controls,
+.record-meta {
+  display: grid;
+  gap: 10px;
+}
+
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 280px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.segmented-control button {
+  border: 0;
+  border-radius: 0;
+  background: var(--bg-surface);
+  font-weight: 700;
+}
+
+.segmented-control button.active {
+  background: var(--primary-deep);
+  color: #fff;
+}
+
+.record-meta {
+  color: var(--text-sub);
+  font-size: var(--font-size-label);
+  line-height: 1.5;
+}
+
+.record-meta p {
+  margin: 0;
+}
+
+.edit-controls {
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.edit-controls > div:first-child,
+.tag-controls {
+  color: var(--text-sub);
+  font-size: var(--font-size-label);
+}
+
+.edit-controls strong,
+.tag-controls strong,
+.server-control strong {
+  color: var(--text-strong);
+}
+
+.edit-actions,
+.tag-control-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-control-chip.active {
+  border-color: var(--primary);
+  background: var(--bg-selection);
+  color: var(--text-strong);
+}
+
+@media (max-width: 720px) {
+  .record-actions {
+    grid-template-columns: 1fr;
+  }
+}

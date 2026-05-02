@@ -1,0 +1,36 @@
+:host {
+  display: contents;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--bg-overlay);
+}
+
+.modal-card {
+  width: min(var(--modal-width, 480px), 100%);
+  gap: 20px;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.18);
+}
+
+.modal-head h2 {
+  margin: 0;
+  font-size: var(--font-size-section);
+  font-weight: 500;
+}
+
+.modal-body {
+  display: grid;
+  gap: 18px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

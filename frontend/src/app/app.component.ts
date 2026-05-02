@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { AppStateService } from './shared/app-state.service';
+import { ThemeService } from './core/services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -11,9 +11,9 @@ import { AppStateService } from './shared/app-state.service';
   styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
-  constructor(private readonly state: AppStateService) {}
+  constructor(private readonly themeService: ThemeService) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.state.ensureDefaultMatch('2026-03-04 vs practice');
+  ngOnInit(): void {
+    this.themeService.init();
   }
 }

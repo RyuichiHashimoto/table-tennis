@@ -1,0 +1,25 @@
+<app-modal
+  [open]="open"
+  title="試合タイトルを編集"
+  width="560px"
+  (backdropClicked)="cancelled.emit()"
+>
+  <p modal-content>「{{ currentTitle }}」のタイトルを変更します。</p>
+
+  <label modal-content class="match-title-field">
+    <span>試合タイトル</span>
+    <input
+      class="ui-input"
+      type="text"
+      placeholder="試合タイトルを入力"
+      [(ngModel)]="title"
+    />
+  </label>
+
+  <ng-container modal-actions>
+    <button type="button" class="modal-button ui-button" (click)="cancelled.emit()">キャンセル</button>
+    <button type="button" class="modal-button ui-button btn-primary" [disabled]="!canSave" (click)="save()">
+      変更する
+    </button>
+  </ng-container>
+</app-modal>

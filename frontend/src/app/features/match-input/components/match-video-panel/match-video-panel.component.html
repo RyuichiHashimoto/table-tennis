@@ -1,0 +1,48 @@
+<article class="panel video-panel ui-panel">
+  <header class="video-head">
+    <span class="step-number">1</span>
+    <h2>動画を読み込む</h2>
+  </header>
+  <ng-container *ngIf="videoSourceUrl; else videoPlaceholder">
+    <div class="video-player-wrap">
+      <video
+        #videoPlayer
+        class="video-player"
+        [src]="videoSourceUrl"
+        controls
+        preload="metadata"
+        (timeupdate)="onVideoTimeUpdate($event)"
+        (loadedmetadata)="onVideoTimeUpdate($event)"
+      ></video>
+      <div class="video-caption">{{ videoTitle || '動画再生' }}</div>
+    </div>
+  </ng-container>
+  <ng-template #videoPlaceholder>
+    <div class="video-placeholder">
+      <span>動画をアップロードするか、YouTube URL を入力してください</span>
+      <div class="video-illustration">
+        <div class="play-mark">▶</div>
+      </div>
+      <label class="upload-button ui-button">
+        動画アップロード
+        <input type="file" accept="video/*" (change)="onSelectVideoFile($event)" />
+      </label>
+    </div>
+  </ng-template>
+  <div class="video-url-bar" *ngIf="!videoSourceUrl">
+    <label>YouTube URL
+      <input
+        class="ui-input"
+        [ngModel]="youtubeUrl"
+        (ngModelChange)="onYoutubeUrlChange($event)"
+        placeholder="https://www.youtube.com/watch?v=..."
+      />
+    </label>
+    <div class="video-url-actions">
+      <button type="button" class="ui-button" (click)="onLoadYoutube()" [disabled]="isLoadingVideo">
+        {{ isLoadingVideo ? '読込中...' : '読み込む' }}
+      </button>
+    </div>
+  </div>
+  <div class="video-help" *ngIf="!videoSourceUrl">動画を読み込むと再生操作が表示されます</div>
+</article>

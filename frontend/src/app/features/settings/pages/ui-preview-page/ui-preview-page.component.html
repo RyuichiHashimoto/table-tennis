@@ -1,0 +1,196 @@
+<section class="ui-preview-page ui-stack">
+  <article class="ui-panel">
+    <header class="ui-preview-head ui-section-head">
+      <div>
+        <h2>UIプレビュー</h2>
+        <p>共通UI部品の見た目をこのページで確認できます。</p>
+      </div>
+      <span class="ui-chip neon">UI</span>
+    </header>
+  </article>
+
+  <section class="ui-preview-grid">
+    <article class="ui-card">
+      <h3>Cards</h3>
+      <p>カードのベーストーンと余白確認用です。</p>
+      <div class="card-samples">
+        <div class="ui-card card-sample">
+          <span>Compact Card</span>
+          <strong>Primary Surface</strong>
+        </div>
+        <div class="ui-panel card-sample">
+          <span>Panel Surface</span>
+          <strong>Neutral Surface</strong>
+        </div>
+      </div>
+    </article>
+
+    <article class="ui-panel">
+      <h3>Buttons</h3>
+      <div class="button-showcase">
+        <div class="button-sample">
+          <span>プライマリー</span>
+          <button type="button" class="ui-button btn-primary">Primary</button>
+        </div>
+        <div class="button-sample">
+          <span>セカンダリー</span>
+          <button type="button" class="ui-button ui-button-secondary">Secondary</button>
+        </div>
+        <div class="button-sample">
+          <span>ターシャリー</span>
+          <button type="button" class="ui-button ui-button-tertiary">Tertiary</button>
+        </div>
+        <div class="button-sample">
+          <span>デンジャー</span>
+          <button type="button" class="ui-button ui-button-danger">Danger</button>
+        </div>
+        <div class="button-sample">
+          <span>アイコン</span>
+          <button type="button" class="ui-button ui-button-icon" aria-label="Add">+</button>
+        </div>
+        <div class="button-sample">
+          <span>Danger アイコン</span>
+          <button type="button" class="ui-button ui-button-icon ui-button-danger ui-preview-trash-button" aria-label="Delete">
+            <span class="button-icon-trash" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="button-sample">
+          <span>ディスエーブル</span>
+          <button type="button" class="ui-button btn-primary" disabled>Disabled</button>
+        </div>
+        <div class="button-sample">
+          <span>フローティング</span>
+          <button type="button" class="ui-button ui-button-floating" aria-label="Create">+</button>
+        </div>
+        <div class="button-sample">
+          <span>モーダル表示</span>
+          <div class="button-row">
+            <button type="button" class="ui-button ui-button-secondary" (click)="openModal('default')">Open Modal</button>
+            <button type="button" class="ui-button ui-button-danger" (click)="openModal('danger')">Open Danger Modal</button>
+            <button type="button" class="ui-button btn-primary" (click)="openFormModal()">Open Form Modal</button>
+          </div>
+        </div>
+      </div>
+
+      <h3>Chips</h3>
+      <div class="chip-row">
+        <span class="ui-chip">Default</span>
+        <span class="ui-chip neon">Neon</span>
+        <span class="ui-chip ui-button-active">Active</span>
+      </div>
+    </article>
+
+    <article class="ui-panel">
+      <h3>Inputs</h3>
+      <div class="input-grid">
+        <label>
+          <span>テキスト入力</span>
+          <input class="ui-input" type="text" [(ngModel)]="sampleText" />
+        </label>
+        <label>
+          <span>セレクト</span>
+          <select class="ui-input" [(ngModel)]="selectedMode">
+            <option value="default">default</option>
+            <option value="compact">compact</option>
+            <option value="danger">danger</option>
+          </select>
+        </label>
+        <label class="input-wide">
+          <span>テキストエリア</span>
+          <textarea class="ui-input" rows="4">複数行入力の確認用です。</textarea>
+        </label>
+      </div>
+    </article>
+
+    <article class="ui-panel ui-preview-table-panel">
+      <h3>Table</h3>
+      <div class="ui-table-wrap">
+        <table class="ui-table">
+          <thead>
+            <tr>
+              <th>名前</th>
+              <th>種別</th>
+              <th>状態</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of sampleRows">
+              <td>{{ row.name }}</td>
+              <td>{{ row.category }}</td>
+              <td><span class="ui-chip">{{ row.state }}</span></td>
+              <td>
+                <button type="button" class="ui-button ui-button-sm">詳細</button>
+                <button type="button" class="ui-button ui-button-sm">edit</button>
+                <button type="button" class="ui-button ui-button-icon ui-button-danger ui-preview-trash-button" aria-label="Delete">
+                  <span class="button-icon-trash" aria-hidden="true"></span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+
+  <app-confirm-modal
+    [open]="isDefaultModalOpen"
+    title="標準モーダル"
+    message="共通 confirm modal の標準トーン表示です。"
+    confirmLabel="OK"
+    cancelLabel="閉じる"
+    (confirmed)="closeModal('default')"
+    (cancelled)="closeModal('default')"
+  ></app-confirm-modal>
+
+  <app-confirm-modal
+    [open]="isDangerModalOpen"
+    title="危険モーダル"
+    message="削除や破壊的操作に使う danger トーンの確認用です。"
+    confirmLabel="削除する"
+    cancelLabel="キャンセル"
+    tone="danger"
+    (confirmed)="closeModal('danger')"
+    (cancelled)="closeModal('danger')"
+  ></app-confirm-modal>
+
+  <app-modal
+    [open]="isFormModalOpen"
+    title="入力モーダル"
+    width="560px"
+    (backdropClicked)="closeFormModal()"
+  >
+    <p modal-content>shared/ui/modal に feature 側のフォーム内容を載せた表示です。</p>
+
+    <div modal-content class="ui-preview-modal-fields">
+      <label>
+        <span>タイトル</span>
+        <input class="ui-input" type="text" placeholder="例: 新しいカード" [(ngModel)]="sampleModalTitle" />
+      </label>
+
+      <label>
+        <span>カテゴリ</span>
+        <select class="ui-input" [(ngModel)]="sampleModalCategory">
+          <option value="panel">Panel</option>
+          <option value="card">Card</option>
+          <option value="modal">Modal</option>
+        </select>
+      </label>
+
+      <label>
+        <span>優先度</span>
+        <input class="ui-input" type="number" [(ngModel)]="sampleModalPriority" />
+      </label>
+
+      <label>
+        <span>メモ</span>
+        <textarea class="ui-input" rows="5" placeholder="複数行メモを入力できます" [(ngModel)]="sampleModalNote"></textarea>
+      </label>
+    </div>
+
+    <ng-container modal-actions>
+      <button type="button" class="modal-button ui-button" (click)="closeFormModal()">閉じる</button>
+      <button type="button" class="modal-button ui-button btn-primary" (click)="submitFormModal()">保存</button>
+    </ng-container>
+  </app-modal>
+</section>

@@ -1,0 +1,82 @@
+<article class="step-card ui-panel control-card">
+  <header class="step-head">
+    <span class="step-number">3</span>
+    <h2>記録操作</h2>
+  </header>
+
+  <div class="record-actions">
+    <button type="button" class="record-button record-button-primary" (click)="startMatch.emit()">▶ 試合を開始</button>
+    <button type="button" class="record-button" (click)="startRally.emit()">▶ ラリー開始</button>
+    <button type="button" class="record-button" (click)="scorePoint.emit('me')">○ 自分の得点</button>
+    <button type="button" class="record-button record-button-danger" (click)="scorePoint.emit('op')">○ 相手の得点</button>
+  </div>
+
+  <div class="server-control">
+    <strong>最初のサーバー</strong>
+    <div class="segmented-control">
+      <button
+        type="button"
+        [class.active]="initialServer === 'me'"
+        (click)="initialServerChange.emit('me')"
+      >
+        自分
+      </button>
+      <button
+        type="button"
+        [class.active]="initialServer === 'op'"
+        (click)="initialServerChange.emit('op')"
+      >
+        相手
+      </button>
+    </div>
+  </div>
+
+  <div class="record-meta">
+    <p *ngIf="insertAfterRally; else appendMode">
+      次回追加: セット {{ inputSetNo }} のラリー #{{ insertAfterRally.id }} の後
+    </p>
+    <ng-template #appendMode>
+      <p>次回追加: セット {{ inputSetNo }} の末尾</p>
+    </ng-template>
+    <p>{{ message || '動画を読み込み、試合を開始してください。' }}</p>
+  </div>
+
+  <div class="edit-controls">
+    <div>
+      <strong>得失点編集</strong>
+      <span *ngIf="editingRally; else noWinnerEditTarget">
+        #{{ editingRally.id }} / {{ editingRally.pointWinner === 'me' ? '得点' : '失点' }}
+      </span>
+      <ng-template #noWinnerEditTarget>
+        <span>タイムラインから編集対象を選択</span>
+      </ng-template>
+    </div>
+    <div class="edit-actions">
+      <button type="button" class="ui-button ui-button-sm" [disabled]="!editingRally" (click)="selectedRallyPointWinnerChange.emit('me')">
+        得点に更新
+      </button>
+      <button type="button" class="ui-button ui-button-sm ui-button-danger" [disabled]="!editingRally" (click)="selectedRallyPointWinnerChange.emit('op')">
+        失点に更新
+      </button>
+    </div>
+  </div>
+
+  <div class="tag-controls">
+    <strong>ラリータグ</strong>
+    <span *ngIf="selectedRally; else noRallySelected">選択中: #{{ selectedRally.id }}</span>
+    <ng-template #noRallySelected><span>タイムラインからラリーを選択</span></ng-template>
+    <div class="tag-control-actions">
+      <button
+        *ngFor="let tag of selectedRallyTags"
+        type="button"
+        class="tag-control-chip ui-chip ui-button"
+        [class.ui-button-active]="selectedRally?.resultTag === tag"
+        [class.active]="selectedRally?.resultTag === tag"
+        [disabled]="!selectedRally"
+        (click)="selectedRallyTagToggle.emit(tag)"
+      >
+        {{ tag }}
+      </button>
+    </div>
+  </div>
+</article>

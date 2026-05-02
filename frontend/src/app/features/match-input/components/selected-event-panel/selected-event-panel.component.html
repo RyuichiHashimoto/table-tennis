@@ -1,0 +1,93 @@
+<article class="selected-event-card ui-panel">
+  <header class="selected-event-head">
+    <h2>選択中のイベント</h2>
+    <div class="event-nav-buttons">
+      <button type="button" class="ui-button ui-button-sm" [disabled]="!selectedRally">‹ 前へ</button>
+      <button type="button" class="ui-button ui-button-sm" [disabled]="!selectedRally">次へ ›</button>
+    </div>
+  </header>
+
+  <ng-container *ngIf="selectedRally; else noSelectedEvent">
+    <section class="selected-event-summary">
+      <div class="event-preview" (click)="seekToTime.emit(selectedRally.tStart ?? 0)">
+        <span class="event-preview-play">▶</span>
+        <small>{{ formatClock(selectedRally.tStart) }} / {{ formatClock(selectedRally.tEnd) }}</small>
+      </div>
+
+      <dl class="event-facts">
+        <div>
+          <dt>イベントNo.</dt>
+          <dd>{{ selectedRally.id }}</dd>
+        </div>
+        <div>
+          <dt>時刻</dt>
+          <dd>{{ formatClock(selectedRally.tStart) }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="selected-event-form">
+      <label>
+        <span>セット</span>
+        <select class="ui-input" [value]="selectedRally.setNo" disabled>
+          <option [value]="selectedRally.setNo">{{ selectedRally.setNo }}</option>
+        </select>
+      </label>
+
+      <label>
+        <span>得点</span>
+        <div class="event-score">{{ score.me }} <span>-</span> {{ score.op }}</div>
+      </label>
+
+      <label>
+        <span>結果</span>
+        <select class="ui-input" [value]="selectedRally.pointWinner" (change)="pointWinnerChange.emit($any($event.target).value)">
+          <option value="me">自分の得点</option>
+          <option value="op">相手の得点</option>
+        </select>
+      </label>
+
+      <label>
+        <span>サーバー</span>
+        <select class="ui-input" [value]="selectedRally.server" disabled>
+          <option value="me">自分</option>
+          <option value="op">相手</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="selected-tags">
+      <strong>タグ</strong>
+      <div class="selected-tag-list">
+        <button
+          *ngFor="let tag of selectedRallyTags"
+          type="button"
+          class="ui-chip ui-button"
+          [class.ui-button-active]="selectedRally.resultTag === tag"
+          (click)="tagToggle.emit(tag)"
+        >
+          {{ tag }}
+        </button>
+        <span class="ui-chip" *ngIf="!selectedRallyTags.length">タグ候補なし</span>
+      </div>
+    </section>
+
+    <label class="event-note">
+      <span>メモ</span>
+      <textarea class="ui-input" rows="4" [value]="selectedRally.note || ''" readonly></textarea>
+    </label>
+
+    <footer class="selected-event-actions">
+      <button type="button" class="ui-button ui-button-danger" (click)="deleteRally.emit(selectedRally.id)">削除</button>
+      <button type="button" class="ui-button" (click)="duplicateRally.emit(selectedRally.id)">複製</button>
+      <button type="button" class="ui-button btn-primary" (click)="save.emit()">保存</button>
+    </footer>
+  </ng-container>
+
+  <ng-template #noSelectedEvent>
+    <div class="no-selected-event">
+      <strong>イベントが選択されていません</strong>
+      <span>左の直近イベントから行を選択してください。</span>
+    </div>
+  </ng-template>
+</article>
