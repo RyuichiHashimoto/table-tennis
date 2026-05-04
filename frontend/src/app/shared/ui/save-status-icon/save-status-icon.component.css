@@ -1,0 +1,130 @@
+.save-status-icon {
+  position: relative;
+  display: inline-block;
+  width: 56px;
+  height: 56px;
+  color: currentColor;
+}
+
+.file-icon {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 44px;
+  height: 44px;
+  stroke-width: 1.8;
+}
+
+.badge {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 999px;
+  line-height: 1;
+}
+
+.badge i-tabler {
+  display: block;
+}
+
+.badge-before {
+  right: 1px;
+  bottom: 1px;
+  width: 22px;
+  height: 22px;
+}
+
+.badge-before i-tabler {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.9;
+}
+
+.badge-saving {
+  right: 0;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+  background: transparent;
+}
+
+.badge-saving i-tabler {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+.badge-saved {
+  right: 0;
+  bottom: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.badge-saved i-tabler {
+  width: 24px;
+  height: 24px;
+  stroke-width: 0;
+}
+
+/* compact: ui-icon-button (36×36) に合わせたサイズ */
+.save-status-icon.compact {
+  width: 36px;
+  height: 36px;
+}
+
+.save-status-icon.compact .file-icon {
+  width: 28px;
+  height: 28px;
+  left: 2px;
+  top: 2px;
+}
+
+.save-status-icon.compact .badge-before {
+  width: 14px;
+  height: 14px;
+  right: 0;
+  bottom: 0;
+}
+
+.save-status-icon.compact .badge-before svg {
+  width: 14px;
+  height: 14px;
+}
+
+.save-status-icon.compact .badge-saving {
+  width: 13px;
+  height: 13px;
+  right: 0;
+  top: 0;
+}
+
+.save-status-icon.compact .badge-saving svg {
+  width: 13px;
+  height: 13px;
+}
+
+.save-status-icon.compact .badge-saved {
+  width: 15px;
+  height: 15px;
+  right: 0;
+  bottom: 0;
+}
+
+.save-status-icon.compact .badge-saved svg {
+  width: 15px;
+  height: 15px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

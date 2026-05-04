@@ -1,0 +1,23 @@
+<div class="status-bar">
+  <div class="status-item status-item-set">
+    <span class="status-icon">🏁</span>
+    <span>セット <strong>{{ selectedSetNo }}</strong></span>
+  </div>
+  <div class="status-item status-item-score">
+    <span class="score-label">自分</span>
+    <strong class="score-value">{{ score.me }} - {{ score.op }}</strong>
+    <span class="score-label">相手</span>
+  </div>
+  <div class="status-item">
+    <span class="status-icon">👤</span>
+    <span>サーバー：<strong>{{ serverLabel }}</strong></span>
+  </div>
+  <div class="status-item">
+    <span class="status-icon">⚡</span>
+    <span>状態：<strong>{{ statusLabel }}</strong></span>
+  </div>
+  <div class="status-hint">
+    <span class="hint-icon">★</span>
+    {{ nextActionMessage }}
+  </div>
+</div>

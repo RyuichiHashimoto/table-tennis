@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { runtimeConfig } from '../../../core/config/runtime-config';
-import { Match, Rally, RallyResultTag, RallySegment, RallyTagDefinition, ScoringPatternSlice, Segment, Summary } from '../models/models';
+import { Match, Rally, RallyResultTag, RallySegment, RallyTagDefinition, ScoringPatternSlice, Segment, Summary, TagPhase, TagPlayerSide, TagShotType } from '../models/models';
 
 export interface MatchVideoState {
   youtubeUrl: string;
@@ -91,19 +91,17 @@ export class AppStateService {
 
   async createTagDefinition(input: {
     tag: string;
-    myRallyOnly: boolean;
-    opponentRallyOnly: boolean;
-    lossOnly: boolean;
-    winOnly: boolean;
+    playerSide: TagPlayerSide;
+    phase: TagPhase;
+    shotType: TagShotType;
   }): Promise<RallyTagDefinition> {
     const row = await this.requestJson<Record<string, unknown>>('/tag-definitions', {
       method: 'POST',
       body: JSON.stringify({
         tag: input.tag,
-        my_rally_only: input.myRallyOnly,
-        opponent_rally_only: input.opponentRallyOnly,
-        loss_only: input.lossOnly,
-        win_only: input.winOnly,
+        player_side: input.playerSide,
+        phase: input.phase,
+        shot_type: input.shotType,
       }),
     });
     const tag = this.mapTagDefinition(row);
@@ -115,20 +113,18 @@ export class AppStateService {
     tagId: number,
     input: {
       tag: string;
-      myRallyOnly: boolean;
-      opponentRallyOnly: boolean;
-      lossOnly: boolean;
-      winOnly: boolean;
+      playerSide: TagPlayerSide;
+      phase: TagPhase;
+      shotType: TagShotType;
     },
   ): Promise<RallyTagDefinition | undefined> {
     const row = await this.requestJson<Record<string, unknown>>(`/tag-definitions/${tagId}`, {
       method: 'PATCH',
       body: JSON.stringify({
         tag: input.tag,
-        my_rally_only: input.myRallyOnly,
-        opponent_rally_only: input.opponentRallyOnly,
-        loss_only: input.lossOnly,
-        win_only: input.winOnly,
+        player_side: input.playerSide,
+        phase: input.phase,
+        shot_type: input.shotType,
       }),
     });
     const tag = this.mapTagDefinition(row);
@@ -211,6 +207,24 @@ export class AppStateService {
     return match;
   }
 
+  async updateMatchPlayers(matchUuid: string, myPlayerName: string, opponentPlayerName: string): Promise<Match | undefined> {
+    const row = await this.requestJson<Record<string, unknown>>(`/matches/${matchUuid}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        my_player_name: myPlayerName,
+        opponent_player_name: opponentPlayerName,
+      }),
+    });
+    const match = this.mapMatch(row);
+    const index = this.matches.findIndex((existing) => existing.uuid === match.uuid);
+    if (index !== -1) {
+      this.matches[index] = match;
+    } else {
+      this.matches = [match, ...this.matches];
+    }
+    return match;
+  }
+
   getSelectedMatchUuid(): string | undefined {
     return this.selectedMatchUuid;
   }
@@ -256,6 +270,14 @@ export class AppStateService {
     return rally;
   }
 
+  async saveSortOrders(matchUuid: string, orders: { id: number; sort_order: number }[]): Promise<boolean> {
+    const result = await this.requestJson<{ ok: boolean }>(`/matches/${matchUuid}/rallies/sort-orders`, {
+      method: 'PUT',
+      body: JSON.stringify({ orders }),
+    });
+    return result.ok;
+  }
+
   async deleteLastRally(matchUuid: string): Promise<boolean> {
     const result = await this.requestJson<{ ok: boolean }>(`/matches/${matchUuid}/rallies/last`, { method: 'DELETE' });
     if (result.ok) {
@@ -286,12 +308,12 @@ export class AppStateService {
     return !!updated;
   }
 
-  async setRallyResultTag(rallyId: number, resultTag?: RallyResultTag): Promise<boolean> {
+  async setRallyResultTags(rallyId: number, resultTags: RallyResultTag[]): Promise<boolean> {
     const rally = this.findRally(rallyId);
     if (!rally) {
       return false;
     }
-    const updated = await this.patchRally(rally.matchUuid, rallyId, { result_tag: resultTag ?? null });
+    const updated = await this.patchRally(rally.matchUuid, rallyId, { result_tags: resultTags });
     return !!updated;
   }
 
@@ -300,7 +322,31 @@ export class AppStateService {
     if (!rally) {
       return false;
     }
-    const updated = await this.patchRally(rally.matchUuid, rallyId, { point_winner: pointWinner, result_tag: null });
+    const updated = await this.patchRally(rally.matchUuid, rallyId, { point_winner: pointWinner, result_tags: [] });
+    return !!updated;
+  }
+
+  async updateRallyFields(
+    rallyId: number,
+    fields: {
+      pointWinner?: 'me' | 'op';
+      server?: 'me' | 'op';
+      resultTags?: RallyResultTag[] | null;
+      note?: string | null;
+      tStart?: number | null;
+    },
+  ): Promise<boolean> {
+    const rally = this.findRally(rallyId);
+    if (!rally) {
+      return false;
+    }
+    const payload: Record<string, unknown> = {};
+    if (fields.pointWinner !== undefined) payload['point_winner'] = fields.pointWinner;
+    if (fields.server !== undefined) payload['server'] = fields.server;
+    if ('resultTags' in fields) payload['result_tags'] = fields.resultTags ?? [];
+    if ('note' in fields) payload['note'] = fields.note ?? null;
+    if ('tStart' in fields) payload['t_start'] = fields.tStart ?? null;
+    const updated = await this.patchRally(rally.matchUuid, rallyId, payload);
     return !!updated;
   }
 
@@ -409,6 +455,8 @@ export class AppStateService {
       uuid: String(row['uuid']),
       title: String(row['title']),
       initialServer: (row['initial_server'] ?? 'me') as 'me' | 'op',
+      myPlayerName: String(row['my_player_name'] ?? '自分'),
+      opponentPlayerName: String(row['opponent_player_name'] ?? '相手'),
       createdAt: String(row['created_at']),
     };
   }
@@ -431,7 +479,7 @@ export class AppStateService {
       endSide: String(row['end_side']),
       my3rd: String(row['my_3rd'] ?? 'none'),
       my3rdResult: String(row['my_3rd_result'] ?? 'na'),
-      resultTag: this.optionalString(row['result_tag']) as RallyResultTag | undefined,
+      resultTags: Array.isArray(row['result_tags']) ? (row['result_tags'] as RallyResultTag[]) : [],
       tStart: row['t_start'] === null || row['t_start'] === undefined ? undefined : Number(row['t_start']),
       tEnd: row['t_end'] === null || row['t_end'] === undefined ? undefined : Number(row['t_end']),
       note: this.optionalString(row['note']),
@@ -443,10 +491,9 @@ export class AppStateService {
     return {
       id: Number(row['id']),
       tag: String(row['tag']),
-      myRallyOnly: Boolean(row['my_rally_only']),
-      opponentRallyOnly: Boolean(row['opponent_rally_only']),
-      lossOnly: Boolean(row['loss_only']),
-      winOnly: Boolean(row['win_only']),
+      playerSide: (String(row['player_side'] ?? 'me')) as TagPlayerSide,
+      phase: (String(row['phase'] ?? 'rally')) as TagPhase,
+      shotType: (String(row['shot_type'] ?? 'miss')) as TagShotType,
       createdAt: String(row['created_at'] ?? ''),
       updatedAt: String(row['updated_at'] ?? ''),
     };
@@ -563,7 +610,7 @@ export class AppStateService {
             note: String(rally['note'] ?? ''),
             sort_order: rally['sortOrder'] ?? undefined,
             starred: Boolean(rally['starred']),
-            result_tag: rally['resultTag'] ?? null,
+            result_tags: Array.isArray(rally['resultTags']) ? rally['resultTags'] : [],
             created_at: String(rally['createdAt'] ?? new Date().toISOString()),
           }),
         });

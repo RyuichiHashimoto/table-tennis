@@ -19,25 +19,81 @@
   </article>
 
   <article class="panel ui-panel">
-    <h2>ラリーデータ</h2>
+    <div class="table-header ui-section-head">
+      <h2>ラリーデータ</h2>
+      <div class="table-actions">
+        <ui-icon-button
+          src="/assets/icons/save.svg"
+          ariaLabel="並び順を保存"
+          [disabled]="!isDirty || isSaving"
+          (clicked)="saveSortOrders()"
+        ></ui-icon-button>
+        <ui-icon-button
+          src="/assets/icons/reset.svg"
+          ariaLabel="並び順をリセット"
+          [disabled]="!isDirty"
+          (clicked)="openResetConfirm()"
+        ></ui-icon-button>
+      </div>
+    </div>
     <div class="table-wrap ui-table-wrap">
       <table class="ui-table">
-        <thead><tr><th>ID</th><th>UUID</th><th>Set</th><th>Winner</th><th>タグ</th><th>t_start</th><th>t_end</th><th>note</th></tr></thead>
-        <tbody>
-          <tr *ngFor="let r of rallies">
-            <td>{{ r.id }}</td>
-            <td>{{ r.uuid }}</td>
-            <td>{{ r.setNo }}</td>
-            <td>{{ r.pointWinner }}</td>
-            <td>
-              <span class="ui-chip">{{ r.resultTag || '-' }}</span>
+        <thead>
+          <tr>
+            <th class="col-drag"></th>
+            <th class="col-score">点数</th>
+            <th class="col-server">サーバ</th>
+            <th class="col-winner">得点者</th>
+            <th class="col-tags">タグ</th>
+          </tr>
+        </thead>
+        <tbody
+          cdkDropList
+          [cdkDropListData]="displayRallies"
+          (cdkDropListDropped)="onDrop($event)"
+        >
+          <tr
+            *ngFor="let r of displayRallies; let i = index; trackBy: trackByRallyId"
+            cdkDrag
+            [cdkDragData]="r"
+            class="rally-row"
+          >
+            <td class="col-drag drag-handle" cdkDragHandle aria-label="ドラッグして並び替え">⠿</td>
+            <td class="col-score">
+              <span class="score-me">{{ scores[i].me }}</span>
+              <span class="score-sep">-</span>
+              <span class="score-op">{{ scores[i].op }}</span>
             </td>
-            <td>{{ r.tStart }}</td>
-            <td>{{ r.tEnd }}</td>
-            <td>{{ r.note }}</td>
+            <td class="col-server">
+              <span class="ui-chip" [class.chip-me]="r.server === 'me'" [class.chip-op]="r.server === 'op'">
+                {{ r.server === 'me' ? '自分' : '相手' }}
+              </span>
+            </td>
+            <td class="col-winner">
+              <span class="ui-chip" [class.chip-me]="r.pointWinner === 'me'" [class.chip-op]="r.pointWinner === 'op'">
+                {{ r.pointWinner === 'me' ? '自分' : '相手' }}
+              </span>
+            </td>
+            <td class="col-tags">
+              <ng-container *ngIf="r.resultTags.length; else noTags">
+                <span class="ui-chip" *ngFor="let tag of r.resultTags">{{ tag }}</span>
+              </ng-container>
+              <ng-template #noTags><span class="no-tags">-</span></ng-template>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
   </article>
 </section>
+
+<app-confirm-modal
+  [open]="showResetConfirm"
+  title="並び順のリセット"
+  message="手動で変更した並び順を元に戻します。保存していない変更は失われます。"
+  confirmLabel="リセット"
+  cancelLabel="キャンセル"
+  tone="danger"
+  (confirmed)="onResetConfirmed()"
+  (cancelled)="onResetCancelled()"
+></app-confirm-modal>

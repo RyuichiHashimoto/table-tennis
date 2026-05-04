@@ -1,0 +1,150 @@
+:host {
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+
+.match-input-layout {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  overflow: hidden;
+  gap: 16px;
+  padding: 10px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.page-title {
+  margin: 0;
+  font-size: var(--font-size-body-lg);
+  font-weight: 700;
+  color: var(--text-strong);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg-card);
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.title-edit-btn:hover {
+  opacity: 1;
+}
+
+.title-detail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg-card);
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+  text-decoration: none;
+  color: var(--text-main);
+}
+
+.title-detail-btn:hover {
+  opacity: 1;
+}
+
+.title-input {
+  min-width: 200px;
+  max-width: 400px;
+  height: 34px;
+  font-size: var(--font-size-body-lg);
+  font-weight: 700;
+}
+
+.title-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-size: var(--font-size-label);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+
+.title-cancel-btn {
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+.main-columns {
+  display: grid;
+  grid-template-columns: 25fr 35fr 40fr;
+  gap: 16px;
+  align-items: stretch;
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+  .main-columns {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .main-columns > app-match-timeline-panel {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .main-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .main-columns > app-match-timeline-panel {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 860px) {
+  .title-input {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 720px) {
+  .match-input-layout {
+    padding: 0;
+  }
+}

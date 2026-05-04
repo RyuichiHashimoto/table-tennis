@@ -1,0 +1,25 @@
+.section-label {
+  font-size: var(--font-size-label);
+  font-weight: 600;
+  color: var(--text-sub);
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-bottom: 8px;
+}
+
+.chip-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.chip-btn:hover {
+  opacity: 0.75;
+}

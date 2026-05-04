@@ -1,0 +1,14 @@
+.card-samples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.card-sample {
+  min-width: 180px;
+}
+
+.card-sample span {
+  color: var(--sub);
+  font-size: var(--font-size-label);
+}

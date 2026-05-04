@@ -8,10 +8,19 @@ DB_PATH = "tt_analyzer.db"
 
 
 def get_conn():
+    """SQLite データベースへの接続を作成する。
+
+    Returns
+    -------
+    Any
+        処理結果。
+    """
     return sqlite3.connect(DB_PATH, check_same_thread=False)
 
 
 def init_db():
+    """従来形式のアプリ用データベースを初期化する。
+    """
     conn = get_conn()
     cur = conn.cursor()
     cur.execute(
@@ -71,6 +80,13 @@ def init_db():
 
 
 def fetch_matches() -> pd.DataFrame:
+    """保存済みの試合一覧を取得する。
+
+    Returns
+    -------
+    pd.DataFrame
+        取得したデータを格納した DataFrame。
+    """
     conn = get_conn()
     df = pd.read_sql_query("SELECT id, title, created_at FROM matches ORDER BY id DESC", conn)
     conn.close()
@@ -78,6 +94,18 @@ def fetch_matches() -> pd.DataFrame:
 
 
 def create_match(title: str) -> int:
+    """新しい試合を作成し、識別子を返す。
+
+    Parameters
+    ----------
+    title : str
+        試合または動画のタイトル。
+
+    Returns
+    -------
+    int
+        作成されたレコードの ID。
+    """
     conn = get_conn()
     cur = conn.cursor()
     cur.execute(
@@ -91,6 +119,20 @@ def create_match(title: str) -> int:
 
 
 def insert_rally(match_id: int, data: dict):
+    """指定した試合にラリー記録を追加する。
+
+    Parameters
+    ----------
+    match_id : int
+        対象試合の ID。
+    data : dict
+        登録または更新するデータ。
+
+    Returns
+    -------
+    Any
+        処理結果。
+    """
     conn = get_conn()
     cur = conn.cursor()
     cols = ",".join(data.keys())
@@ -101,6 +143,18 @@ def insert_rally(match_id: int, data: dict):
 
 
 def fetch_rallies(match_id: int) -> pd.DataFrame:
+    """指定した試合のラリー一覧を取得する。
+
+    Parameters
+    ----------
+    match_id : int
+        対象試合の ID。
+
+    Returns
+    -------
+    pd.DataFrame
+        取得したデータを格納した DataFrame。
+    """
     conn = get_conn()
     df = pd.read_sql_query(
         "SELECT * FROM rallies WHERE match_id = ? ORDER BY id ASC",
@@ -112,6 +166,18 @@ def fetch_rallies(match_id: int) -> pd.DataFrame:
 
 
 def delete_last_rally(match_id: int) -> bool:
+    """指定した試合の直近ラリーを削除する。
+
+    Parameters
+    ----------
+    match_id : int
+        対象試合の ID。
+
+    Returns
+    -------
+    bool
+        処理に成功した場合は True。
+    """
     conn = get_conn()
     cur = conn.cursor()
     cur.execute("SELECT id FROM rallies WHERE match_id=? ORDER BY id DESC LIMIT 1", (match_id,))
@@ -135,6 +201,23 @@ def upsert_downloaded_video(
     uploader: str | None = None,
     duration: int | None = None,
 ) -> None:
+    """ダウンロード済み動画のメタデータを登録または更新する。
+
+    Parameters
+    ----------
+    source_url : str
+        元動画の URL。
+    local_path : str
+        ローカルに保存された動画パス。
+    video_id : str | None
+        動画サービス上の ID。
+    title : str | None
+        試合または動画のタイトル。
+    uploader : str | None
+        動画投稿者名。
+    duration : int | None
+        動画の長さ（秒）。
+    """
     conn = get_conn()
     cur = conn.cursor()
     cur.execute(
@@ -166,6 +249,13 @@ def upsert_downloaded_video(
 
 
 def fetch_downloaded_videos() -> pd.DataFrame:
+    """ダウンロード済み動画の一覧を取得する。
+
+    Returns
+    -------
+    pd.DataFrame
+        取得したデータを格納した DataFrame。
+    """
     conn = get_conn()
     df = pd.read_sql_query(
         """
@@ -190,6 +280,18 @@ def fetch_downloaded_videos() -> pd.DataFrame:
 
 
 def fetch_downloaded_video_by_source_url(source_url: str) -> pd.DataFrame:
+    """元 URL に対応するダウンロード済み動画を取得する。
+
+    Parameters
+    ----------
+    source_url : str
+        元動画の URL。
+
+    Returns
+    -------
+    pd.DataFrame
+        取得したデータを格納した DataFrame。
+    """
     conn = get_conn()
     df = pd.read_sql_query(
         """
@@ -217,6 +319,15 @@ def fetch_downloaded_video_by_source_url(source_url: str) -> pd.DataFrame:
 
 
 def update_downloaded_video_segments(local_path: str, segments: list[dict]) -> None:
+    """動画に紐づく試合区間情報を保存する。
+
+    Parameters
+    ----------
+    local_path : str
+        ローカルに保存された動画パス。
+    segments : list[dict]
+        切り出し対象の区間リスト。
+    """
     conn = get_conn()
     cur = conn.cursor()
     cur.execute(

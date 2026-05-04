@@ -1,0 +1,28 @@
+<article class="ui-panel">
+  <h3>SetScoreChip</h3>
+
+  <div class="section-label">静的表示</div>
+  <div class="chip-row">
+    @for (s of samples; track s.setNo) {
+      <app-set-score-chip
+        [setNo]="s.setNo"
+        [myPoints]="s.myPoints"
+        [opPoints]="s.opPoints"
+      ></app-set-score-chip>
+    }
+  </div>
+
+  <div class="section-label">アクティブ状態（クリックで切替）</div>
+  <div class="chip-row">
+    @for (s of samples; track s.setNo) {
+      <button type="button" class="chip-btn" (click)="selectSet(s.setNo)">
+        <app-set-score-chip
+          [setNo]="s.setNo"
+          [myPoints]="s.myPoints"
+          [opPoints]="s.opPoints"
+          [active]="s.setNo === activeSetNo"
+        ></app-set-score-chip>
+      </button>
+    }
+  </div>
+</article>

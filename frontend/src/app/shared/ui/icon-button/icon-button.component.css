@@ -1,0 +1,52 @@
+:host {
+  display: contents;
+}
+
+.icon-button-root {
+  position: relative;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.icon-button-root.no-border {
+  border-color: transparent;
+}
+
+.icon-button-root.no-border:hover:not(:disabled) {
+  border-color: transparent;
+}
+
+.icon-button-root img {
+  display: block;
+  pointer-events: none;
+}
+
+/* ツールチップ */
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  background: var(--text-main, #333);
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  transition-delay: 0s;
+  z-index: 200;
+}
+
+/* ホバー1秒後に表示 */
+.icon-button-root:hover .tooltip {
+  opacity: 1;
+  transition-delay: 1s;
+}
+
+/* ボタンが無効のときは非表示 */
+.icon-button-root:disabled .tooltip {
+  display: none;
+}

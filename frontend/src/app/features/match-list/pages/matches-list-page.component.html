@@ -13,16 +13,28 @@
             <td>{{ m.title }}</td>
             <td>{{ m.createdAt }}</td>
             <td class="row-actions">
-              <button type="button" class="ui-button ui-button-sm" (click)="openMatch(m.uuid)">詳細</button>
-              <button type="button" class="ui-button ui-button-sm" (click)="editMatch(m.uuid)">edit</button>
-              <button
-                type="button"
-                class="ui-button ui-button-sm ui-button-icon ui-button-danger delete-icon-button"
-                aria-label="削除"
-                (click)="deleteMatch(m.uuid)"
-              >
-                <span class="button-icon-trash" aria-hidden="true"></span>
-              </button>
+              <ui-icon-button
+                src="/assets/icons/detail.svg"
+                alt="詳細"
+                ariaLabel="詳細"
+                [showBorder]="false"
+                (clicked)="openMatch(m.uuid)"
+              ></ui-icon-button>
+              <ui-icon-button
+                src="/assets/icons/edit.svg"
+                alt="編集"
+                ariaLabel="編集"
+                [showBorder]="false"
+                (clicked)="editMatch(m.uuid)"
+              ></ui-icon-button>
+              <ui-icon-button
+                src="/assets/icons/danger-trashbox.svg"
+                alt=""
+                ariaLabel="削除"
+                [danger]="true"
+                [showBorder]="false"
+                (clicked)="deleteMatch(m.uuid)"
+              ></ui-icon-button>
             </td>
           </tr>
         </tbody>

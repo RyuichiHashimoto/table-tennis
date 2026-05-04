@@ -1,0 +1,126 @@
+<article class="panel timeline-panel ui-panel">
+  <header class="timeline-head">
+    <div class="timeline-title">
+      <span class="step-number">3</span>
+      <h2>記録一覧</h2>
+    </div>
+    <div class="table-actions">
+      <ui-icon-button
+        src="/assets/icons/reset.svg"
+        ariaLabel="並び順をリセット"
+        [disabled]="!isDirty"
+        (clicked)="openResetConfirm()"
+      ></ui-icon-button>
+      <button
+        type="button"
+        class="save-status-button"
+        [disabled]="saveStatus !== 'before'"
+        (click)="saveSortOrders()"
+        aria-label="並び順を保存"
+        title="並び順を保存"
+      >
+        <app-save-status-icon [status]="saveStatus" [compact]="true"></app-save-status-icon>
+      </button>
+    </div>
+  </header>
+  <div class="set-tabs">
+    <button
+      *ngFor="let group of setGroups; trackBy: trackBySetNo"
+      type="button"
+      class="set-tab-btn"
+      (click)="selectSet(group.setNo)"
+    >
+      <app-set-score-chip
+        [setNo]="group.setNo"
+        [myPoints]="group.myPoints"
+        [opPoints]="group.opPoints"
+        [active]="group.setNo === activeSetNo"
+      ></app-set-score-chip>
+    </button>
+  </div>
+  <div class="event-list-wrap ui-table-wrap">
+    <table class="event-table ui-table">
+      <thead>
+        <tr>
+          <th class="col-score">スコア</th>
+          <th class="col-winner">得点側</th>
+          <th class="col-tags">内容</th>
+          <th class="col-actions">操作</th>
+        </tr>
+      </thead>
+      <tbody
+        cdkDropList
+        [cdkDropListData]="activeRows"
+        (cdkDropListDropped)="onDrop($event)"
+      >
+        <tr
+          *ngFor="let row of activeRows; trackBy: trackByRallyId"
+          cdkDrag
+          [cdkDragData]="row"
+          class="rally-row"
+          [class.active-row]="row.rally.id === selectedRallyId"
+          (click)="onSelectRally(row.rally)"
+        >
+          <td class="col-score">
+            <span class="score-me">{{ row.myPoints }}</span>
+            <span class="score-sep">-</span>
+            <span class="score-op">{{ row.opPoints }}</span>
+          </td>
+          <td class="col-winner">
+            <span class="tag-item" [class.point-me-chip]="row.rally.pointWinner === 'me'" [class.point-op-chip]="row.rally.pointWinner === 'op'">
+              {{ row.rally.pointWinner === 'me' ? '自分' : '相手' }}
+            </span>
+          </td>
+          <td class="col-tags tag-cell" (click)="onSelectRally(row.rally); $event.stopPropagation()">
+            <div class="tag-chip-row">
+              <ng-container *ngIf="row.rally.resultTags.length; else noTags">
+                <span *ngFor="let tag of row.rally.resultTags.slice(0, 3)" class="tag-item">{{ tag }}</span>
+                <span *ngIf="row.rally.resultTags.length > 3" class="tag-item tag-more">…</span>
+              </ng-container>
+              <ng-template #noTags>
+                <span class="tag-item tag-fallback">タグ無し</span>
+              </ng-template>
+            </div>
+          </td>
+          <td class="col-actions">
+            <div class="row-action-group">
+              <button
+                type="button"
+                class="star-button"
+                [class.starred]="row.rally.starred"
+                aria-label="お気に入り"
+                (click)="onToggleStar(row.rally); $event.stopPropagation()"
+              >★</button>
+              <button
+                type="button"
+                class="play-row-button"
+                aria-label="この時点にシーク"
+                (click)="onSeek(row.rally); $event.stopPropagation()"
+              >▶</button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="!activeRows.length">
+          <td colspan="4" class="empty-row">
+            <div class="empty-state">
+              <span class="empty-icon">▣</span>
+              <strong>まだ記録がありません</strong>
+              <small>動画を再生し、ラリーを記録するとここにイベントが表示されます。</small>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
+<app-confirm-modal
+  [open]="showResetConfirm"
+  title="並び順のリセット"
+  message="手動で変更した並び順を元に戻します。保存していない変更は失われます。"
+  confirmLabel="リセット"
+  cancelLabel="キャンセル"
+  tone="danger"
+  (confirmed)="onResetConfirmed()"
+  (cancelled)="onResetCancelled()"
+></app-confirm-modal>

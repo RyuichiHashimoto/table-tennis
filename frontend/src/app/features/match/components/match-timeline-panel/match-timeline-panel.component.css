@@ -1,0 +1,384 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+
+.panel {
+  gap: 16px;
+}
+
+.timeline-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(19, 35, 28, 0.08);
+  overflow: hidden;
+}
+
+.timeline-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 36px;
+}
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.save-status-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-card) 100%);
+  cursor: pointer;
+  border-radius: 0;
+  transition: opacity 0.15s;
+}
+
+.save-status-button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.save-status-button:hover:not(:disabled) {
+  opacity: 0.75;
+}
+
+.timeline-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timeline-title h2 {
+  margin: 0;
+  font-size: var(--font-size-body-lg);
+  font-weight: 700;
+}
+
+.step-number {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--primary-deep);
+  color: #fff;
+  font-size: var(--font-size-label);
+  font-weight: 700;
+}
+
+.set-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.set-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+
+.set-tab-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.set-tab-btn:hover {
+  opacity: 0.75;
+}
+
+.event-list-wrap {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+  border-top: 1px solid var(--line);
+}
+
+.event-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* th の横パディングを縮小して列名を1行に収める */
+.event-table th {
+  padding: 10px 6px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* ドラッグハンドル列 */
+.col-drag {
+  width: 32px;
+  text-align: center;
+}
+
+/* 再生ボタン列 */
+.col-play {
+  width: 44px;
+  text-align: center;
+}
+
+/* スコア */
+.col-score {
+  width: 76px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* 得点側 */
+.col-winner {
+  width: 68px;
+}
+
+/* 星＋再生まとめ列 */
+.col-actions {
+  width: 68px;
+  text-align: center;
+}
+
+/* 内容: 残り幅をすべて使い、溢れたチップは隠す */
+.col-tags {
+  overflow: hidden;
+}
+
+.event-table tbody tr {
+  cursor: pointer;
+}
+
+.ui-table tbody tr.active-row td {
+  background: var(--bg-selection);
+}
+
+.ui-table tbody tr.active-row td:first-child {
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+
+.row-action-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.star-button {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--line);
+  transition: color 0.15s, transform 0.1s;
+}
+
+.star-button:hover {
+  color: #f5b400;
+  transform: scale(1.15);
+}
+
+.star-button.starred {
+  color: #f5b400;
+}
+
+.play-row-button {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  padding: 0;
+  border-color: var(--line);
+  background: var(--bg-surface);
+  color: var(--primary-deep);
+  font-size: var(--font-size-caption);
+}
+
+.tag-cell {
+  cursor: pointer;
+}
+
+.tag-chip-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  align-items: center;
+  overflow: hidden;
+  width: 100%;
+}
+
+.tag-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: var(--font-size-caption, 11px);
+  white-space: nowrap;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  background: var(--bg-surface);
+  color: var(--text-main);
+}
+
+.tag-chip-row.point-me .tag-item {
+  border-color: #bce9cf;
+  background: #e7f8ee;
+  color: var(--primary-deep);
+}
+
+.tag-chip-row.point-op .tag-item {
+  border-color: #ffd1d1;
+  background: #fff0f0;
+  color: #d44848;
+}
+
+.tag-fallback {
+  color: var(--text-sub);
+  border-color: transparent;
+  background: transparent;
+}
+
+.tag-more {
+  color: var(--text-sub);
+  border-color: transparent;
+  background: transparent;
+  padding: 2px 2px;
+}
+
+.tag-display.empty {
+  color: var(--sub);
+}
+
+.tag-display.point-me {
+  border-color: #bce9cf;
+  background: #e7f8ee;
+  color: var(--primary-deep);
+}
+
+.tag-display.point-op {
+  border-color: #ffd1d1;
+  background: #fff0f0;
+  color: #d44848;
+}
+
+.tag-display.selected {
+  background: var(--bg-selection);
+  color: var(--text-strong);
+  border-color: var(--primary);
+}
+
+
+.empty-row {
+  text-align: center;
+  color: var(--sub);
+}
+
+.empty-state {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 92px;
+  border: 1px dashed var(--line);
+  background: var(--bg-card);
+}
+
+.empty-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--bg-surface-soft);
+  color: var(--text-muted);
+}
+
+.empty-state strong {
+  color: var(--text-strong);
+  font-size: var(--font-size-body-lg);
+}
+
+.empty-state small {
+  color: var(--text-sub);
+  font-size: var(--font-size-label);
+}
+
+/* ドラッグハンドルアイコン */
+.drag-icon {
+  display: inline-block;
+  padding: 0 4px;
+  color: var(--text-sub);
+  cursor: grab;
+  user-select: none;
+  vertical-align: middle;
+}
+
+/* 点数スタイル */
+.score-me {
+  font-weight: 600;
+  color: var(--primary-deep);
+}
+
+.score-op {
+  color: var(--text-sub);
+}
+
+.score-sep {
+  margin: 0 3px;
+  color: var(--text-sub);
+}
+
+/* サーバ・得点者チップ（既存 tag-item に色を上書き） */
+.point-me-chip {
+  border-color: #bce9cf;
+  background: #e7f8ee;
+  color: var(--primary-deep);
+}
+
+.point-op-chip {
+  border-color: #ffd1d1;
+  background: #fff0f0;
+  color: #d44848;
+}
+
+/* CDK DragDrop: ドラッグ中の行 */
+.rally-row.cdk-drag-dragging {
+  opacity: 0.5;
+}
+
+.cdk-drag-preview td {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  background: var(--bg-elevated);
+  font-size: var(--font-size-label);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drop-list-dragging .rally-row:not(.cdk-drag-placeholder) {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+

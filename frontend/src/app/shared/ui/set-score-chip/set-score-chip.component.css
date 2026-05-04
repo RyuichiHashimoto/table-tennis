@@ -1,0 +1,39 @@
+:host {
+  display: inline-block;
+}
+
+.set-score-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg-card);
+  min-width: 64px;
+  text-align: center;
+}
+
+.chip-label {
+  font-size: var(--font-size-label);
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.chip-score {
+  font-size: var(--font-size-caption);
+  color: var(--text-sub);
+  white-space: nowrap;
+}
+
+.set-score-chip.active {
+  border-color: var(--primary);
+  border-bottom-width: 2px;
+}
+
+.set-score-chip.active .chip-label,
+.set-score-chip.active .chip-score {
+  color: var(--primary-deep);
+}

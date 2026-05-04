@@ -25,6 +25,9 @@
 }
 
 .tag-add-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   min-width: 72px;
 }
 
@@ -40,14 +43,45 @@
   white-space: nowrap;
 }
 
-.tag-scope-summary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
 .tag-scope-chip {
   color: var(--text);
+}
+
+.chip-me {
+  border-color: var(--primary);
+  background: var(--bg-selection);
+  color: var(--primary-deep);
+}
+
+.chip-op {
+  border-color: var(--op-border);
+  background: var(--op-bg);
+  color: var(--op-color);
+}
+
+.chip-miss {
+  border-color: var(--op-border);
+  background: var(--op-bg);
+  color: var(--op-color);
+}
+
+.chip-point {
+  border-color: var(--primary);
+  background: var(--bg-selection);
+  color: var(--primary-deep);
+}
+
+.result-chip {
+  font-size: var(--font-size-label);
+  font-weight: 600;
+}
+
+.result-me {
+  color: var(--primary-deep);
+}
+
+.result-op {
+  color: var(--op-color);
 }
 
 .tag-action-cell {
@@ -55,7 +89,11 @@
 }
 
 .tag-edit-button {
-  min-width: 72px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  padding: 0 8px;
 }
 
 .tag-row-actions {
@@ -64,7 +102,11 @@
 }
 
 .tag-delete-button {
-  min-width: 72px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  padding: 0 8px;
   border-color: var(--danger);
   color: var(--danger);
 }
@@ -92,37 +134,18 @@
 
 .tag-edit-body {
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
-.tag-edit-body > label {
+.edit-field {
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
-.tag-edit-fieldset {
-  display: grid;
-  gap: 10px;
-  margin: 0;
-  padding: 16px;
-  border: 1px solid var(--line);
-}
-
-.tag-edit-fieldset legend {
-  padding: 0 6px;
+.edit-field span {
+  font-size: var(--font-size-label);
   font-weight: 600;
-}
-
-.tag-edit-fieldset label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text);
-}
-
-.tag-edit-fieldset input {
-  width: auto;
-  margin: 0;
+  color: var(--text-sub);
 }
 
 .tag-edit-actions {

@@ -3,12 +3,15 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AppStateService } from '../../../table-tennis/services/app-state.service';
 import { ConfirmModalComponent } from '../../../../shared/ui/confirm-modal/confirm-modal.component';
-import { RallyTagDefinition } from '../../../table-tennis/models/models';
+import { AddIconComponent } from '../../../../shared/ui/add-icon/add-icon.component';
+import { EditIconComponent } from '../../../../shared/ui/edit-icon/edit-icon.component';
+import { DeleteIconComponent } from '../../../../shared/ui/delete-icon/delete-icon.component';
+import { RallyTagDefinition, TagPhase, TagPlayerSide, TagShotType } from '../../../table-tennis/models/models';
 
 @Component({
   selector: 'app-tag-definitions-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConfirmModalComponent],
+  imports: [CommonModule, FormsModule, ConfirmModalComponent, AddIconComponent, EditIconComponent, DeleteIconComponent],
   templateUrl: './tag-definitions-page.component.html',
   styleUrl: './tag-definitions-page.component.css',
 })
@@ -18,6 +21,24 @@ export class TagDefinitionsPageComponent implements OnInit {
   isCreatingTag = false;
   pendingDeleteTag?: RallyTagDefinition;
   editForm = this.createEditForm();
+
+  readonly playerSideOptions: { value: TagPlayerSide; label: string }[] = [
+    { value: 'me', label: '自分' },
+    { value: 'op', label: '相手' },
+    { value: 'both', label: '両方' },
+  ];
+
+  readonly phaseOptions: { value: TagPhase; label: string }[] = [
+    { value: 'serve', label: 'サーブ' },
+    { value: 'receive', label: 'レシーブ' },
+    { value: 'rally', label: 'ラリー中' },
+  ];
+
+  readonly shotTypeOptions: { value: TagShotType; label: string }[] = [
+    { value: 'miss', label: 'ミス' },
+    { value: 'point', label: '得点' },
+    { value: 'any', label: 'どちらでも' },
+  ];
 
   constructor(private readonly state: AppStateService) {}
 
@@ -34,10 +55,9 @@ export class TagDefinitionsPageComponent implements OnInit {
     this.editingTag = tag;
     this.editForm = {
       tag: tag.tag,
-      myRallyEnabled: tag.myRallyOnly || (!tag.myRallyOnly && !tag.opponentRallyOnly),
-      opponentRallyEnabled: tag.opponentRallyOnly || (!tag.myRallyOnly && !tag.opponentRallyOnly),
-      lossEnabled: tag.lossOnly || (!tag.lossOnly && !tag.winOnly),
-      winEnabled: tag.winOnly || (!tag.lossOnly && !tag.winOnly),
+      playerSide: tag.playerSide,
+      phase: tag.phase,
+      shotType: tag.shotType,
     };
   }
 
@@ -55,26 +75,20 @@ export class TagDefinitionsPageComponent implements OnInit {
   }
 
   async saveEdit(): Promise<void> {
-    if (!this.editingTag && !this.isCreatingTag) {
-      return;
-    }
+    if (!this.editingTag && !this.isCreatingTag) return;
     const tagName = this.editForm.tag.trim();
-    if (!tagName) {
-      return;
-    }
-    const rallyScope = this.normalizeCheckboxScope(this.editForm.myRallyEnabled, this.editForm.opponentRallyEnabled);
-    const pointScope = this.normalizeCheckboxScope(this.editForm.lossEnabled, this.editForm.winEnabled);
-    const nextTag = {
+    if (!tagName) return;
+
+    const payload = {
       tag: tagName,
-      myRallyOnly: rallyScope === 'first-only',
-      opponentRallyOnly: rallyScope === 'second-only',
-      lossOnly: pointScope === 'first-only',
-      winOnly: pointScope === 'second-only',
+      playerSide: this.editForm.playerSide,
+      phase: this.editForm.phase,
+      shotType: this.editForm.shotType,
     };
     if (this.isCreatingTag) {
-      await this.state.createTagDefinition(nextTag);
+      await this.state.createTagDefinition(payload);
     } else if (this.editingTag) {
-      await this.state.updateTagDefinition(this.editingTag.id, nextTag);
+      await this.state.updateTagDefinition(this.editingTag.id, payload);
     }
     this.tagDefinitions = this.state.getTagDefinitions();
     this.closeEditModal();
@@ -90,63 +104,35 @@ export class TagDefinitionsPageComponent implements OnInit {
 
   async confirmDeleteTag(): Promise<void> {
     const tag = this.pendingDeleteTag;
-    if (!tag) {
-      return;
-    }
-    if (this.editingTag === tag) {
-      this.closeEditModal();
-    }
+    if (!tag) return;
+    if (this.editingTag === tag) this.closeEditModal();
     await this.state.deleteTagDefinition(tag.id);
     this.tagDefinitions = this.state.getTagDefinitions();
     this.pendingDeleteTag = undefined;
   }
 
-  getRallyScopeLabels(tag: RallyTagDefinition): string[] {
-    if (tag.myRallyOnly) {
-      return ['自ラリー'];
-    }
-    if (tag.opponentRallyOnly) {
-      return ['相手ラリー'];
-    }
-    return ['自ラリー', '相手ラリー'];
+  playerSideLabel(side: TagPlayerSide): string {
+    return this.playerSideOptions.find((o) => o.value === side)?.label ?? side;
   }
 
-  getPointScopeLabels(tag: RallyTagDefinition): string[] {
-    if (tag.lossOnly) {
-      return ['失点時'];
-    }
-    if (tag.winOnly) {
-      return ['得点時'];
-    }
-    return ['失点時', '得点時'];
+  phaseLabel(phase: TagPhase): string {
+    return this.phaseOptions.find((o) => o.value === phase)?.label ?? phase;
   }
 
-  private createEditForm(): {
-    tag: string;
-    myRallyEnabled: boolean;
-    opponentRallyEnabled: boolean;
-    lossEnabled: boolean;
-    winEnabled: boolean;
-  } {
-    return {
-      tag: '',
-      myRallyEnabled: true,
-      opponentRallyEnabled: true,
-      lossEnabled: true,
-      winEnabled: true,
-    };
+  shotTypeLabel(shotType: TagShotType): string {
+    return this.shotTypeOptions.find((o) => o.value === shotType)?.label ?? shotType;
   }
 
-  private normalizeCheckboxScope(
-    firstEnabled: boolean,
-    secondEnabled: boolean,
-  ): 'first-only' | 'second-only' | 'both' {
-    if (firstEnabled && !secondEnabled) {
-      return 'first-only';
-    }
-    if (!firstEnabled && secondEnabled) {
-      return 'second-only';
-    }
-    return 'both';
+  pointWinnerLabel(tag: RallyTagDefinition): string {
+    if (tag.shotType === 'any') return 'どちらでも';
+    if (tag.playerSide === 'me' && tag.shotType === 'miss') return '相手の得点';
+    if (tag.playerSide === 'me' && tag.shotType === 'point') return '自分の得点';
+    if (tag.playerSide === 'op' && tag.shotType === 'miss') return '自分の得点';
+    if (tag.playerSide === 'op' && tag.shotType === 'point') return '相手の得点';
+    return 'どちらでも';
+  }
+
+  private createEditForm(): { tag: string; playerSide: TagPlayerSide; phase: TagPhase; shotType: TagShotType } {
+    return { tag: '', playerSide: 'me', phase: 'rally', shotType: 'miss' };
   }
 }

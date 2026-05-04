@@ -1,0 +1,173 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.step-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  box-sizing: border-box;
+  border-color: #dde7e1;
+  border-radius: 8px;
+  background: var(--bg-card);
+  box-shadow: 0 8px 24px rgba(19, 35, 28, 0.08);
+}
+
+.step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step-head h2 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: var(--font-size-body-lg);
+  font-weight: 700;
+}
+
+.step-number {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--primary-deep);
+  color: #fff;
+  font-size: var(--font-size-label);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.record-button {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 6px;
+  background: var(--bg-card);
+  font-size: var(--font-size-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.record-button-primary {
+  border-color: var(--primary-deep);
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-deep) 100%);
+  color: #fff;
+}
+
+.record-button-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.server-control,
+.result-control,
+.tag-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.server-control strong,
+.result-control strong,
+.tag-controls strong {
+  color: var(--text-strong);
+  font-size: var(--font-size-body);
+}
+
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.segmented-control button {
+  min-height: 48px;
+  border: 0;
+  border-radius: 0;
+  background: var(--bg-surface);
+  font-size: var(--font-size-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.segmented-control button.active {
+  background: var(--primary-deep);
+  color: #fff;
+}
+
+.segmented-control button:nth-child(2).active {
+  background: var(--op-color);
+}
+
+.result-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.result-button {
+  min-height: 52px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-card);
+  font-size: var(--font-size-body);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
+}
+
+.result-me.active {
+  border-color: var(--primary);
+  background: var(--bg-selection);
+  color: var(--primary-deep);
+}
+
+.result-op {
+  color: var(--op-color);
+  border-color: var(--op-border);
+}
+
+.result-op.active {
+  border-color: var(--op-border);
+  background: var(--op-bg);
+  color: var(--op-color);
+}
+
+.tag-control-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-control-chip.active {
+  border-color: var(--primary);
+  background: var(--bg-selection);
+  color: var(--text-strong);
+}
+
+.note-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.note-control span:first-child {
+  color: var(--text-strong);
+  font-size: var(--font-size-body);
+  font-weight: 700;
+}
+
+.note-control .ui-input {
+  resize: vertical;
+}
+
+.note-count {
+  align-self: flex-end;
+  color: var(--text-sub);
+  font-size: var(--font-size-label);
+}

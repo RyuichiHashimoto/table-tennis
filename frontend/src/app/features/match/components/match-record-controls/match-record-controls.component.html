@@ -1,0 +1,82 @@
+<article class="step-card ui-panel control-card">
+  <header class="step-head">
+    <span class="step-number">2</span>
+    <h2>新規イベントを記録</h2>
+  </header>
+
+  <button type="button" class="record-button record-button-primary" (click)="startRally.emit()">
+    ▶ ラリー開始
+  </button>
+
+  <div class="server-control">
+    <strong>このラリーのサーバー</strong>
+    <div class="segmented-control">
+      <button
+        type="button"
+        [class.active]="initialServer === 'me'"
+        (click)="initialServerChange.emit('me')"
+      >自分</button>
+      <button
+        type="button"
+        [class.active]="initialServer === 'op'"
+        (click)="initialServerChange.emit('op')"
+      >相手</button>
+    </div>
+  </div>
+
+  <div class="result-control">
+    <strong>結果</strong>
+    <div class="result-buttons">
+      <button
+        type="button"
+        class="result-button result-me"
+        [class.active]="selectedResult === 'me'"
+        (click)="selectedResult = 'me'"
+      >○ 自分の得点</button>
+      <button
+        type="button"
+        class="result-button result-op"
+        [class.active]="selectedResult === 'op'"
+        (click)="selectedResult = 'op'"
+      >○ 相手の得点</button>
+    </div>
+  </div>
+
+  <div class="tag-controls">
+    <strong>ラリータグ</strong>
+    <div class="tag-control-actions">
+      <button
+        *ngFor="let tag of selectedRallyTags"
+        type="button"
+        class="tag-control-chip ui-chip ui-button"
+        [class.ui-button-active]="selectedRally?.resultTags?.includes(tag)"
+        [class.active]="selectedRally?.resultTags?.includes(tag)"
+        [disabled]="!selectedRally"
+        (click)="selectedRallyTagToggle.emit(tag)"
+      >{{ tag }}</button>
+      <span class="ui-chip" *ngIf="!selectedRallyTags.length">タグ候補なし</span>
+    </div>
+  </div>
+
+  <label class="note-control">
+    <span>メモ（任意）</span>
+    <textarea
+      class="ui-input"
+      rows="4"
+      [value]="localNote"
+      maxlength="300"
+      placeholder="メモを入力してください（任意）"
+      (input)="localNote = $any($event.target).value"
+    ></textarea>
+    <span class="note-count">{{ localNote.length }} / 300</span>
+  </label>
+
+  <button
+    type="button"
+    class="record-button record-button-primary btn-register"
+    [disabled]="!selectedResult"
+    (click)="onRegister()"
+  >
+    🗒 イベントを登録
+  </button>
+</article>

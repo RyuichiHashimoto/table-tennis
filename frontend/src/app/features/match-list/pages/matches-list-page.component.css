@@ -35,23 +35,3 @@
 .matches-table td:nth-child(4) {
   width: 220px;
 }
-
-.delete-icon-button {
-  min-width: 36px;
-  min-height: 36px;
-}
-
-.button-icon-trash {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  background-color: currentColor;
-  mask-image: url("/assets/icons/danger-trashbox.svg");
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-  -webkit-mask-image: url("/assets/icons/danger-trashbox.svg");
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: contain;
-}

@@ -12,7 +12,79 @@
   font-size: var(--font-size-label);
 }
 
-th,
-td {
-  padding: 10px;
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ドラッグハンドル列 */
+.col-drag {
+  width: 36px;
+  text-align: center;
+  color: var(--text-sub);
+  cursor: grab;
+  user-select: none;
+}
+
+.col-score {
+  width: 80px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.col-server,
+.col-winner {
+  width: 80px;
+}
+
+.col-tags {
+  min-width: 120px;
+}
+
+.score-me {
+  font-weight: 600;
+  color: var(--primary, #2563eb);
+}
+
+.score-op {
+  color: var(--text-sub);
+}
+
+.score-sep {
+  margin: 0 4px;
+  color: var(--text-sub);
+}
+
+.chip-me {
+  background: color-mix(in srgb, var(--primary, #2563eb) 15%, transparent);
+  color: var(--primary, #2563eb);
+}
+
+.chip-op {
+  background: color-mix(in srgb, var(--danger, #dc2626) 12%, transparent);
+  color: var(--danger, #dc2626);
+}
+
+.no-tags {
+  color: var(--text-sub);
+}
+
+/* CDK DragDrop: ドラッグ中の行スタイル */
+.rally-row.cdk-drag-dragging {
+  opacity: 0.5;
+}
+
+.cdk-drag-preview td {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  background: var(--bg-elevated);
+  font-size: var(--font-size-label);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drop-list-dragging .rally-row:not(.cdk-drag-placeholder) {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
 }

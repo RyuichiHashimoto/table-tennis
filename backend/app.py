@@ -57,6 +57,22 @@ def _build_rally_clip_segments(
     scope_start_sec: float | None = None,
     scope_end_sec: float | None = None,
 ) -> list[dict]:
+    """ラリー記録からクリップ切り出し用の区間一覧を作成する。
+
+    Parameters
+    ----------
+    rallies_df : pd.DataFrame
+        ラリー記録を含む DataFrame。
+    scope_start_sec : float | None
+        対象に含める開始時刻（秒）。
+    scope_end_sec : float | None
+        対象に含める終了時刻（秒）。
+
+    Returns
+    -------
+    list[dict]
+        区間またはレコードを表す辞書のリスト。
+    """
     if rallies_df.empty:
         return []
 
@@ -85,6 +101,18 @@ def _build_rally_clip_segments(
 
 
 def _build_set_segments_from_rallies(rally_segments: list[dict]) -> list[dict]:
+    """ラリー区間をセット単位の区間へ集約する。
+
+    Parameters
+    ----------
+    rally_segments : list[dict]
+        ラリー区間を表す辞書のリスト。
+
+    Returns
+    -------
+    list[dict]
+        区間またはレコードを表す辞書のリスト。
+    """
     if not rally_segments:
         return []
     df = pd.DataFrame(rally_segments)
@@ -99,6 +127,20 @@ def _build_set_segments_from_rallies(rally_segments: list[dict]) -> list[dict]:
 
 
 def _build_set_segments_from_boundaries(clip_duration_sec: float, boundaries: list[float]) -> list[dict]:
+    """境界時刻からセット単位の区間一覧を作成する。
+
+    Parameters
+    ----------
+    clip_duration_sec : float
+        クリップ全体の長さ（秒）。
+    boundaries : list[float]
+        区間境界の時刻（秒）のリスト。
+
+    Returns
+    -------
+    list[dict]
+        区間またはレコードを表す辞書のリスト。
+    """
     marks = sorted({round(float(x), 2) for x in boundaries if 0.0 < float(x) < clip_duration_sec})
     points = [0.0, *marks, round(float(clip_duration_sec), 2)]
     segments = []

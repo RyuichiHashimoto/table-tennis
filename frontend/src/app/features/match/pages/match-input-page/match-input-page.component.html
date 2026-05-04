@@ -1,0 +1,84 @@
+<section class="match-input-layout">
+  <header class="page-header" *ngIf="match">
+    <div class="title-row">
+      @if (isEditingTitle) {
+        <input
+          class="ui-input title-input"
+          [(ngModel)]="editingTitle"
+          (keydown.enter)="saveTitle()"
+          (keydown.escape)="cancelEditTitle()"
+          autofocus
+        />
+        <button type="button" class="title-action-btn btn-primary" (click)="saveTitle()">保存</button>
+        <button type="button" class="title-action-btn title-cancel-btn" (click)="cancelEditTitle()">キャンセル</button>
+      } @else {
+        <h1 class="page-title">{{ match.title }}</h1>
+        <button type="button" class="title-edit-btn" aria-label="試合名を編集" title="試合名を編集" (click)="startEditTitle()">
+          <img src="/assets/icons/edit.svg" alt="" width="16" height="16" />
+        </button>
+        <a
+          class="title-detail-btn"
+          aria-label="詳細を表示"
+          title="詳細を表示"
+          [routerLink]="['/match', match.uuid, 'summary']"
+        >
+          <ui-detail-icon [size]="16"></ui-detail-icon>
+        </a>
+      }
+    </div>
+  </header>
+
+  <section class="main-columns">
+    <app-match-info-panel
+      [match]="match"
+      [videoSourceUrl]="videoSourceUrl"
+      [videoTitle]="videoTitle"
+      [youtubeUrl]="youtubeUrl"
+      [isLoadingVideo]="isLoadingVideo"
+      [currentSetNo]="selectedSetNo"
+      [mySetCount]="mySetCount"
+      [opSetCount]="opSetCount"
+      [currentScore]="currentSetScore"
+      [nextServer]="nextServer"
+      (youtubeUrlChange)="youtubeUrl = $event"
+      (loadYoutube)="loadYoutubeVideo()"
+      (selectVideoFile)="onVideoFileSelected($event)"
+      (currentTimeChange)="onVideoCurrentTimeChange($event)"
+      (playerNamesChange)="updatePlayerNames($event)"
+    ></app-match-info-panel>
+
+    <app-match-record-controls
+      [initialServer]="initialServer"
+      [selectedRally]="selectedRally"
+      [selectedRallyTags]="selectedRallyTags"
+      (startRally)="startRally()"
+      (initialServerChange)="updateInitialServer($event)"
+      (selectedRallyTagToggle)="applyTagToSelectedRally($event)"
+      (registerRally)="onRegisterRally($event)"
+    ></app-match-record-controls>
+
+    <app-match-timeline-panel
+      [rallies]="rallies"
+      [selectedRallyId]="selectedRallyId"
+      [selectedSetNo]="selectedSetNo"
+      (seekToTime)="seekVideoTo($event)"
+      (seekAfterRally)="seekVideoAfterRally($event)"
+      (deleteRally)="deleteRally($event)"
+      (toggleStar)="toggleRallyStar($event)"
+      (selectRally)="selectRally($event)"
+      (editRally)="editRally($event)"
+      (insertAfterRally)="chooseInsertAfterRally($event)"
+      (selectedSetChange)="selectSet($event)"
+    ></app-match-timeline-panel>
+  </section>
+</section>
+
+<app-rally-edit-drawer
+  [isOpen]="isDrawerOpen"
+  [rally]="selectedRally"
+  [tagDefinitions]="tagDefinitions"
+  (close)="closeDrawer()"
+  (save)="onSaveRallyEdit($event)"
+  (delete)="onDeleteRallyFromDrawer($event)"
+  (seekToTime)="seekVideoTo($event)"
+></app-rally-edit-drawer>

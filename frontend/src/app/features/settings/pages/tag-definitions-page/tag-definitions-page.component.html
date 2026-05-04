@@ -1,15 +1,20 @@
 <section class="settings-card settings-card-wide ui-card">
   <div class="settings-card-head">
     <strong>タグ一覧</strong>
-    <button type="button" class="tag-add-button ui-button" (click)="openCreateModal()">追加</button>
+    <button type="button" class="tag-add-button ui-button" aria-label="タグを追加" (click)="openCreateModal()">
+      <ui-add-icon [size]="16"></ui-add-icon>
+      追加
+    </button>
   </div>
   <div class="tag-table-wrap ui-table-wrap">
     <table class="tag-table ui-table">
       <thead>
         <tr>
-          <th>タグ</th>
-          <th>対象</th>
-          <th>得失点</th>
+          <th>パターン名</th>
+          <th>対象プレイヤー</th>
+          <th>局面</th>
+          <th>種別</th>
+          <th>結果</th>
           <th>操作</th>
         </tr>
       </thead>
@@ -17,19 +22,31 @@
         <tr *ngFor="let tag of tagDefinitions">
           <td>{{ tag.tag }}</td>
           <td>
-            <div class="tag-scope-summary">
-              <span class="tag-scope-chip ui-chip" *ngFor="let scope of getRallyScopeLabels(tag)">{{ scope }}</span>
-            </div>
+            <span class="tag-scope-chip ui-chip" [class.chip-me]="tag.playerSide === 'me'" [class.chip-op]="tag.playerSide === 'op'">
+              {{ playerSideLabel(tag.playerSide) }}
+            </span>
           </td>
           <td>
-            <div class="tag-scope-summary">
-              <span class="tag-scope-chip ui-chip" *ngFor="let scope of getPointScopeLabels(tag)">{{ scope }}</span>
-            </div>
+            <span class="tag-scope-chip ui-chip">{{ phaseLabel(tag.phase) }}</span>
+          </td>
+          <td>
+            <span class="tag-scope-chip ui-chip" [class.chip-miss]="tag.shotType === 'miss'" [class.chip-point]="tag.shotType === 'point'">
+              {{ shotTypeLabel(tag.shotType) }}
+            </span>
+          </td>
+          <td>
+            <span class="result-chip" [class.result-me]="pointWinnerLabel(tag) === '自分の得点'" [class.result-op]="pointWinnerLabel(tag) === '相手の得点'">
+              {{ pointWinnerLabel(tag) }}
+            </span>
           </td>
           <td class="tag-action-cell">
             <div class="tag-row-actions">
-              <button type="button" class="tag-edit-button ui-button ui-button-sm" (click)="openEditModal(tag)">edit</button>
-              <button type="button" class="tag-delete-button ui-button ui-button-sm ui-button-danger" (click)="deleteTag(tag)">delete</button>
+              <button type="button" class="tag-edit-button ui-button ui-button-sm" aria-label="編集" (click)="openEditModal(tag)">
+                <ui-edit-icon [size]="16"></ui-edit-icon>
+              </button>
+              <button type="button" class="tag-delete-button ui-button ui-button-sm ui-button-danger" aria-label="削除" (click)="deleteTag(tag)">
+                <ui-delete-icon [size]="16"></ui-delete-icon>
+              </button>
             </div>
           </td>
         </tr>
@@ -45,34 +62,31 @@
     </header>
 
     <div class="tag-edit-body">
-      <label>
-        <span>タグ名</span>
-        <input type="text" class="ui-input" [(ngModel)]="editForm.tag" />
+      <label class="edit-field">
+        <span>パターン名</span>
+        <input type="text" class="ui-input" [(ngModel)]="editForm.tag" placeholder="例：サーブミス" />
       </label>
 
-      <fieldset class="tag-edit-fieldset">
-        <legend>対象ラリー</legend>
-        <label>
-          <input type="checkbox" [(ngModel)]="editForm.myRallyEnabled" />
-          <span>自ラリー</span>
-        </label>
-        <label>
-          <input type="checkbox" [(ngModel)]="editForm.opponentRallyEnabled" />
-          <span>相手ラリー</span>
-        </label>
-      </fieldset>
+      <label class="edit-field">
+        <span>対象プレイヤー</span>
+        <select class="ui-input" [(ngModel)]="editForm.playerSide">
+          <option *ngFor="let opt of playerSideOptions" [value]="opt.value">{{ opt.label }}</option>
+        </select>
+      </label>
 
-      <fieldset class="tag-edit-fieldset">
-        <legend>対象得失点時</legend>
-        <label>
-          <input type="checkbox" [(ngModel)]="editForm.lossEnabled" />
-          <span>失点時</span>
-        </label>
-        <label>
-          <input type="checkbox" [(ngModel)]="editForm.winEnabled" />
-          <span>得点時</span>
-        </label>
-      </fieldset>
+      <label class="edit-field">
+        <span>局面</span>
+        <select class="ui-input" [(ngModel)]="editForm.phase">
+          <option *ngFor="let opt of phaseOptions" [value]="opt.value">{{ opt.label }}</option>
+        </select>
+      </label>
+
+      <label class="edit-field">
+        <span>種別</span>
+        <select class="ui-input" [(ngModel)]="editForm.shotType">
+          <option *ngFor="let opt of shotTypeOptions" [value]="opt.value">{{ opt.label }}</option>
+        </select>
+      </label>
     </div>
 
     <footer class="tag-edit-actions">

@@ -1,0 +1,8 @@
+<button type="button" class="option-card" [class.selected]="selected" (click)="clicked.emit()">
+  <span class="option-icon" aria-hidden="true">{{ icon }}</span>
+  <span class="option-body">
+    <span class="option-label">{{ label }}</span>
+    <span class="option-description">{{ description }}</span>
+  </span>
+  <span class="option-radio" [class.checked]="selected" aria-hidden="true"></span>
+</button>

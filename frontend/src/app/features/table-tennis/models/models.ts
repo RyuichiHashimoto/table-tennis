@@ -6,6 +6,8 @@ export interface Match {
   uuid: string;
   title: string;
   initialServer: Side;
+  myPlayerName: string;
+  opponentPlayerName: string;
   createdAt: string;
 }
 
@@ -26,7 +28,7 @@ export interface Rally {
   endSide: string;
   my3rd: string;
   my3rdResult: string;
-  resultTag?: RallyResultTag;
+  resultTags: RallyResultTag[];
   tStart?: number;
   tEnd?: number;
   note?: string;
@@ -55,13 +57,16 @@ export interface Summary {
   opServeWinRate: number;
 }
 
+export type TagPlayerSide = 'me' | 'op' | 'both';
+export type TagPhase = 'serve' | 'receive' | 'rally';
+export type TagShotType = 'miss' | 'point' | 'any';
+
 export interface RallyTagDefinition {
   id: number;
   tag: RallyResultTag;
-  myRallyOnly: boolean;
-  opponentRallyOnly: boolean;
-  lossOnly: boolean;
-  winOnly: boolean;
+  playerSide: TagPlayerSide;
+  phase: TagPhase;
+  shotType: TagShotType;
   createdAt: string;
   updatedAt: string;
 }

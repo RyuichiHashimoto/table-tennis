@@ -5,12 +5,13 @@ import { AppStateService } from '../../table-tennis/services/app-state.service';
 import { ConfirmModalComponent } from '../../../shared/ui/confirm-modal/confirm-modal.component';
 import { MatchTitleModalComponent } from '../components/match-title-modal/match-title-modal.component';
 import { TableShellComponent } from '../../../shared/ui/table-shell/table-shell.component';
+import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.component';
 import { Match } from '../../table-tennis/models/models';
 
 @Component({
   selector: 'app-matches-list-page',
   standalone: true,
-  imports: [CommonModule, ConfirmModalComponent, MatchTitleModalComponent, TableShellComponent],
+  imports: [CommonModule, ConfirmModalComponent, MatchTitleModalComponent, TableShellComponent, IconButtonComponent],
   templateUrl: './matches-list-page.component.html',
   styleUrl: './matches-list-page.component.css',
 })
@@ -32,8 +33,11 @@ export class MatchesListPageComponent implements OnInit {
   }
 
   async createMatch(): Promise<void> {
-    const created = await this.state.createMatch(`新規試合 ${new Date().toISOString().slice(0, 10)}`);
-    void this.router.navigate(['/match', created.uuid]);
+    const now = new Date();
+    const date = now.toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
+    const time = now.toTimeString().slice(0, 5);
+    const created = await this.state.createMatch(`新規試合 ${date} ${time}`);
+    void this.router.navigate(['/match', created.uuid, 'edit']);
   }
 
   openMatch(matchUuid: string): void {
@@ -42,11 +46,7 @@ export class MatchesListPageComponent implements OnInit {
   }
 
   editMatch(matchUuid: string): void {
-    const match = this.state.getMatchByUuid(matchUuid);
-    if (!match) {
-      return;
-    }
-    this.pendingEditMatch = match;
+    void this.router.navigate(['/match', matchUuid, 'edit']);
   }
 
   deleteMatch(matchUuid: string): void {

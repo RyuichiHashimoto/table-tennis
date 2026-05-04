@@ -1,0 +1,21 @@
+<article class="ui-panel">
+  <h3>Inputs</h3>
+  <div class="input-grid">
+    <label>
+      <span>テキスト入力</span>
+      <input class="ui-input" type="text" [(ngModel)]="sampleText" />
+    </label>
+    <label>
+      <span>セレクト</span>
+      <select class="ui-input" [(ngModel)]="selectedMode">
+        <option value="default">default</option>
+        <option value="compact">compact</option>
+        <option value="danger">danger</option>
+      </select>
+    </label>
+    <label class="input-wide">
+      <span>テキストエリア</span>
+      <textarea class="ui-input" rows="4">複数行入力の確認用です。</textarea>
+    </label>
+  </div>
+</article>

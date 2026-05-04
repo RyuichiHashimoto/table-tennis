@@ -1,0 +1,35 @@
+<article class="ui-panel">
+  <h3>SaveStatusIcon</h3>
+
+  <div class="section-label">静的表示（デフォルト色）</div>
+  <div class="icon-showcase">
+    <div *ngFor="let item of statuses" class="icon-sample">
+      <app-save-status-icon [status]="item.value"></app-save-status-icon>
+      <span class="icon-label">{{ item.label }}</span>
+    </div>
+  </div>
+
+  <div class="section-label">color 指定（緑）</div>
+  <div class="icon-showcase">
+    <div *ngFor="let item of statuses" class="icon-sample">
+      <app-save-status-icon [status]="item.value" color="var(--primary-deep)"></app-save-status-icon>
+      <span class="icon-label">{{ item.label }}</span>
+    </div>
+  </div>
+
+  <div class="section-label">アイコンボタン（クリックで動作確認）</div>
+  <div class="demo-row">
+    <button
+      type="button"
+      class="save-icon-button"
+      [class.is-saving]="demoStatus === 'saving'"
+      [disabled]="demoStatus === 'saving'"
+      (click)="onDemoClick()"
+      [attr.aria-label]="demoLabel"
+      [title]="demoLabel"
+    >
+      <app-save-status-icon [status]="demoStatus"></app-save-status-icon>
+    </button>
+    <span class="demo-status-label">{{ demoLabel }}</span>
+  </div>
+</article>

@@ -27,7 +27,5 @@ services:
       - table-tennis-backend
     container_name: table-tennis-frontend
 
-#  60.00s / 終了 744.00s
-
 volumes:
   frontend_node_modules:

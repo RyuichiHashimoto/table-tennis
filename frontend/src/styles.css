@@ -42,6 +42,10 @@
   --danger: #d44848;
   --danger-soft: #fff0f0;
 
+  --op-color: #d44848;
+  --op-bg: #fff0f0;
+  --op-border: #ffd1d1;
+
   --shadow-neon-soft: 0 8px 22px rgba(0, 143, 88, 0.11);
   --shadow-neon-strong: 0 12px 30px rgba(0, 143, 88, 0.18);
 
@@ -87,6 +91,10 @@
   --chrome-surface: #050505;
   --danger: #ff7a7a;
   --danger-soft: #3b1f1f;
+
+  --op-color: #ff7a7a;
+  --op-bg: #3b1f1f;
+  --op-border: #5c3030;
 
   --shadow-neon-soft: 0 0 12px rgba(0, 255, 156, 0.12);
   --shadow-neon-strong: 0 0 18px rgba(0, 255, 156, 0.22);
@@ -185,15 +193,15 @@ td {
 }
 
 .btn-primary {
-  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-soft) 100%);
-  border-color: var(--primary-soft);
-  color: #03140e;
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-deep) 100%);
+  border-color: var(--primary-deep);
+  color: #fff;
   font-weight: 600;
 }
 
 .btn-primary:hover:not(:disabled) {
   background: linear-gradient(180deg, var(--primary-soft) 0%, var(--primary) 100%);
-  border-color: var(--primary-soft);
+  border-color: var(--primary);
   box-shadow: var(--shadow-neon-strong);
 }
 

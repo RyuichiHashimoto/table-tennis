@@ -1,0 +1,191 @@
+<article class="info-panel ui-panel">
+  <header class="info-head">
+    <ui-clipboard-list-icon [size]="20" class="info-head-icon"></ui-clipboard-list-icon>
+    <h2>試合情報</h2>
+  </header>
+
+  <!-- 対戦カード -->
+  <div class="info-section">
+    <div class="section-label">
+      <ui-users-icon [size]="15"></ui-users-icon>
+      <span>対戦カード</span>
+      @if (!isEditingPlayers) {
+        <button type="button" class="section-icon-button" aria-label="対戦カードを編集" title="対戦カードを編集" (click)="startEditPlayers()">
+          <img src="/assets/icons/edit.svg" alt="" width="14" height="14" />
+        </button>
+      }
+    </div>
+    @if (isEditingPlayers) {
+      <div class="matchup-edit">
+        <label class="player-name-field">
+          <span>自分側</span>
+          <input
+            class="ui-input player-name-input"
+            [(ngModel)]="editingMyPlayerName"
+            (keydown.enter)="savePlayers()"
+            (keydown.escape)="cancelEditPlayers()"
+            maxlength="24"
+            autofocus
+          />
+        </label>
+        <label class="player-name-field">
+          <span>相手側</span>
+          <input
+            class="ui-input player-name-input"
+            [(ngModel)]="editingOpponentPlayerName"
+            (keydown.enter)="savePlayers()"
+            (keydown.escape)="cancelEditPlayers()"
+            maxlength="24"
+          />
+        </label>
+        <div class="matchup-edit-actions">
+          <button type="button" class="matchup-save-btn ui-button btn-primary" (click)="savePlayers()">保存</button>
+          <button type="button" class="matchup-cancel-btn ui-button" (click)="cancelEditPlayers()">キャンセル</button>
+        </div>
+      </div>
+    } @else {
+      <div class="matchup-row">
+        <div class="player">
+          <div class="player-avatar avatar-me">
+            <ui-user-filled-icon [size]="26"></ui-user-filled-icon>
+          </div>
+          <span class="player-name">{{ myPlayerName }}</span>
+        </div>
+        <span class="vs-label">VS</span>
+        <div class="player">
+          <div class="player-avatar avatar-op">
+            <ui-user-filled-icon [size]="26"></ui-user-filled-icon>
+          </div>
+          <span class="player-name">{{ opponentPlayerName }}</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- セット情報 -->
+  <div class="info-section">
+    <div class="section-label">
+      <ui-layout-grid-icon [size]="15"></ui-layout-grid-icon>
+      <span>セット情報</span>
+    </div>
+    <div class="set-info-row">
+      <span class="set-current-text">セット <strong>{{ currentSetNo }}</strong> / 5</span>
+      <div class="set-count-card">
+        <span class="set-count-label">セットカウント</span>
+        <span class="set-count-score">{{ mySetCount }} - {{ opSetCount }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 現在スコア -->
+  <div class="info-section">
+    <div class="section-label">
+      <ui-trophy-icon [size]="15"></ui-trophy-icon>
+      <span>現在スコア</span>
+    </div>
+    <div class="score-display">
+      <span class="score-big score-big-me">{{ currentScore.me }}</span>
+      <span class="score-sep">-</span>
+      <span class="score-big score-big-op">{{ currentScore.op }}</span>
+    </div>
+  </div>
+
+  <!-- 次のサーバー -->
+  <div class="info-section">
+    <div class="section-label">
+      <ui-rotate-clockwise-icon [size]="15"></ui-rotate-clockwise-icon>
+      <span>次のサーバー</span>
+    </div>
+    <div class="server-badge" [class.server-me]="nextServer === 'me'" [class.server-op]="nextServer === 'op'">
+      {{ nextServer === 'me' ? '自分' : '相手' }}
+    </div>
+  </div>
+
+  <!-- 入力設定 -->
+  <div class="info-section">
+    <div class="section-label">
+      <ui-settings-icon [size]="15"></ui-settings-icon>
+      <span>入力設定</span>
+    </div>
+    <div class="settings-rows">
+      <div class="settings-row">
+        <span class="settings-key">入力モード</span>
+        <span class="settings-value">{{ inputMode === 'post' ? '手動入力' : 'リアルタイム' }}</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-key">動画</span>
+        <span class="settings-value">{{ videoTitle || '未設定' }}</span>
+      </div>
+    </div>
+    <button type="button" class="change-settings-btn ui-button" (click)="showSettings = !showSettings">
+      設定を変更
+    </button>
+
+    <div class="settings-expand" *ngIf="showSettings">
+      <div class="expand-field">
+        <span class="expand-label">入力方法</span>
+        <div class="option-card-list">
+          <ui-option-card
+            icon="📹"
+            label="試合後に入力（動画あり）"
+            description="試合の動画を見返しながら記録を入力します。"
+            [selected]="inputMode === 'post'"
+            (clicked)="inputMode = 'post'"
+          ></ui-option-card>
+          <ui-option-card
+            icon="⏱"
+            label="試合中に入力（リアルタイム）"
+            description="試合をリアルタイムで見ながら記録を入力します。"
+            [selected]="inputMode === 'realtime'"
+            (clicked)="inputMode = 'realtime'"
+          ></ui-option-card>
+        </div>
+      </div>
+
+      <div class="expand-field" *ngIf="inputMode === 'post'">
+        <span class="expand-label">動画（任意）</span>
+        <ng-container *ngIf="videoSourceUrl; else videoUpload">
+          <div class="video-player-wrap">
+            <video
+              #videoPlayer
+              class="video-player"
+              [src]="videoSourceUrl"
+              controls
+              preload="metadata"
+              (timeupdate)="onVideoTimeUpdate($event)"
+              (loadedmetadata)="onVideoTimeUpdate($event)"
+            ></video>
+            <div class="video-caption">{{ videoTitle || '動画再生' }}</div>
+          </div>
+        </ng-container>
+        <ng-template #videoUpload>
+          <label class="drop-zone">
+            <input type="file" accept="video/*" class="drop-zone-input" (change)="onSelectVideoFile($event)" />
+            <span class="drop-zone-icon">☁</span>
+            <span class="drop-zone-text">動画ファイルをドラッグ＆ドロップ</span>
+            <span class="drop-zone-or">または</span>
+            <span class="upload-btn ui-button">動画アップロード</span>
+          </label>
+        </ng-template>
+        <label class="youtube-row">
+          <span class="expand-label">YouTube URL</span>
+          <div class="youtube-input-wrap">
+            <input
+              type="text"
+              class="ui-input"
+              [ngModel]="youtubeUrl"
+              (ngModelChange)="youtubeUrlChange.emit($event)"
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+            <button
+              type="button"
+              class="ui-button"
+              [disabled]="isLoadingVideo"
+              (click)="loadYoutube.emit()"
+            >{{ isLoadingVideo ? '読込中...' : '読み込む' }}</button>
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
+</article>

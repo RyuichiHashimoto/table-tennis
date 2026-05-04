@@ -21,6 +21,13 @@ class RallyInput:
     created_at: str
 
     def to_record(self) -> dict:
+        """ラリー入力データを保存用の辞書へ変換する。
+
+        Returns
+        -------
+        dict
+            処理結果を表す辞書。
+        """
         payload = asdict(self)
         if payload["my_3rd"] == "none":
             payload["my_3rd_result"] = "na"
@@ -42,6 +49,42 @@ def build_rally_input(
     t_end: float,
     note: str,
 ) -> RallyInput:
+    """フォーム入力値からラリー入力データを構築する。
+
+    Parameters
+    ----------
+    set_no : int
+        セット番号。
+    server : str
+        サーバーを表す値。
+    serve_type : str
+        サーブ種別。
+    receive_type : str
+        レシーブ種別。
+    rally_len_bucket : str
+        ラリー長の区分。
+    point_winner : str
+        得点者を表す値。
+    end_reason : str
+        ラリー終了理由。
+    end_side : str
+        ラリー終了位置。
+    my_3rd : str
+        自分の 3 球目の内容。
+    my_3rd_result : str
+        自分の 3 球目の結果。
+    t_start : float
+        ラリー開始時刻（秒）。
+    t_end : float
+        ラリー終了時刻（秒）。
+    note : str
+        任意メモ。
+
+    Returns
+    -------
+    RallyInput
+        構築したラリー入力データ。
+    """
     return RallyInput(
         set_no=int(set_no),
         server=server,
