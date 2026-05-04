@@ -2,10 +2,36 @@ import pandas as pd
 
 
 def rate(numer, denom) -> float:
+    """分子と分母から比率を計算する。
+
+    Parameters
+    ----------
+    numer : Any
+        分子。
+    denom : Any
+        分母。
+
+    Returns
+    -------
+    float
+        計算された数値。
+    """
     return float(numer) / float(denom) if denom else 0.0
 
 
 def summarize(df: pd.DataFrame) -> dict:
+    """ラリー記録の基本集計を作成する。
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        集計対象の DataFrame。
+
+    Returns
+    -------
+    dict
+        処理結果を表す辞書。
+    """
     if df.empty:
         return {}
 
@@ -50,6 +76,20 @@ def summarize(df: pd.DataFrame) -> dict:
 
 
 def scoring_patterns(df: pd.DataFrame, *, limit: int = 6) -> list[dict]:
+    """得点ラリーの結果タグを集計して主要パターンを返す。
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        集計対象の DataFrame。
+    limit : int
+        返す上位件数。
+
+    Returns
+    -------
+    list[dict]
+        区間またはレコードを表す辞書のリスト。
+    """
     if df.empty:
         return []
 

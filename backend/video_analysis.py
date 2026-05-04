@@ -5,12 +5,36 @@ from pathlib import Path
 
 
 def ensure_dir(path: str) -> Path:
+    """指定されたディレクトリを作成して Path として返す。
+
+    Parameters
+    ----------
+    path : str
+        対象のパス。
+
+    Returns
+    -------
+    Path
+        作成または解決された Path。
+    """
     p = Path(path)
     p.mkdir(parents=True, exist_ok=True)
     return p
 
 
 def fetch_video_info(url: str) -> dict:
+    """yt-dlp を使って動画メタデータを取得する。
+
+    Parameters
+    ----------
+    url : str
+        対象動画の URL。
+
+    Returns
+    -------
+    dict
+        処理結果を表す辞書。
+    """
     cmd = [
         "yt-dlp",
         "--dump-single-json",
@@ -23,6 +47,20 @@ def fetch_video_info(url: str) -> dict:
 
 
 def download_video(url: str, out_dir: str) -> str:
+    """yt-dlp を使って動画をダウンロードする。
+
+    Parameters
+    ----------
+    url : str
+        対象動画の URL。
+    out_dir : str
+        出力先ディレクトリ。
+
+    Returns
+    -------
+    str
+        処理結果。
+    """
     ensure_dir(out_dir)
     out_tpl = os.path.join(out_dir, "%(title).120B [%(id)s].%(ext)s")
     cmd = [
@@ -43,6 +81,22 @@ def download_video(url: str, out_dir: str) -> str:
 
 
 def export_video_segments(video_path: str, segments: list[dict], out_dir: str | None = None) -> dict:
+    """指定された動画区間を個別のクリップとして書き出す。
+
+    Parameters
+    ----------
+    video_path : str
+        対象動画ファイルのパス。
+    segments : list[dict]
+        切り出し対象の区間リスト。
+    out_dir : str | None
+        出力先ディレクトリ。
+
+    Returns
+    -------
+    dict
+        処理結果を表す辞書。
+    """
     input_path = Path(video_path)
     if not input_path.exists():
         raise RuntimeError(f"Video file does not exist: {video_path}")
@@ -93,6 +147,18 @@ def export_video_segments(video_path: str, segments: list[dict], out_dir: str | 
 
 
 def get_video_duration_sec(video_path: str) -> float:
+    """ffprobe を使って動画の長さを秒単位で取得する。
+
+    Parameters
+    ----------
+    video_path : str
+        対象動画ファイルのパス。
+
+    Returns
+    -------
+    float
+        計算された数値。
+    """
     cmd = [
         "ffprobe",
         "-v",
@@ -115,6 +181,26 @@ def detect_set_boundaries_auto(
     base_motion_threshold: float = 0.008,
     edge_margin_sec: float = 10.0,
 ) -> dict:
+    """低モーション区間を手がかりにセット境界を自動検出する。
+
+    Parameters
+    ----------
+    video_path : str
+        対象動画ファイルのパス。
+    sample_every_sec : float
+        動画をサンプリングする間隔（秒）。
+    min_break_sec : float
+        境界候補とみなす最小停止時間（秒）。
+    base_motion_threshold : float
+        動き量の下限しきい値。
+    edge_margin_sec : float
+        動画端を境界候補から除外する余白（秒）。
+
+    Returns
+    -------
+    dict
+        処理結果を表す辞書。
+    """
     try:
         import cv2  # type: ignore
     except ImportError as exc:
@@ -223,6 +309,22 @@ def detect_set_boundaries_auto(
 
 
 def analyze_video_basic(video_path: str, sample_every_sec: float = 1.0, max_samples: int = 300) -> dict:
+    """動画の基本情報と簡易的な明るさ指標を取得する。
+
+    Parameters
+    ----------
+    video_path : str
+        対象動画ファイルのパス。
+    sample_every_sec : float
+        動画をサンプリングする間隔（秒）。
+    max_samples : int
+        取得する最大サンプル数。
+
+    Returns
+    -------
+    dict
+        処理結果を表す辞書。
+    """
     try:
         import cv2  # type: ignore
     except ImportError as exc:
@@ -269,6 +371,20 @@ def analyze_video_basic(video_path: str, sample_every_sec: float = 1.0, max_samp
 
 
 def _merge_segments(segments: list[tuple[float, float]], bridge_gap_sec: float) -> list[tuple[float, float]]:
+    """近接する動画区間を結合する。
+
+    Parameters
+    ----------
+    segments : list[tuple[float, float]]
+        切り出し対象の区間リスト。
+    bridge_gap_sec : float
+        結合する区間間隔の上限（秒）。
+
+    Returns
+    -------
+    list[tuple[float, float]]
+        開始時刻と終了時刻のタプルリスト。
+    """
     if not segments:
         return []
     merged = [segments[0]]
@@ -289,6 +405,28 @@ def extract_match_segments(
     min_segment_sec: float = 5.0,
     bridge_gap_sec: float = 2.0,
 ) -> dict:
+    """卓球台らしさと動き量から試合区間を抽出する。
+
+    Parameters
+    ----------
+    video_path : str
+        対象動画ファイルのパス。
+    sample_every_sec : float
+        動画をサンプリングする間隔（秒）。
+    table_ratio_threshold : float
+        卓球台らしさのしきい値。
+    motion_threshold : float
+        動き量のしきい値。
+    min_segment_sec : float
+        採用する最小区間長（秒）。
+    bridge_gap_sec : float
+        結合する区間間隔の上限（秒）。
+
+    Returns
+    -------
+    dict
+        処理結果を表す辞書。
+    """
     try:
         import cv2  # type: ignore
     except ImportError as exc:
