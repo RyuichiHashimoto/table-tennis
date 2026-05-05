@@ -4,6 +4,7 @@ FROM python:3.12-slim
 # 基本設定
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app/src \
     STREAMLIT_SERVER_ADDRESS=0.0.0.0 \
     STREAMLIT_SERVER_PORT=8501
 
@@ -26,10 +27,10 @@ COPY pyproject.toml uv.lock* ./
 RUN uv sync
 
 # アプリ本体
-# COPY . .
+COPY src ./src
 
-EXPOSE 8501
+EXPOSE 8000
 
 ENV PATH="/app/.venv/bin:/root/.local/bin:${PATH}"
 
-CMD ["streamlit", "run", "backend/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["uvicorn", "table_tennis_backend.main:app", "--host", "0.0.0.0", "--port", "8000"]

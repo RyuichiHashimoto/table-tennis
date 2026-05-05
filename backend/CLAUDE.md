@@ -21,22 +21,34 @@
 
 ```
 backend/
-  api.py          # FastAPI アプリ定義 + 全ルートハンドラ
-  match_store.py  # 試合/ラリー/タグ の CRUD（メインデータストア）
-  db.py           # 旧 Streamlit 用 SQLite + downloaded_videos テーブル
-  analytics.py    # 集計ロジック（summarize / scoring_patterns）
-  clip_utils.py   # 動画セグメント構築ユーティリティ
-  models.py       # RallyInput dataclass + build_rally_input
-  video_analysis.py # yt-dlp / OpenCV / ffmpeg ラッパー
-  app.py          # Streamlit MVP（旧UIレガシー、参照用）
+  Dockerfile
+  pyproject.toml
+  src/
+    table_tennis_backend/
+      main.py          # FastAPI アプリ定義 + ルーター登録 + ヘルスチェック
+      streamlit_app.py # Streamlit MVP（旧UIレガシー、参照用）
+      common/
+        db.py           # 共通 SQLite 接続
+      match/
+        analytics.py    # 試合/ラリー集計ロジック（summarize / scoring_patterns）
+        schemas.py       # 試合/ラリー/タグ系 API のリクエストスキーマ
+        models.py        # RallyInput dataclass + build_rally_input
+        router.py        # 試合/ラリー/タグ/集計系 Web API ルートハンドラ
+        store.py         # 試合/ラリー/タグ の CRUD（メインデータストア）
+      video/
+        router.py         # 動画/解析/クリップ系 Web API ルートハンドラ
+        store.py          # downloaded_videos の CRUD
+        clip_utils.py     # 動画セグメント構築ユーティリティ
+        video_analysis.py # yt-dlp / OpenCV / ffmpeg ラッパー
 ```
 
 ---
 
 ## データストア構造
 
-- `match_store.py` → `data/matches/index.sqlite`（試合インデックス） + 試合ごとの JSON ファイル（ラリーデータ）
-- `db.py` → `tt_analyzer.db`（`downloaded_videos` テーブルおよびレガシーデータ）
+- `match/store.py` → `data/matches/index.sqlite`（試合インデックス） + 試合ごとの SQLite ファイル（ラリーデータ）
+- `video/store.py` → `tt_analyzer.db`（`downloaded_videos` テーブル）
+- `common/db.py` → 共通 SQLite 接続
 
 ---
 
@@ -60,7 +72,7 @@ def get_match_api(match_uuid: str) -> dict[str, Any]:
 
 ## Pydanticモデルルール
 
-- リクエストボディは `api.py` 内の Pydantic `BaseModel` で定義する
+- リクエストボディは各機能フォルダの `schemas.py` 内の Pydantic `BaseModel` で定義する
 - フィールド名は snake_case
 - Optional フィールドにはデフォルト値を設定する
 
@@ -79,8 +91,8 @@ class RallyCreateRequest(BaseModel):
 - SQLは raw sqlite3 で書く（`?` プレースホルダーを必ず使う）
 - DB読み取りには `pd.read_sql_query()` を使い、DataFrame として返す
 - `None` を含むDataFrame をdictに変換する際は `_safe_records(df)` を使う
-- `match_store.py` の関数を通じてデータにアクセスする（`api.py` で直接 sqlite3 を呼ばない）
-- マイグレーションは `init_db()` / `init_match_store()` 内の `CREATE TABLE IF NOT EXISTS` と `ALTER TABLE` で行う
+- `match/store.py` の関数を通じてデータにアクセスする（`main.py` で直接 sqlite3 を呼ばない）
+- マイグレーションは `init_match_store()` / `init_video_store()` 内の `CREATE TABLE IF NOT EXISTS` と `ALTER TABLE` で行う
 
 ```python
 # ✅ 良い例（プレースホルダー使用）
@@ -119,6 +131,6 @@ except Exception as exc:
 ## 禁止事項（バックエンド）
 
 - `f"... {変数} ..."` 形式の SQL 文字列結合禁止（プレースホルダー `?` を使う）
-- `api.py` から直接 sqlite3 を操作しない（`match_store.py` / `db.py` の関数を使う）
+- `main.py` から直接 sqlite3 を操作しない（`match/store.py` / `video/store.py` の関数を使う）
 - シークレット・APIキーのハードコーディング禁止
-- `app.py`（Streamlit）に新機能を追加しない（レガシー参照用）
+- `streamlit_app.py`（Streamlit）に新機能を追加しない（レガシー参照用）

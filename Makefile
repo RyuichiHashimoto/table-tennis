@@ -14,3 +14,8 @@ log-backend:
 log-frontend:
 	docker logs table-tennis-frontend -f 
 
+exec-backend:
+	docker exec -it table-tennis-backend /bin/bash
+
+exec-frontend:
+	docker exec -it table-tennis-frontend /bin/bash
