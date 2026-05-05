@@ -3,10 +3,11 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Rally } from '../../../table-tennis/models/models';
 import { AppStateService } from '../../../table-tennis/services/app-state.service';
-import { ConfirmModalComponent } from '../../../../shared/ui/confirm-modal/confirm-modal.component';
-import { IconButtonComponent } from '../../../../shared/ui/icon-button/icon-button.component';
-import { SaveStatusIconComponent, SaveStatus } from '../../../../shared/ui/save-status-icon/save-status-icon.component';
+import { ConfirmModalComponent } from '../../../../shared/ui/modal/confirm-modal/confirm-modal.component';
+import { IconButtonComponent } from '../../../../shared/ui/icon-button/icon-button/icon-button.component';
+import { SaveStatusIconComponent, SaveStatus } from '../../../../shared/ui/icon-button/save-status-icon/save-status-icon.component';
 import { SetScoreChipComponent } from '../../../../shared/ui/set-score-chip/set-score-chip.component';
+import { StandardTableComponent } from '../../../../shared/ui/table/standard-table/standard-table.component';
 
 interface TimelineRow {
   rally: Rally;
@@ -28,7 +29,7 @@ interface TimelineSetGroup {
 @Component({
   selector: 'app-match-timeline-panel',
   standalone: true,
-  imports: [CommonModule, DragDropModule, ConfirmModalComponent, IconButtonComponent, SaveStatusIconComponent, SetScoreChipComponent],
+  imports: [CommonModule, DragDropModule, ConfirmModalComponent, IconButtonComponent, SaveStatusIconComponent, SetScoreChipComponent, StandardTableComponent],
   templateUrl: './match-timeline-panel.component.html',
   styleUrl: './match-timeline-panel.component.css',
 })

@@ -1,0 +1,73 @@
+.drag-hint {
+  margin: 0 0 12px;
+  font-size: var(--font-size-label);
+  color: var(--text-sub);
+}
+
+.sortable-table .col-handle {
+  width: 32px;
+}
+
+.drag-handle {
+  cursor: grab;
+  color: var(--text-muted);
+  font-size: 14px;
+  letter-spacing: -3px;
+  user-select: none;
+  text-align: center;
+  padding: 0 8px;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.col-score {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.point-winner-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: var(--font-size-label);
+  border: 1px solid var(--line);
+  background: var(--bg-surface);
+  color: var(--text-main);
+}
+
+.point-winner-chip.me {
+  border-color: #bce9cf;
+  background: #e7f8ee;
+  color: var(--primary-deep);
+}
+
+.point-winner-chip.op {
+  border-color: #ffd1d1;
+  background: #fff0f0;
+  color: #d44848;
+}
+
+.sortable-table tr.cdk-drag-preview {
+  display: table;
+  width: 100%;
+  background: var(--bg-card);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  opacity: 0.9;
+  border-radius: 4px;
+}
+
+.sortable-table tr.cdk-drag-placeholder td {
+  background: var(--bg-surface-soft);
+  opacity: 0.4;
+}
+
+.sortable-table tr.cdk-drag-animating {
+  transition: transform 200ms ease;
+}
+
+.sortable-table tbody.cdk-drop-list-dragging tr:not(.cdk-drag-placeholder) {
+  transition: transform 200ms ease;
+}

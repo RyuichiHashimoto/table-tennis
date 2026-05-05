@@ -1,0 +1,38 @@
+<p class="drag-hint">⋮⋮ ドラッグで並び替え（PCはマウス、スマホはタッチでドラッグできます）</p>
+<div class="table-base">
+  <div class="ui-table-wrap">
+    <table class="ui-table sortable-table">
+      <thead>
+        <tr>
+          <th class="col-handle"></th>
+          <th>点数</th>
+          <th>サーバー</th>
+          <th>得点者</th>
+          <th>タグ</th>
+        </tr>
+      </thead>
+      <tbody
+        cdkDropList
+        (cdkDropListDropped)="dropped.emit($event)"
+      >
+        <tr
+          *ngFor="let row of rows; trackBy: trackById"
+          cdkDrag
+          cdkDragLockAxis="y"
+        >
+          <td class="drag-handle" cdkDragHandle title="ドラッグして並び替え">⋮⋮</td>
+          <td class="col-score">{{ row.score }}</td>
+          <td>{{ row.server }}</td>
+          <td>
+            <span class="point-winner-chip" [class.me]="row.pointWinner === '自分'" [class.op]="row.pointWinner === '相手'">
+              {{ row.pointWinner }}
+            </span>
+          </td>
+          <td><span class="ui-chip">{{ row.tag }}</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="table-empty" *ngIf="empty || rows.length === 0">{{ emptyMessage }}</p>
+</div>

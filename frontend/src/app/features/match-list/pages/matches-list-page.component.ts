@@ -2,16 +2,16 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppStateService } from '../../table-tennis/services/app-state.service';
-import { ConfirmModalComponent } from '../../../shared/ui/confirm-modal/confirm-modal.component';
+import { ConfirmModalComponent } from '../../../shared/ui/modal/confirm-modal/confirm-modal.component';
 import { MatchTitleModalComponent } from '../components/match-title-modal/match-title-modal.component';
-import { TableShellComponent } from '../../../shared/ui/table-shell/table-shell.component';
-import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.component';
+import { StandardTableComponent } from '../../../shared/ui/table/standard-table/standard-table.component';
+import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button/icon-button.component';
 import { Match } from '../../table-tennis/models/models';
 
 @Component({
   selector: 'app-matches-list-page',
   standalone: true,
-  imports: [CommonModule, ConfirmModalComponent, MatchTitleModalComponent, TableShellComponent, IconButtonComponent],
+  imports: [CommonModule, ConfirmModalComponent, MatchTitleModalComponent, StandardTableComponent, IconButtonComponent],
   templateUrl: './matches-list-page.component.html',
   styleUrl: './matches-list-page.component.css',
 })

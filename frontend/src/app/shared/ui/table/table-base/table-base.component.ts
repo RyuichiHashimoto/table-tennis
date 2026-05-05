@@ -2,13 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-table-shell',
+  selector: 'ui-table-base',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './table-shell.component.html',
-  styleUrl: './table-shell.component.css',
+  templateUrl: './table-base.component.html',
+  styleUrl: './table-base.component.css',
 })
-export class TableShellComponent {
+export class TableBaseComponent {
   @Input() empty = false;
   @Input() emptyMessage = 'データがありません。';
 }

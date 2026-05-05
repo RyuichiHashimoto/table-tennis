@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ModalComponent } from '../../../../shared/ui/modal/modal.component';
+import { ModalComponent } from '../../../../shared/ui/modal/modal/modal.component';
 
 @Component({
   selector: 'app-match-title-modal',

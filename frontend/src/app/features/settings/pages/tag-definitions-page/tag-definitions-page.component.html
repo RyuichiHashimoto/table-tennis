@@ -6,7 +6,7 @@
       追加
     </button>
   </div>
-  <div class="tag-table-wrap ui-table-wrap">
+  <ui-standard-table [empty]="tagDefinitions.length === 0" emptyMessage="パターンがありません。">
     <table class="tag-table ui-table">
       <thead>
         <tr>
@@ -52,7 +52,7 @@
         </tr>
       </tbody>
     </table>
-  </div>
+  </ui-standard-table>
 </section>
 
 <div class="tag-edit-overlay" *ngIf="editModalOpen" (click)="closeEditModal()">

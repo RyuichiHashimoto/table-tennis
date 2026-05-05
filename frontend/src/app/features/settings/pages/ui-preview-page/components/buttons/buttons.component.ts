@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ConfirmModalComponent } from '../../../../../../shared/ui/confirm-modal/confirm-modal.component';
-import { IconButtonComponent } from '../../../../../../shared/ui/icon-button/icon-button.component';
-import { ModalComponent } from '../../../../../../shared/ui/modal/modal.component';
+import { ConfirmModalComponent } from '../../../../../../shared/ui/modal/confirm-modal/confirm-modal.component';
+import { IconButtonComponent } from '../../../../../../shared/ui/icon-button/icon-button/icon-button.component';
+import { ModalComponent } from '../../../../../../shared/ui/modal/modal/modal.component';
 
 @Component({
   selector: 'app-preview-buttons',

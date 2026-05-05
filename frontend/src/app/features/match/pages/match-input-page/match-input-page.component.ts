@@ -9,7 +9,7 @@ import { MatchTimelinePanelComponent } from '../../components/match-timeline-pan
 import { MatchInfoPanelComponent } from '../../components/match-info-panel/match-info-panel.component';
 import { MatchRecordControlsComponent } from '../../components/match-record-controls/match-record-controls.component';
 import { RallyEditDrawerComponent, RallyEditPayload } from '../../components/rally-edit-drawer/rally-edit-drawer.component';
-import { DetailIconComponent } from '../../../../shared/ui/detail-icon/detail-icon.component';
+import { DetailIconComponent } from '../../../../shared/ui/icon-button/detail-icon/detail-icon.component';
 
 @Component({
   selector: 'app-match-input-page',

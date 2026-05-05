@@ -1,13 +1,12 @@
 <article class="ui-panel">
   <h3>Table</h3>
-  <app-table-shell [empty]="sampleRows.length === 0" emptyMessage="データがありません。">
+  <ui-standard-table [empty]="sampleRows.length === 0" emptyMessage="データがありません。">
     <table class="ui-table">
       <thead>
         <tr>
           <th>名前</th>
           <th>種別</th>
           <th>状態</th>
-          <th>操作</th>
         </tr>
       </thead>
       <tbody>
@@ -15,67 +14,23 @@
           <td>{{ row.name }}</td>
           <td>{{ row.category }}</td>
           <td><span class="ui-chip">{{ row.state }}</span></td>
-          <td class="row-actions">
-            <button type="button" class="ui-button ui-button-sm">詳細</button>
-            <button type="button" class="ui-button ui-button-sm">edit</button>
-            <ui-icon-button
-              src="/assets/icons/danger-trashbox.svg"
-              alt=""
-              ariaLabel="Delete"
-              [danger]="true"
-            ></ui-icon-button>
-          </td>
         </tr>
       </tbody>
     </table>
-  </app-table-shell>
+  </ui-standard-table>
 </article>
 
 <article class="ui-panel sortable-section">
   <h3>Sortable Table</h3>
-  <p class="drag-hint">⋮⋮ ドラッグで並び替え（PCはマウス、スマホはタッチでドラッグできます）</p>
-  <div class="ui-table-wrap">
-    <table class="ui-table sortable-table">
-      <thead>
-        <tr>
-          <th class="col-handle"></th>
-          <th>点数</th>
-          <th>サーバー</th>
-          <th>得点者</th>
-          <th>タグ</th>
-        </tr>
-      </thead>
-      <tbody
-        cdkDropList
-        (cdkDropListDropped)="onDrop($event)"
-      >
-        <tr
-          *ngFor="let row of sortableRows; trackBy: trackById"
-          cdkDrag
-          cdkDragLockAxis="y"
-        >
-          <td class="drag-handle" cdkDragHandle title="ドラッグして並び替え">⋮⋮</td>
-          <td class="col-score">{{ row.score }}</td>
-          <td>{{ row.server }}</td>
-          <td>
-            <span class="point-winner-chip" [class.me]="row.pointWinner === '自分'" [class.op]="row.pointWinner === '相手'">
-              {{ row.pointWinner }}
-            </span>
-          </td>
-          <td><span class="ui-chip">{{ row.tag }}</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <ui-sortable-table
+    [rows]="sortableRows"
+    (dropped)="onDrop($event)"
+  ></ui-sortable-table>
 
   <div class="sortable-footer">
     <div class="save-status" [class.visible]="saveStatus === 'saved'">✓ 保存しました</div>
     <div class="sortable-actions">
-      <button
-        type="button"
-        class="ui-button"
-        (click)="showResetModal = true"
-      >リセット</button>
+      <button type="button" class="ui-button" (click)="showResetModal = true">リセット</button>
       <button
         type="button"
         class="ui-button ui-button-primary"

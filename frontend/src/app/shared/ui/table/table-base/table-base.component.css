@@ -1,0 +1,56 @@
+/* === 第一段階: テーブル構造 === */
+
+/* 縦罫線・外枠を消す */
+:host ::ng-deep .ui-table th,
+:host ::ng-deep .ui-table td {
+  border: none;
+  border-bottom: 1px solid var(--line);
+}
+
+/* ヘッダー: 上下ボーダーなし・薄い背景 */
+:host ::ng-deep .ui-table thead th {
+  background: var(--bg-surface-soft);
+  border-bottom: 1px solid var(--line);
+}
+
+/* 最終行の下線なし */
+:host ::ng-deep .ui-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ホバー背景 */
+:host ::ng-deep .ui-table tbody tr:hover td {
+  background: var(--bg-surface);
+}
+
+/* === 第二段階: セル内容 === */
+
+/* チップをコンパクトにして色の主張を抑える */
+:host ::ng-deep .ui-chip {
+  min-height: auto;
+  padding: 2px 10px;
+  border-radius: 4px;
+}
+
+/* 結果列テキストを中央揃え */
+:host ::ng-deep .result-chip {
+  display: block;
+  text-align: center;
+}
+
+/* 操作ボタンの枠を弱める */
+:host ::ng-deep .tag-row-actions .ui-button {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+:host ::ng-deep .tag-row-actions .ui-button:hover {
+  border-color: var(--line);
+  background: var(--bg-surface-soft);
+}
+
+:host ::ng-deep .tag-row-actions .tag-delete-button:hover {
+  border-color: var(--op-border);
+  background: var(--op-bg);
+}

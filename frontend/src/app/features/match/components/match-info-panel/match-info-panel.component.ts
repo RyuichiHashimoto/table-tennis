@@ -3,13 +3,13 @@ import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@
 import { FormsModule } from '@angular/forms';
 import { Match } from '../../../table-tennis/models/models';
 import { OptionCardComponent } from '../../../../shared/ui/option-card/option-card.component';
-import { ClipboardListIconComponent } from '../../../../shared/ui/clipboard-list-icon/clipboard-list-icon.component';
-import { UsersIconComponent } from '../../../../shared/ui/users-icon/users-icon.component';
-import { UserFilledIconComponent } from '../../../../shared/ui/user-filled-icon/user-filled-icon.component';
-import { LayoutGridIconComponent } from '../../../../shared/ui/layout-grid-icon/layout-grid-icon.component';
-import { TrophyIconComponent } from '../../../../shared/ui/trophy-icon/trophy-icon.component';
-import { RotateClockwiseIconComponent } from '../../../../shared/ui/rotate-clockwise-icon/rotate-clockwise-icon.component';
-import { SettingsIconComponent } from '../../../../shared/ui/settings-icon/settings-icon.component';
+import { ClipboardListIconComponent } from '../../../../shared/ui/icon-button/clipboard-list-icon/clipboard-list-icon.component';
+import { UsersIconComponent } from '../../../../shared/ui/icon-button/users-icon/users-icon.component';
+import { UserFilledIconComponent } from '../../../../shared/ui/icon-button/user-filled-icon/user-filled-icon.component';
+import { LayoutGridIconComponent } from '../../../../shared/ui/icon-button/layout-grid-icon/layout-grid-icon.component';
+import { TrophyIconComponent } from '../../../../shared/ui/icon-button/trophy-icon/trophy-icon.component';
+import { RotateClockwiseIconComponent } from '../../../../shared/ui/icon-button/rotate-clockwise-icon/rotate-clockwise-icon.component';
+import { SettingsIconComponent } from '../../../../shared/ui/icon-button/settings-icon/settings-icon.component';
 
 export type InputMode = 'post' | 'realtime';
 

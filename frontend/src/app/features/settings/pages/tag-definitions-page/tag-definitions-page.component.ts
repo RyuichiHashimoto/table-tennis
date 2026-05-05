@@ -2,16 +2,17 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AppStateService } from '../../../table-tennis/services/app-state.service';
-import { ConfirmModalComponent } from '../../../../shared/ui/confirm-modal/confirm-modal.component';
-import { AddIconComponent } from '../../../../shared/ui/add-icon/add-icon.component';
-import { EditIconComponent } from '../../../../shared/ui/edit-icon/edit-icon.component';
-import { DeleteIconComponent } from '../../../../shared/ui/delete-icon/delete-icon.component';
+import { ConfirmModalComponent } from '../../../../shared/ui/modal/confirm-modal/confirm-modal.component';
+import { AddIconComponent } from '../../../../shared/ui/icon-button/add-icon/add-icon.component';
+import { EditIconComponent } from '../../../../shared/ui/icon-button/edit-icon/edit-icon.component';
+import { DeleteIconComponent } from '../../../../shared/ui/icon-button/delete-icon/delete-icon.component';
 import { RallyTagDefinition, TagPhase, TagPlayerSide, TagShotType } from '../../../table-tennis/models/models';
+import { StandardTableComponent } from '../../../../shared/ui/table/standard-table/standard-table.component';
 
 @Component({
   selector: 'app-tag-definitions-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConfirmModalComponent, AddIconComponent, EditIconComponent, DeleteIconComponent],
+  imports: [CommonModule, FormsModule, ConfirmModalComponent, AddIconComponent, EditIconComponent, DeleteIconComponent, StandardTableComponent],
   templateUrl: './tag-definitions-page.component.html',
   styleUrl: './tag-definitions-page.component.css',
 })

@@ -4,7 +4,7 @@
       <h2>試合一覧</h2>
       <button type="button" class="icon-button ui-button ui-button-icon" (click)="createMatch()">+</button>
     </div>
-    <app-table-shell [empty]="matches.length === 0" emptyMessage="試合がありません。">
+    <ui-standard-table [empty]="matches.length === 0" emptyMessage="試合がありません。">
       <table class="matches-table ui-table">
         <thead><tr><th>ID</th><th>タイトル</th><th>作成日時</th><th>操作</th></tr></thead>
         <tbody>
@@ -39,7 +39,7 @@
           </tr>
         </tbody>
       </table>
-    </app-table-shell>
+    </ui-standard-table>
   </article>
 </section>
 

@@ -4,8 +4,8 @@ import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-
 import { AppStateService } from '../../table-tennis/services/app-state.service';
 import { Match, Rally, ScoringPatternSlice } from '../../table-tennis/models/models';
 import { ScoringPatternPieChartComponent } from '../components/scoring-pattern-pie-chart/scoring-pattern-pie-chart.component';
-import { ConfirmModalComponent } from '../../../shared/ui/confirm-modal/confirm-modal.component';
-import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.component';
+import { ConfirmModalComponent } from '../../../shared/ui/modal/confirm-modal/confirm-modal.component';
+import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button/icon-button.component';
 
 @Component({
   selector: 'app-analysis-page',

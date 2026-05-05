@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SaveStatusIconComponent, SaveStatus } from '../../../../../../../shared/ui/save-status-icon/save-status-icon.component';
+import { SaveStatusIconComponent, SaveStatus } from '../../../../../../../shared/ui/icon-button/save-status-icon/save-status-icon.component';
 
 @Component({
   selector: 'app-preview-save-status-icon',

@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AppStateService } from '../../../table-tennis/services/app-state.service';
 import { Match, Rally } from '../../../table-tennis/models/models';
 import { SetScoreChipComponent } from '../../../../shared/ui/set-score-chip/set-score-chip.component';
-import { EditIconComponent } from '../../../../shared/ui/edit-icon/edit-icon.component';
+import { EditIconComponent } from '../../../../shared/ui/icon-button/edit-icon/edit-icon.component';
 
 interface SetSummary {
   setNo: number;

@@ -1,17 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { IconButtonComponent } from '../../../../../../shared/ui/icon-button/icon-button.component';
-import { TableShellComponent } from '../../../../../../shared/ui/table-shell/table-shell.component';
-import { ConfirmModalComponent } from '../../../../../../shared/ui/confirm-modal/confirm-modal.component';
-
-interface SortableRow {
-  id: number;
-  score: string;
-  server: '自分' | '相手';
-  pointWinner: '自分' | '相手';
-  tag: string;
-}
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { ConfirmModalComponent } from '../../../../../../shared/ui/modal/confirm-modal/confirm-modal.component';
+import { StandardTableComponent } from '../../../../../../shared/ui/table/standard-table/standard-table.component';
+import { SortableTableComponent, SortableRow } from '../../../../../../shared/ui/table/sortable-table/sortable-table.component';
 
 const INITIAL_ROWS: SortableRow[] = [
   { id: 1, score: '1-0',  server: '自分', pointWinner: '自分', tag: 'フォアドライブ' },
@@ -24,7 +16,7 @@ const INITIAL_ROWS: SortableRow[] = [
 @Component({
   selector: 'app-preview-table',
   standalone: true,
-  imports: [CommonModule, DragDropModule, IconButtonComponent, TableShellComponent, ConfirmModalComponent],
+  imports: [CommonModule, ConfirmModalComponent, StandardTableComponent, SortableTableComponent],
   templateUrl: './table.component.html',
   styleUrl: './table.component.css',
 })
@@ -43,10 +35,6 @@ export class PreviewTableComponent {
 
   get hasPendingChanges(): boolean {
     return this.sortableRows.some((r, i) => r.id !== this.savedRows[i]?.id);
-  }
-
-  trackById(_: number, row: SortableRow): number {
-    return row.id;
   }
 
   onDrop(event: CdkDragDrop<SortableRow[]>): void {
