@@ -36,8 +36,8 @@ export class TagDefinitionsPageComponent implements OnInit {
   ];
 
   readonly shotTypeOptions: { value: TagShotType; label: string }[] = [
-    { value: 'miss', label: 'ミス' },
     { value: 'point', label: '得点' },
+    { value: 'miss', label: 'ミス' },
     { value: 'any', label: 'どちらでも' },
   ];
 
