@@ -1,60 +1,17 @@
-import sqlite3
-from datetime import datetime
+"""ダウンロード済み動画メタデータの SQLite ストア。"""
+
 import json
+from datetime import datetime
 
 import pandas as pd
 
-DB_PATH = "tt_analyzer.db"
+from table_tennis_backend.common.db import get_conn
 
 
-def get_conn():
-    """SQLite データベースへの接続を作成する。
-
-    Returns
-    -------
-    Any
-        処理結果。
-    """
-    return sqlite3.connect(DB_PATH, check_same_thread=False)
-
-
-def init_db():
-    """従来形式のアプリ用データベースを初期化する。
-    """
+def init_video_store() -> None:
+    """動画メタデータ用テーブルを初期化する。"""
     conn = get_conn()
     cur = conn.cursor()
-    cur.execute(
-        """
-    CREATE TABLE IF NOT EXISTS matches (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        created_at TEXT NOT NULL
-    )
-    """
-    )
-    cur.execute(
-        """
-    CREATE TABLE IF NOT EXISTS rallies (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        match_id INTEGER NOT NULL,
-        set_no INTEGER NOT NULL,
-        server TEXT NOT NULL,                 -- 'me' or 'op'
-        serve_type TEXT,                      -- optional
-        receive_type TEXT NOT NULL,           -- short/long/flick/push/stop/other
-        rally_len_bucket TEXT NOT NULL,       -- '1-2','3-4','5-8','9+'
-        point_winner TEXT NOT NULL,           -- 'me' or 'op'
-        end_reason TEXT NOT NULL,             -- 'my_miss','op_miss','winner','ace','receive_miss'
-        end_side TEXT NOT NULL,               -- 'my_fh','my_bh','my_mid','op_fh','op_bh','op_mid','unknown'
-        my_3rd TEXT,                          -- 'attack','keep','none'
-        my_3rd_result TEXT,                   -- 'point','continue','miss','na'
-        t_start REAL,                         -- optional (sec)
-        t_end REAL,                           -- optional (sec)
-        note TEXT,
-        created_at TEXT NOT NULL,
-        FOREIGN KEY(match_id) REFERENCES matches(id)
-    )
-    """
-    )
     cur.execute(
         """
     CREATE TABLE IF NOT EXISTS downloaded_videos (
@@ -77,119 +34,6 @@ def init_db():
         cur.execute("ALTER TABLE downloaded_videos ADD COLUMN match_segments_updated_at TEXT")
     conn.commit()
     conn.close()
-
-
-def fetch_matches() -> pd.DataFrame:
-    """保存済みの試合一覧を取得する。
-
-    Returns
-    -------
-    pd.DataFrame
-        取得したデータを格納した DataFrame。
-    """
-    conn = get_conn()
-    df = pd.read_sql_query("SELECT id, title, created_at FROM matches ORDER BY id DESC", conn)
-    conn.close()
-    return df
-
-
-def create_match(title: str) -> int:
-    """新しい試合を作成し、識別子を返す。
-
-    Parameters
-    ----------
-    title : str
-        試合または動画のタイトル。
-
-    Returns
-    -------
-    int
-        作成されたレコードの ID。
-    """
-    conn = get_conn()
-    cur = conn.cursor()
-    cur.execute(
-        "INSERT INTO matches (title, created_at) VALUES (?, ?)",
-        (title, datetime.now().isoformat(timespec="seconds")),
-    )
-    conn.commit()
-    match_id = cur.lastrowid
-    conn.close()
-    return match_id
-
-
-def insert_rally(match_id: int, data: dict):
-    """指定した試合にラリー記録を追加する。
-
-    Parameters
-    ----------
-    match_id : int
-        対象試合の ID。
-    data : dict
-        登録または更新するデータ。
-
-    Returns
-    -------
-    Any
-        処理結果。
-    """
-    conn = get_conn()
-    cur = conn.cursor()
-    cols = ",".join(data.keys())
-    qs = ",".join(["?"] * len(data))
-    cur.execute(f"INSERT INTO rallies (match_id,{cols}) VALUES (?,{qs})", [match_id, *data.values()])
-    conn.commit()
-    conn.close()
-
-
-def fetch_rallies(match_id: int) -> pd.DataFrame:
-    """指定した試合のラリー一覧を取得する。
-
-    Parameters
-    ----------
-    match_id : int
-        対象試合の ID。
-
-    Returns
-    -------
-    pd.DataFrame
-        取得したデータを格納した DataFrame。
-    """
-    conn = get_conn()
-    df = pd.read_sql_query(
-        "SELECT * FROM rallies WHERE match_id = ? ORDER BY id ASC",
-        conn,
-        params=(match_id,),
-    )
-    conn.close()
-    return df
-
-
-def delete_last_rally(match_id: int) -> bool:
-    """指定した試合の直近ラリーを削除する。
-
-    Parameters
-    ----------
-    match_id : int
-        対象試合の ID。
-
-    Returns
-    -------
-    bool
-        処理に成功した場合は True。
-    """
-    conn = get_conn()
-    cur = conn.cursor()
-    cur.execute("SELECT id FROM rallies WHERE match_id=? ORDER BY id DESC LIMIT 1", (match_id,))
-    row = cur.fetchone()
-    if not row:
-        conn.close()
-        return False
-    last_id = row[0]
-    cur.execute("DELETE FROM rallies WHERE id=?", (last_id,))
-    conn.commit()
-    conn.close()
-    return True
 
 
 def upsert_downloaded_video(
