@@ -16,6 +16,7 @@ export class ConfirmModalComponent {
   @Input() confirmLabel = 'OK';
   @Input() cancelLabel = 'キャンセル';
   @Input() tone: 'default' | 'danger' = 'default';
+  @Input() errorMessage = '';
 
   @Output() confirmed = new EventEmitter<void>();
   @Output() cancelled = new EventEmitter<void>();

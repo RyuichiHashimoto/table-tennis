@@ -1,5 +1,6 @@
 <app-modal [open]="open" [title]="title" (backdropClicked)="cancelled.emit()">
   <p modal-content>{{ message }}</p>
+  <p modal-content class="modal-error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
 
   <ng-container modal-actions>
     <button type="button" class="modal-button ui-button" (click)="cancelled.emit()">{{ cancelLabel }}</button>
