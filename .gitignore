@@ -8,3 +8,4 @@ frontend/.angular/
 uv.lock
 .env
 tt_analyzer.db
+.vscode/
