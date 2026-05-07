@@ -2,16 +2,23 @@
 
 import os
 
+from logging import getLogger
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+
+from table_tennis_backend.common.logging_config import setup_logging
 from table_tennis_backend.match.router import router as match_router
-from table_tennis_backend.match.store import init_match_store
+from table_tennis_backend.match.models import init_match_store
 from table_tennis_backend.video.router import router as video_router
 from table_tennis_backend.video.store import init_video_store
 
+setup_logging()
+getLogger(__name__).info("Starting TT Analyzer API...")
 
 app = FastAPI(title="TT Analyzer API", version="0.1.0")
+
+
 
 origins_env = os.getenv("CORS_ALLOW_ORIGINS", "*")
 origins = [x.strip() for x in origins_env.split(",") if x.strip()]

@@ -14,7 +14,7 @@ from table_tennis_backend.video.store import (
     update_downloaded_video_segments,
     upsert_downloaded_video,
 )
-from table_tennis_backend.match.store import fetch_rallies
+from table_tennis_backend.match.models import fetch_rallies
 from table_tennis_backend.video.schemas import (
     BoundaryDetectRequest,
     ExportRalliesRequest,

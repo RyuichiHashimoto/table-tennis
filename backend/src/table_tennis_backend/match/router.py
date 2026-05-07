@@ -6,8 +6,8 @@ from typing import Any
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Query
 
-from table_tennis_backend.match.analytics import scoring_patterns, summarize
-from table_tennis_backend.match.store import (
+from table_tennis_backend.match.models import (
+    build_rally_input,
     bulk_update_sort_orders,
     create_match,
     create_tag_definition,
@@ -26,7 +26,8 @@ from table_tennis_backend.match.store import (
     update_rally_fields,
     update_tag_definition,
 )
-from table_tennis_backend.match.models import build_rally_input
+
+from table_tennis_backend.match.analytics import scoring_patterns, summarize
 from table_tennis_backend.match.schemas import (
     BulkSortOrderRequest,
     MatchCreateRequest,
@@ -68,7 +69,7 @@ def list_matches() -> list[dict[str, Any]]:
     list[dict[str, Any]]
         API 応答用の辞書リスト。
     """
-    return _safe_records(fetch_matches())
+    return fetch_matches()
 
 
 @router.get("/tag-definitions")
@@ -80,7 +81,7 @@ def list_tag_definitions() -> list[dict[str, Any]]:
     list[dict[str, Any]]
         API 応答用の辞書リスト。
     """
-    return _safe_records(fetch_tag_definitions())
+    return fetch_tag_definitions()
 
 
 @router.post("/tag-definitions")

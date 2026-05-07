@@ -94,4 +94,3 @@ class TagDefinitionUpdateRequest(BaseModel):
     player_side: str | None = None
     phase: str | None = None
     shot_type: str | None = None
-
