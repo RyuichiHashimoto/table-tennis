@@ -8,7 +8,7 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
-      - ./data:/app/data
+      # - ./data:/app/data
     env_file:
       - .env
     environment:
@@ -31,6 +31,29 @@ services:
     depends_on:
       - table-tennis-backend
     container_name: table-tennis-frontend
+
+  table-tennis-db:
+    image: postgres:17
+    container_name: table-tennis-db
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-table_tennis}
+      POSTGRES_USER: ${POSTGRES_USER:-table_tennis_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-table_tennis_password}
+      TZ: ${TZ:-Asia/Tokyo}
+    volumes:
+      - ./postgres/storage:/var/lib/postgresql/data
+      - ./postgres/seed:/seed
+      - ./postgres/scripts:/scripts
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
 volumes:
   frontend_node_modules:
