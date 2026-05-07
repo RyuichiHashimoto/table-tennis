@@ -1,13 +1,13 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-set-score-chip',
+  selector: 'app-set-score-tab',
   standalone: true,
   imports: [],
-  templateUrl: './set-score-chip.component.html',
-  styleUrl: './set-score-chip.component.css',
+  templateUrl: './set-score-tab.component.html',
+  styleUrl: './set-score-tab.component.css',
 })
-export class SetScoreChipComponent {
+export class SetScoreTabComponent {
   @Input() setNo = 1;
   @Input() myPoints = 0;
   @Input() opPoints = 0;

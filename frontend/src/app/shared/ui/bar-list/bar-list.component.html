@@ -1,0 +1,13 @@
+<div class="bar-list" *ngIf="rows.length; else emptyState">
+  <div class="bar-row" *ngFor="let row of rows" [class.muted]="row.muted">
+    <span class="bar-label">{{ row.label }}</span>
+    <div class="bar-track">
+      <i [style.width.%]="toPercent(row.ratio)"></i>
+    </div>
+    <strong class="bar-value">{{ row.valueLabel }}</strong>
+  </div>
+</div>
+
+<ng-template #emptyState>
+  <p class="bar-empty">{{ emptyMessage }}</p>
+</ng-template>

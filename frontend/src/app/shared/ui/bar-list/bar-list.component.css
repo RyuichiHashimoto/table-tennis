@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+.bar-list {
+  display: grid;
+  gap: 14px;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: minmax(72px, 90px) minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 10px;
+}
+
+.bar-label {
+  min-width: 0;
+  color: var(--text-main);
+  line-height: 1.45;
+}
+
+.bar-track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #edf2ef;
+}
+
+.bar-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary-deep);
+}
+
+.bar-row.muted .bar-track i {
+  background: #c4cbc7;
+}
+
+.bar-value {
+  color: var(--text-strong);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.bar-empty {
+  margin: 0;
+  color: var(--text-sub);
+}

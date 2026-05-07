@@ -525,7 +525,7 @@ export class AppStateService {
     const response = await fetch(`${this.apiBase}${path}`, {
       ...init,
       headers: {
-        'Content-Type': 'application/json',
+        ...(init?.body !== undefined ? { 'Content-Type': 'application/json' } : {}),
         ...(init?.headers ?? {}),
       },
     });

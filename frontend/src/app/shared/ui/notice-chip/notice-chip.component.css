@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+
+.notice-chip {
+  padding: 12px 16px;
+  border: 1px solid #d9ebe2;
+  border-radius: 6px;
+  background: #f0faf5;
+  color: var(--primary-deep);
+  font-weight: 700;
+}
+
+.notice-chip.danger {
+  border-color: var(--op-border);
+  background: var(--op-bg);
+  color: var(--danger);
+}

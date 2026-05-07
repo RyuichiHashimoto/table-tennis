@@ -26,7 +26,7 @@ export class SettingsPageComponent {
       path: '/settings/tags',
       label: 'タグ設定',
       title: 'タグ設定',
-      description: 'ラリーに付与するタグの管理や、候補の整理を行うための領域です。',
+      description: 'ラリーに付与するタグの追加、削除、編集を行います。',
       items: ['タグ一覧', '表示順', '既定タグ候補'],
     },
     {
@@ -42,7 +42,7 @@ export class SettingsPageComponent {
       path: '/settings/ui-preview',
       label: 'UIプレビュー',
       title: 'UIプレビュー',
-      description: '共通UI部品やテーマの見た目を確認するための領域です。',
+      description: '共通UI部品やテーマの見た目を確認します。',
       items: ['ボタン', '入力欄', 'テーブル'],
     },
   ];

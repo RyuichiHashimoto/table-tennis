@@ -144,6 +144,16 @@
   color: var(--text-sub);
 }
 
+.tag-error-message {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--danger);
+  background: var(--op-bg);
+  color: var(--danger);
+  font-size: var(--font-size-label);
+  line-height: 1.5;
+}
+
 .tag-edit-actions {
   display: flex;
   justify-content: flex-end;

@@ -1,0 +1,54 @@
+:host {
+  display: inline-block;
+}
+
+.set-score-tab {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  width: 92px;
+  min-width: 92px;
+  padding: 0 8px 7px;
+  border-bottom: 2px solid transparent;
+  color: var(--text-sub);
+  text-align: center;
+}
+
+.tab-label {
+  font-size: var(--font-size-label);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.tab-score {
+  color: var(--text-muted);
+  font-size: var(--font-size-caption);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.set-score-tab.win .tab-label,
+.set-score-tab.win .tab-score {
+  color: var(--primary-deep);
+}
+
+.set-score-tab.loss .tab-label,
+.set-score-tab.loss .tab-score {
+  color: var(--danger);
+}
+
+.set-score-tab.active {
+  border-bottom-color: var(--primary-deep);
+}
+
+.set-score-tab.active.loss {
+  border-bottom-color: var(--danger);
+}
+
+@media (max-width: 720px) {
+  .set-score-tab {
+    width: 84px;
+    min-width: 84px;
+    padding-inline: 6px;
+  }
+}

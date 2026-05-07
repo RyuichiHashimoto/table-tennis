@@ -6,7 +6,7 @@ import { AppStateService } from '../../../table-tennis/services/app-state.servic
 import { ConfirmModalComponent } from '../../../../shared/ui/modal/confirm-modal/confirm-modal.component';
 import { IconButtonComponent } from '../../../../shared/ui/icon-button/icon-button/icon-button.component';
 import { SaveStatusIconComponent, SaveStatus } from '../../../../shared/ui/icon-button/save-status-icon/save-status-icon.component';
-import { SetScoreChipComponent } from '../../../../shared/ui/set-score-chip/set-score-chip.component';
+import { SetScoreTabComponent } from '../../../../shared/ui/set-score-tab/set-score-tab.component';
 import { StandardTableComponent } from '../../../../shared/ui/table/standard-table/standard-table.component';
 
 interface TimelineRow {
@@ -29,7 +29,7 @@ interface TimelineSetGroup {
 @Component({
   selector: 'app-match-timeline-panel',
   standalone: true,
-  imports: [CommonModule, DragDropModule, ConfirmModalComponent, IconButtonComponent, SaveStatusIconComponent, SetScoreChipComponent, StandardTableComponent],
+  imports: [CommonModule, DragDropModule, ConfirmModalComponent, IconButtonComponent, SaveStatusIconComponent, SetScoreTabComponent, StandardTableComponent],
   templateUrl: './match-timeline-panel.component.html',
   styleUrl: './match-timeline-panel.component.css',
 })

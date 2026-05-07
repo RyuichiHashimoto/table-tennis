@@ -1,0 +1,33 @@
+<article class="ui-card split-chart">
+  <h3 class="chart-title">{{ title }}</h3>
+  <div class="chart-body">
+
+    <!-- 列ヘッダー -->
+    <span></span>
+    <span class="col-header">{{ leftLabel }}</span>
+    <span></span>
+    <span class="col-header">{{ rightLabel }}</span>
+
+    <!-- データ行 -->
+    <ng-container *ngFor="let row of rows">
+      <span class="row-label">{{ row.label }}</span>
+      <strong class="pct-value pct-left">{{ row.leftPercent }}%</strong>
+      <div class="bar-track">
+        <i class="bar-fill" [style.width.%]="row.leftPercent"></i>
+        <span class="center-mark"></span>
+      </div>
+      <strong class="pct-value pct-right">{{ rightPercent(row) }}%</strong>
+    </ng-container>
+
+    <!-- X軸 -->
+    <span></span>
+    <span></span>
+    <div class="x-axis">
+      <span>0%</span>
+      <span>50%</span>
+      <span>100%</span>
+    </div>
+    <span></span>
+
+  </div>
+</article>

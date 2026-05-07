@@ -30,12 +30,12 @@
       class="set-tab-btn"
       (click)="selectSet(group.setNo)"
     >
-      <app-set-score-chip
+      <app-set-score-tab
         [setNo]="group.setNo"
         [myPoints]="group.myPoints"
         [opPoints]="group.opPoints"
         [active]="group.setNo === activeSetNo"
-      ></app-set-score-chip>
+      ></app-set-score-tab>
     </button>
   </div>
   <ui-standard-table class="event-list-wrap">

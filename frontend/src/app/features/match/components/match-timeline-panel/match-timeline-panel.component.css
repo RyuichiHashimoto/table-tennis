@@ -85,8 +85,9 @@
 .set-tabs {
   display: flex;
   flex-wrap: nowrap;
-  gap: 6px;
+  gap: 10px;
   overflow-x: auto;
+  border-bottom: 1px solid var(--line);
   scrollbar-width: none;
 }
 
@@ -381,4 +382,3 @@
 .cdk-drop-list-dragging .rally-row:not(.cdk-drag-placeholder) {
   transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
 }
-

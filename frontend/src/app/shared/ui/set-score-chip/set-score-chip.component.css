@@ -3,37 +3,102 @@
 }
 
 .set-score-chip {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto 1fr;
   align-items: center;
-  gap: 2px;
-  padding: 4px 12px;
+  justify-items: center;
+  width: 132px;
+  min-width: 132px;
+  overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 10px;
   background: var(--bg-card);
-  min-width: 64px;
+  box-shadow: 0 8px 18px rgba(19, 35, 28, 0.1);
   text-align: center;
 }
 
 .chip-label {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--border-strong);
+  color: #fff;
   font-size: var(--font-size-label);
-  font-weight: 600;
-  color: var(--text-main);
+  font-weight: 800;
   white-space: nowrap;
 }
 
 .chip-score {
-  font-size: var(--font-size-caption);
-  color: var(--text-sub);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  justify-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 18px 14px 20px;
+  color: var(--text-strong);
+  font-size: 42px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
   white-space: nowrap;
 }
 
-.set-score-chip.active {
-  border-color: var(--primary);
-  border-bottom-width: 2px;
+.my-score {
+  justify-self: center;
 }
 
-.set-score-chip.active .chip-label,
-.set-score-chip.active .chip-score {
+.op-score {
+  justify-self: center;
+}
+
+.score-separator {
+  color: var(--text-strong);
+  font-weight: 800;
+}
+
+.set-score-chip.win {
+  border-color: #bce9cf;
+}
+
+.set-score-chip.win .my-score {
   color: var(--primary-deep);
+}
+
+.set-score-chip.win .chip-label {
+  background: var(--primary-deep);
+}
+
+.set-score-chip.loss {
+  border-color: var(--op-border);
+}
+
+.set-score-chip.loss .op-score {
+  color: var(--danger);
+}
+
+.set-score-chip.loss .chip-label {
+  background: var(--danger);
+}
+
+.set-score-chip.active {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .set-score-chip {
+    width: 116px;
+    min-width: 116px;
+  }
+
+  .chip-label {
+    padding: 7px 8px;
+  }
+
+  .chip-score {
+    gap: 6px;
+    padding: 16px 10px 18px;
+    font-size: 36px;
+  }
 }

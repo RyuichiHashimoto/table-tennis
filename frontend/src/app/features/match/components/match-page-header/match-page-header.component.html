@@ -1,0 +1,23 @@
+<header class="match-page-header" *ngIf="match">
+  <h2 class="match-title">{{ match.title }}</h2>
+  <nav class="view-tabs">
+    <a
+      class="view-tab"
+      [class.active]="activeView === 'edit'"
+      [routerLink]="['/match', match.uuid, 'edit']"
+      aria-label="編集"
+    >
+      <ui-edit-icon [size]="14"></ui-edit-icon>
+      <span>編集</span>
+    </a>
+    <a
+      class="view-tab"
+      [class.active]="activeView === 'summary'"
+      [routerLink]="['/match', match.uuid, 'summary']"
+      aria-label="サマリー"
+    >
+      <ui-detail-icon [size]="14"></ui-detail-icon>
+      <span>サマリー</span>
+    </a>
+  </nav>
+</header>

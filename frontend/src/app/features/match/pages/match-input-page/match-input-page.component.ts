@@ -9,7 +9,7 @@ import { MatchTimelinePanelComponent } from '../../components/match-timeline-pan
 import { MatchInfoPanelComponent } from '../../components/match-info-panel/match-info-panel.component';
 import { MatchRecordControlsComponent } from '../../components/match-record-controls/match-record-controls.component';
 import { RallyEditDrawerComponent, RallyEditPayload } from '../../components/rally-edit-drawer/rally-edit-drawer.component';
-import { DetailIconComponent } from '../../../../shared/ui/icon-button/detail-icon/detail-icon.component';
+import { MatchPageHeaderComponent } from '../../components/match-page-header/match-page-header.component';
 
 @Component({
   selector: 'app-match-input-page',
@@ -22,7 +22,7 @@ import { DetailIconComponent } from '../../../../shared/ui/icon-button/detail-ic
     MatchRecordControlsComponent,
     MatchTimelinePanelComponent,
     RallyEditDrawerComponent,
-    DetailIconComponent,
+    MatchPageHeaderComponent,
   ],
   templateUrl: './match-input-page.component.html',
   styleUrl: './match-input-page.component.css',
@@ -53,8 +53,6 @@ export class MatchInputPageComponent implements OnInit {
   insertAfterRallyId?: number;
   message = '';
   tagDefinitions: RallyTagDefinition[] = [];
-  isEditingTitle = false;
-  editingTitle = '';
 
   form = this.defaultForm();
 
@@ -102,34 +100,6 @@ export class MatchInputPageComponent implements OnInit {
     return this.match?.initialServer ?? 'me';
   }
 
-  get currentSetScore(): { me: number; op: number } {
-    return this.rallies
-      .filter((rally) => rally.setNo === this.selectedSetNo)
-      .reduce(
-        (score, rally) => {
-          if (rally.pointWinner === 'me') {
-            score.me += 1;
-          } else {
-            score.op += 1;
-          }
-          return score;
-        },
-        { me: 0, op: 0 },
-      );
-  }
-
-  get mySetCount(): number {
-    return this.computeSetCounts().me;
-  }
-
-  get opSetCount(): number {
-    return this.computeSetCounts().op;
-  }
-
-  get nextServer(): 'me' | 'op' {
-    return this.resolveInputServer();
-  }
-
   get nextActionMessage(): string {
     if (this.matchStartTime === undefined) {
       return '試合を開始してください';
@@ -149,21 +119,6 @@ export class MatchInputPageComponent implements OnInit {
     const minutes = Math.floor(totalSeconds / 60);
     const rest = totalSeconds % 60;
     return `${minutes}:${rest.toString().padStart(2, '0')}`;
-  }
-
-  private computeSetCounts(): { me: number; op: number } {
-    let me = 0;
-    let op = 0;
-    for (let setNo = 1; setNo <= 5; setNo++) {
-      const setRallies = this.rallies.filter((r) => r.setNo === setNo);
-      const myPts = setRallies.filter((r) => r.pointWinner === 'me').length;
-      const opPts = setRallies.filter((r) => r.pointWinner === 'op').length;
-      if ((myPts >= 11 || opPts >= 11) && Math.abs(myPts - opPts) >= 2) {
-        if (myPts > opPts) me++;
-        else op++;
-      }
-    }
-    return { me, op };
   }
 
   private matchesTagPointWinner(tag: RallyTagDefinition, pointWinner: 'me' | 'op'): boolean {
@@ -485,24 +440,16 @@ export class MatchInputPageComponent implements OnInit {
     this.message = `入力先をセット ${setNo} に切り替えました。`;
   }
 
-  startEditTitle(): void {
-    this.editingTitle = this.match?.title ?? '';
-    this.isEditingTitle = true;
-  }
-
-  cancelEditTitle(): void {
-    this.isEditingTitle = false;
-    this.editingTitle = '';
-  }
-
-  async saveTitle(): Promise<void> {
-    if (!this.match || !this.editingTitle.trim()) return;
-    const updated = await this.state.updateMatchTitle(this.match.uuid, this.editingTitle.trim());
+  async updateMatchTitle(title: string): Promise<void> {
+    const nextTitle = title.trim();
+    if (!this.match || !nextTitle) return;
+    const updated = await this.state.updateMatchTitle(this.match.uuid, nextTitle);
     if (updated) {
       this.match = updated;
+      this.message = '試合名を更新しました。';
+    } else {
+      this.message = '試合名を更新できませんでした。';
     }
-    this.isEditingTitle = false;
-    this.editingTitle = '';
   }
 
   async applyTagToSelectedRally(resultTag: RallyResultTag): Promise<void> {

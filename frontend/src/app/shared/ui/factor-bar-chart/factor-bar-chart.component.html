@@ -1,0 +1,26 @@
+<article class="ui-card factor-chart">
+  <header class="factor-chart-header">
+    <h3 class="factor-chart-title">{{ title }}</h3>
+    <span class="factor-chart-total">{{ totalLabel }}: {{ total }}</span>
+  </header>
+
+  <div class="factor-chart-body" *ngIf="computedRows.length; else emptyState">
+    <ng-container *ngFor="let row of computedRows">
+      <span class="bar-label">{{ row.label }}</span>
+      <div class="bar-track">
+        <i [style.width.%]="row.barPercent"></i>
+      </div>
+      <strong class="bar-value">{{ row.count }} ({{ row.totalPercent }}%)</strong>
+    </ng-container>
+
+    <span class="axis-spacer"></span>
+    <div class="x-axis-ticks">
+      <span *ngFor="let tick of xAxisTicks">{{ tick }}</span>
+    </div>
+    <span class="axis-spacer"></span>
+  </div>
+
+  <ng-template #emptyState>
+    <p class="factor-chart-empty">データがありません</p>
+  </ng-template>
+</article>

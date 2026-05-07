@@ -1,0 +1,8 @@
+:host {
+  display: block;
+  grid-column: 1 / -1;
+}
+
+.chart-preview {
+  min-width: 0;
+}

@@ -1,4 +1,13 @@
-<span class="set-score-chip" [class.active]="active">
+<span
+  class="set-score-chip"
+  [class.active]="active"
+  [class.win]="resultClass === 'win'"
+  [class.loss]="resultClass === 'loss'"
+>
   <span class="chip-label">セット {{ setNo }}</span>
-  <span class="chip-score">{{ myPoints }} - {{ opPoints }}</span>
+  <span class="chip-score">
+    <span class="my-score">{{ myPoints }}</span>
+    <span class="score-separator">-</span>
+    <span class="op-score">{{ opPoints }}</span>
+  </span>
 </span>

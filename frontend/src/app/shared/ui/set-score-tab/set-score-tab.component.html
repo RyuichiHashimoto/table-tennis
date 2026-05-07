@@ -1,0 +1,9 @@
+<span
+  class="set-score-tab"
+  [class.active]="active"
+  [class.win]="resultClass === 'win'"
+  [class.loss]="resultClass === 'loss'"
+>
+  <span class="tab-label">セット {{ setNo }}</span>
+  <span class="tab-score">{{ myPoints }} - {{ opPoints }}</span>
+</span>

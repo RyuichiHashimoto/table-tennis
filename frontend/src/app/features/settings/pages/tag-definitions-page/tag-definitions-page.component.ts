@@ -22,6 +22,8 @@ export class TagDefinitionsPageComponent implements OnInit {
   isCreatingTag = false;
   pendingDeleteTag?: RallyTagDefinition;
   editForm = this.createEditForm();
+  editErrorMessage = '';
+  deleteErrorMessage = '';
 
   readonly playerSideOptions: { value: TagPlayerSide; label: string }[] = [
     { value: 'me', label: '自分' },
@@ -54,6 +56,7 @@ export class TagDefinitionsPageComponent implements OnInit {
   openEditModal(tag: RallyTagDefinition): void {
     this.isCreatingTag = false;
     this.editingTag = tag;
+    this.editErrorMessage = '';
     this.editForm = {
       tag: tag.tag,
       playerSide: tag.playerSide,
@@ -66,6 +69,8 @@ export class TagDefinitionsPageComponent implements OnInit {
     this.pendingDeleteTag = undefined;
     this.editingTag = undefined;
     this.isCreatingTag = true;
+    this.editErrorMessage = '';
+    this.deleteErrorMessage = '';
     this.editForm = this.createEditForm();
   }
 
@@ -73,12 +78,16 @@ export class TagDefinitionsPageComponent implements OnInit {
     this.editingTag = undefined;
     this.isCreatingTag = false;
     this.editForm = this.createEditForm();
+    this.editErrorMessage = '';
   }
 
   async saveEdit(): Promise<void> {
     if (!this.editingTag && !this.isCreatingTag) return;
     const tagName = this.editForm.tag.trim();
-    if (!tagName) return;
+    if (!tagName) {
+      this.editErrorMessage = 'パターン名を入力してください。';
+      return;
+    }
 
     const payload = {
       tag: tagName,
@@ -86,30 +95,42 @@ export class TagDefinitionsPageComponent implements OnInit {
       phase: this.editForm.phase,
       shotType: this.editForm.shotType,
     };
-    if (this.isCreatingTag) {
-      await this.state.createTagDefinition(payload);
-    } else if (this.editingTag) {
-      await this.state.updateTagDefinition(this.editingTag.id, payload);
+    try {
+      this.editErrorMessage = '';
+      if (this.isCreatingTag) {
+        await this.state.createTagDefinition(payload);
+      } else if (this.editingTag) {
+        await this.state.updateTagDefinition(this.editingTag.id, payload);
+      }
+      this.tagDefinitions = this.state.getTagDefinitions();
+      this.closeEditModal();
+    } catch (error) {
+      this.editErrorMessage = this.apiErrorMessage(error);
     }
-    this.tagDefinitions = this.state.getTagDefinitions();
-    this.closeEditModal();
   }
 
   deleteTag(tag: RallyTagDefinition): void {
     this.pendingDeleteTag = tag;
+    this.deleteErrorMessage = '';
   }
 
   cancelDeleteTag(): void {
     this.pendingDeleteTag = undefined;
+    this.deleteErrorMessage = '';
   }
 
   async confirmDeleteTag(): Promise<void> {
     const tag = this.pendingDeleteTag;
     if (!tag) return;
-    if (this.editingTag === tag) this.closeEditModal();
-    await this.state.deleteTagDefinition(tag.id);
-    this.tagDefinitions = this.state.getTagDefinitions();
-    this.pendingDeleteTag = undefined;
+    try {
+      this.deleteErrorMessage = '';
+      if (this.editingTag === tag) this.closeEditModal();
+      await this.state.deleteTagDefinition(tag.id);
+      this.tagDefinitions = this.state.getTagDefinitions();
+      this.pendingDeleteTag = undefined;
+    } catch (error) {
+      this.deleteErrorMessage = this.apiErrorMessage(error);
+    }
   }
 
   playerSideLabel(side: TagPlayerSide): string {
@@ -135,5 +156,12 @@ export class TagDefinitionsPageComponent implements OnInit {
 
   private createEditForm(): { tag: string; playerSide: TagPlayerSide; phase: TagPhase; shotType: TagShotType } {
     return { tag: '', playerSide: 'me', phase: 'rally', shotType: 'miss' };
+  }
+
+  private apiErrorMessage(error: unknown): string {
+    if (error instanceof Error && error.message) {
+      return error.message;
+    }
+    return '処理に失敗しました。入力内容を確認してください。';
   }
 }

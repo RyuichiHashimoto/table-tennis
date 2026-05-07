@@ -1,32 +1,5 @@
 <section class="match-input-layout">
-  <header class="page-header" *ngIf="match">
-    <div class="title-row">
-      @if (isEditingTitle) {
-        <input
-          class="ui-input title-input"
-          [(ngModel)]="editingTitle"
-          (keydown.enter)="saveTitle()"
-          (keydown.escape)="cancelEditTitle()"
-          autofocus
-        />
-        <button type="button" class="title-action-btn btn-primary" (click)="saveTitle()">保存</button>
-        <button type="button" class="title-action-btn title-cancel-btn" (click)="cancelEditTitle()">キャンセル</button>
-      } @else {
-        <h1 class="page-title">{{ match.title }}</h1>
-        <button type="button" class="title-edit-btn" aria-label="試合名を編集" title="試合名を編集" (click)="startEditTitle()">
-          <img src="/assets/icons/edit.svg" alt="" width="16" height="16" />
-        </button>
-        <a
-          class="title-detail-btn"
-          aria-label="詳細を表示"
-          title="詳細を表示"
-          [routerLink]="['/match', match.uuid, 'summary']"
-        >
-          <ui-detail-icon [size]="16"></ui-detail-icon>
-        </a>
-      }
-    </div>
-  </header>
+  <app-match-page-header [match]="match" activeView="edit"></app-match-page-header>
 
   <section class="main-columns">
     <app-match-info-panel
@@ -35,15 +8,11 @@
       [videoTitle]="videoTitle"
       [youtubeUrl]="youtubeUrl"
       [isLoadingVideo]="isLoadingVideo"
-      [currentSetNo]="selectedSetNo"
-      [mySetCount]="mySetCount"
-      [opSetCount]="opSetCount"
-      [currentScore]="currentSetScore"
-      [nextServer]="nextServer"
       (youtubeUrlChange)="youtubeUrl = $event"
       (loadYoutube)="loadYoutubeVideo()"
       (selectVideoFile)="onVideoFileSelected($event)"
       (currentTimeChange)="onVideoCurrentTimeChange($event)"
+      (matchTitleChange)="updateMatchTitle($event)"
       (playerNamesChange)="updatePlayerNames($event)"
     ></app-match-info-panel>
 

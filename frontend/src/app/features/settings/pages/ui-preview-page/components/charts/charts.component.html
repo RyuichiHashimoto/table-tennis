@@ -1,0 +1,21 @@
+<article class="ui-card chart-preview">
+  <app-score-line-chart
+    title="点差推移"
+    [points]="scorePoints"
+    [segments]="scoreSegments"
+    [yMin]="-12"
+    [yMax]="12"
+  ></app-score-line-chart>
+</article>
+
+<app-factor-bar-chart
+  title="得点要因"
+  [rows]="factorRows"
+></app-factor-bar-chart>
+
+<app-split-bar-chart
+  title="サーブ・レシーブ分析"
+  leftLabel="自分"
+  rightLabel="相手"
+  [rows]="serveReceiveRows"
+></app-split-bar-chart>

@@ -1,0 +1,77 @@
+<article class="score-line-chart">
+  <h3>{{ title }}</h3>
+  <svg [attr.viewBox]="'0 0 ' + width + ' ' + height" role="img" [attr.aria-label]="title">
+    <rect class="positive-zone" [attr.x]="plot.left" [attr.y]="plot.top" [attr.width]="plotWidth" [attr.height]="zeroY - plot.top"></rect>
+    <rect class="negative-zone" [attr.x]="plot.left" [attr.y]="zeroY" [attr.width]="plotWidth" [attr.height]="plot.top + plotHeight - zeroY"></rect>
+
+    <g class="set-bands">
+      <g *ngFor="let segment of segments">
+        <line
+          *ngIf="segment.startX !== xMin"
+          class="set-divider"
+          [attr.x1]="segmentStartX(segment)"
+          [attr.x2]="segmentStartX(segment)"
+          [attr.y1]="plot.top"
+          [attr.y2]="plot.top + plotHeight"
+        ></line>
+        <text [attr.x]="segmentX(segment)" [attr.y]="plot.top - 12">{{ segment.label }}</text>
+      </g>
+    </g>
+
+    <g class="grid">
+      <g *ngFor="let tick of yTicks">
+        <line [attr.x1]="plot.left" [attr.x2]="plot.left + plotWidth" [attr.y1]="yToSvg(tick)" [attr.y2]="yToSvg(tick)"></line>
+        <text [attr.x]="plot.left - 12" [attr.y]="yToSvg(tick) + 4">{{ tick }}</text>
+      </g>
+      <g *ngFor="let tick of xTicks">
+        <line [attr.x1]="xToSvg(tick)" [attr.x2]="xToSvg(tick)" [attr.y1]="plot.top" [attr.y2]="plot.top + plotHeight"></line>
+        <text [attr.x]="xToSvg(tick)" [attr.y]="plot.top + plotHeight + 22">{{ tick }}</text>
+      </g>
+    </g>
+
+    <line class="zero-line" [attr.x1]="plot.left" [attr.x2]="plot.left + plotWidth" [attr.y1]="zeroY" [attr.y2]="zeroY"></line>
+    <path class="score-line" [attr.d]="linePath"></path>
+    <path
+      class="score-line-hit"
+      [attr.d]="linePath"
+      (mousemove)="showNearestPoint($event)"
+      (mouseleave)="hideTooltip()"
+    ></path>
+
+    <g class="hover-points">
+      <circle
+        *ngFor="let point of points"
+        class="hover-point"
+        [attr.cx]="xToSvg(point.x)"
+        [attr.cy]="yToSvg(point.y)"
+        r="10"
+        tabindex="0"
+        (mouseenter)="showPoint(point)"
+        (mouseleave)="hidePoint(point)"
+        (focus)="showPoint(point)"
+        (blur)="hidePoint(point)"
+      ></circle>
+    </g>
+
+    <circle
+      *ngIf="points.length"
+      class="last-point"
+      [attr.cx]="xToSvg(points[points.length - 1].x)"
+      [attr.cy]="yToSvg(points[points.length - 1].y)"
+      r="6"
+    ></circle>
+
+    <text class="y-axis-label" [attr.x]="plot.left" [attr.y]="plot.top - 12">{{ yAxisLabel }}</text>
+    <text class="x-axis-label" [attr.x]="plot.left + plotWidth / 2" [attr.y]="height - 6">{{ xAxisLabel }}</text>
+
+    <g *ngIf="hoveredPoint" class="score-tooltip" [attr.transform]="'translate(' + tooltipX + ' ' + tooltipY + ')'">
+      <rect [attr.width]="tooltip.width" [attr.height]="tooltip.height" rx="6"></rect>
+      <text class="score-tooltip-title" x="10" y="17">セット {{ hoveredPoint.setNo ?? '-' }} / {{ hoveredPointLabel }}</text>
+      <text class="score-tooltip-label" x="10" y="38">自分</text>
+      <text class="score-tooltip-value" x="52" y="38">{{ hoveredPoint.myPoints ?? 0 }}</text>
+      <text class="score-tooltip-label" x="78" y="38">相手</text>
+      <text class="score-tooltip-value" x="116" y="38">{{ hoveredPoint.opPoints ?? 0 }}</text>
+      <text class="score-tooltip-score" x="63" y="53">{{ hoveredScoreLabel }}</text>
+    </g>
+  </svg>
+</article>

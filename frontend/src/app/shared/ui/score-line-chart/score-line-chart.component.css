@@ -1,0 +1,135 @@
+:host {
+  display: block;
+}
+
+.score-line-chart {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.score-line-chart h3 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: var(--font-size-body);
+  font-weight: 800;
+}
+
+svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.positive-zone {
+  fill: #eff9f4;
+}
+
+.negative-zone {
+  fill: #fff1f1;
+}
+
+.set-bands text {
+  fill: var(--text-main);
+  font-size: 10px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.set-divider {
+  stroke: var(--line);
+  stroke-dasharray: 3 3;
+}
+
+.grid line {
+  stroke: var(--line);
+  stroke-dasharray: 2 3;
+}
+
+.grid text {
+  fill: var(--text-sub);
+  font-size: 10px;
+  text-anchor: middle;
+}
+
+.grid g:first-child text {
+  text-anchor: end;
+}
+
+.zero-line {
+  stroke: #d4dcd8;
+  stroke-width: 1.5;
+}
+
+.score-line {
+  fill: none;
+  stroke: var(--primary-deep);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.score-line-hit {
+  cursor: crosshair;
+  fill: none;
+  pointer-events: stroke;
+  stroke: transparent;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 16;
+}
+
+.hover-point {
+  cursor: crosshair;
+  fill: transparent;
+  outline: none;
+}
+
+.hover-point:focus {
+  stroke: var(--primary-deep);
+  stroke-width: 1.5;
+}
+
+.score-tooltip {
+  pointer-events: none;
+}
+
+.score-tooltip rect {
+  fill: #ffffff;
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.score-tooltip text {
+  fill: var(--text-main);
+  font-size: 9px;
+}
+
+.score-tooltip-title,
+.score-tooltip-value,
+.score-tooltip-score {
+  font-weight: 800;
+}
+
+.score-tooltip-score {
+  text-anchor: middle;
+  fill: var(--primary-deep);
+}
+
+.last-point {
+  fill: var(--primary-deep);
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+
+.x-axis-label,
+.y-axis-label {
+  fill: var(--text-main);
+  font-size: 10px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.y-axis-label {
+  text-anchor: start;
+}

@@ -1,0 +1,87 @@
+:host {
+  display: block;
+}
+
+.chart-title {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+/* 4列グリッド: [行ラベル] [左%] [バー] [右%] */
+.chart-body {
+  display: grid;
+  grid-template-columns: minmax(100px, 180px) max-content minmax(0, 1fr) max-content;
+  align-items: center;
+  row-gap: 10px;
+  column-gap: 10px;
+}
+
+.col-header {
+  font-size: 12px;
+  color: var(--text-sub);
+  text-align: center;
+}
+
+.row-label {
+  font-size: 13px;
+  color: var(--text-main);
+  line-height: 1.45;
+}
+
+.pct-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-strong);
+  white-space: nowrap;
+}
+
+.pct-left {
+  text-align: right;
+}
+
+.pct-right {
+  text-align: left;
+}
+
+/* バートラック */
+.bar-track {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  /* 右側（相手）の色 */
+  background: #c4cbc7;
+  overflow: hidden;
+}
+
+/* 左側（自分）の塗り */
+.bar-fill {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: var(--primary-deep);
+}
+
+/* 50% 位置の基準線 */
+.center-mark {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+/* X軸 */
+.x-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-sub);
+  margin-top: -4px;
+}

@@ -87,6 +87,8 @@
           <option *ngFor="let opt of shotTypeOptions" [value]="opt.value">{{ opt.label }}</option>
         </select>
       </label>
+
+      <p class="tag-error-message" *ngIf="editErrorMessage">{{ editErrorMessage }}</p>
     </div>
 
     <footer class="tag-edit-actions">
@@ -103,6 +105,7 @@
   confirmLabel="削除する"
   cancelLabel="キャンセル"
   tone="danger"
+  [errorMessage]="deleteErrorMessage"
   (cancelled)="cancelDeleteTag()"
   (confirmed)="confirmDeleteTag()"
 ></app-confirm-modal>

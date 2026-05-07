@@ -1,0 +1,77 @@
+:host {
+  display: block;
+}
+
+.factor-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.factor-chart-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.factor-chart-total {
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+/* バー行とX軸行を同じグリッド列に揃える */
+.factor-chart-body {
+  display: grid;
+  grid-template-columns: minmax(72px, 90px) minmax(0, 1fr) max-content;
+  align-items: center;
+  row-gap: 12px;
+  column-gap: 10px;
+}
+
+.bar-label {
+  font-size: 13px;
+  color: var(--text-main);
+  line-height: 1.45;
+}
+
+.bar-track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #edf2ef;
+}
+
+.bar-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary-deep);
+}
+
+.bar-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-strong);
+  white-space: nowrap;
+}
+
+/* X軸 */
+.axis-spacer {
+  /* グリッド列の整合用スペーサー */
+}
+
+.x-axis-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-sub);
+  margin-top: -4px;
+}
+
+.factor-chart-empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-sub);
+}
