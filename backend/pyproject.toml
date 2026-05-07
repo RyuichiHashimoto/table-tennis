@@ -11,6 +11,8 @@ dependencies = [
   "opencv-python-headless>=4.10.0.84",
   "fastapi>=0.115.0",
   "uvicorn>=0.30.0",
+  "sqlalchemy>=2.0",
+  "psycopg2-binary>=2.9.12",
 ]
 
 [tool.uv]

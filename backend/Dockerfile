@@ -33,4 +33,4 @@ EXPOSE 8000
 
 ENV PATH="/app/.venv/bin:/root/.local/bin:${PATH}"
 
-CMD ["uvicorn", "table_tennis_backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "table_tennis_backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--log-config", "/app/logging.yaml"]
