@@ -13,8 +13,12 @@ services:
       - .env
     environment:
       PYTHONPATH: /app/src
+    depends_on:
+      table-tennis-db:
+        condition: service_healthy
     command: uv run uvicorn table_tennis_backend.main:app --host 0.0.0.0 --port 8000 --reload
     container_name: table-tennis-backend
+    restart: unless-stopped
 
   table-tennis-frontend:
     build:
@@ -31,6 +35,7 @@ services:
     depends_on:
       - table-tennis-backend
     container_name: table-tennis-frontend
+    restart: unless-stopped
 
   table-tennis-db:
     image: postgres:17
@@ -49,11 +54,12 @@ services:
       - ./postgres/seed:/seed
       - ./postgres/scripts:/scripts
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 30s
+    restart: unless-stopped
 
 volumes:
   frontend_node_modules:
