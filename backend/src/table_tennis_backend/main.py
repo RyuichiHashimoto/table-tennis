@@ -12,6 +12,8 @@ from table_tennis_backend.match.router import router as match_router
 from table_tennis_backend.match.models import init_match_store
 from table_tennis_backend.video.router import router as video_router
 from table_tennis_backend.video.store import init_video_store
+from table_tennis_backend.schedule.router import router as schedule_router
+from table_tennis_backend.schedule.store import init_schedule_store
 
 setup_logging()
 getLogger(__name__).info("Starting TT Analyzer API...")
@@ -32,8 +34,10 @@ app.add_middleware(
 
 init_match_store()
 init_video_store()
+init_schedule_store()
 app.include_router(match_router)
 app.include_router(video_router)
+app.include_router(schedule_router)
 
 
 @app.get("/health")

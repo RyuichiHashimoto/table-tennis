@@ -18,13 +18,16 @@ from table_tennis_backend.match.models import (
     fetch_match,
     fetch_match_input_state,
     fetch_matches,
+    fetch_point_move_history,
     fetch_rallies,
     fetch_tag_definitions,
     insert_rally,
+    move_points,
     save_match_input_state,
     update_match,
     update_rally_fields,
     update_tag_definition,
+    undo_point_move,
 )
 
 from table_tennis_backend.match.analytics import scoring_patterns, summarize
@@ -33,6 +36,7 @@ from table_tennis_backend.match.schemas import (
     MatchCreateRequest,
     MatchInputStateRequest,
     MatchUpdateRequest,
+    PointMoveRequest,
     RallyCreateRequest,
     RallyUpdateRequest,
     TagDefinitionCreateRequest,
@@ -222,17 +226,26 @@ def update_match_api(match_uuid: str, req: MatchUpdateRequest) -> dict[str, Any]
     dict[str, Any]
         処理結果を表す辞書。
     """
-    match = update_match(
-        match_uuid,
-        title=req.title,
-        initial_server=req.initial_server,
-        my_player_name=req.my_player_name.strip() if req.my_player_name is not None else None,
-        opponent_player_name=req.opponent_player_name.strip() if req.opponent_player_name is not None else None,
-    )
+    if req.best_of is not None and req.best_of not in (5, 7):
+        raise HTTPException(status_code=400, detail="best_of must be 5 or 7")
+    try:
+        match = update_match(
+            match_uuid,
+            title=req.title,
+            initial_server=req.initial_server,
+            my_player_name=req.my_player_name.strip() if req.my_player_name is not None else None,
+            opponent_player_name=req.opponent_player_name.strip() if req.opponent_player_name is not None else None,
+            created_at=req.created_at,
+            venue=req.venue.strip() if req.venue is not None else None,
+            event_type=req.event_type.strip() if req.event_type is not None else None,
+            memo=req.memo.strip() if req.memo is not None else None,
+            best_of=req.best_of,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     if not match:
         raise HTTPException(status_code=404, detail="match not found")
     return match
-
 
 @router.delete("/matches/{match_uuid}")
 def delete_match_api(match_uuid: str) -> dict:
@@ -307,6 +320,46 @@ def list_rallies(match_uuid: str) -> list[dict[str, Any]]:
         API 応答用の辞書リスト。
     """
     return _safe_records(fetch_rallies(match_uuid))
+
+
+@router.get("/matches/{match_uuid}/rallies/moves")
+def list_point_moves_api(match_uuid: str, limit: int = Query(default=20, ge=1, le=100)) -> list[dict[str, Any]]:
+    """指定した試合のセット修正履歴を返す。"""
+    if not fetch_match(match_uuid):
+        raise HTTPException(status_code=404, detail="match not found")
+    return fetch_point_move_history(match_uuid, limit)
+
+
+@router.post("/matches/{match_uuid}/rallies/moves")
+def move_points_api(match_uuid: str, req: PointMoveRequest) -> dict[str, Any]:
+    """選択したポイントを別セットへ一括移動する。"""
+    try:
+        return move_points(
+            match_uuid,
+            point_ids=req.point_ids,
+            target_set_no=req.target_set_no,
+            insertion=req.insertion,
+            insert_after_point_id=req.insert_after_point_id,
+            client_operation_id=req.client_operation_id,
+            expected_points=[item.model_dump() for item in req.expected_points],
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except ValueError as exc:
+        status = 404 if str(exc) == "match not found" else 400
+        raise HTTPException(status_code=status, detail=str(exc)) from exc
+
+
+@router.post("/matches/{match_uuid}/rallies/moves/{operation_id}/undo")
+def undo_point_move_api(match_uuid: str, operation_id: str) -> dict[str, Any]:
+    """競合がない場合にセット修正を取り消す。"""
+    try:
+        return undo_point_move(match_uuid, operation_id)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except ValueError as exc:
+        status = 404 if str(exc) in {"match not found", "move history not found"} else 400
+        raise HTTPException(status_code=status, detail=str(exc)) from exc
 
 
 @router.post("/matches/{match_uuid}/rallies")

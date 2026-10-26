@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any
 
 import pandas as pd
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, Text
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, Text, text
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, Session, mapped_column
@@ -43,6 +43,10 @@ class Match(Base):
     initial_server: Mapped[str] = mapped_column(Text, nullable=False, server_default="me", comment="第1セット開始時のサーバー。me/op。")
     my_player_name: Mapped[str] = mapped_column(Text, nullable=False, server_default="自分", comment="自分側の選手名。")
     opponent_player_name: Mapped[str] = mapped_column(Text, nullable=False, server_default="相手", comment="相手側の選手名。")
+    venue: Mapped[str] = mapped_column(Text, nullable=False, server_default="", comment="試合会場。")
+    event_type: Mapped[str] = mapped_column(Text, nullable=False, server_default="シングルス", comment="種目。")
+    memo: Mapped[str] = mapped_column(Text, nullable=False, server_default="", comment="試合の振り返りメモ。")
+    best_of: Mapped[int] = mapped_column(Integer, nullable=False, server_default="5", comment="最大ゲーム数。5または7。")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False, comment="作成日時。")
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -118,9 +122,32 @@ class InputState(Base):
     )
 
 
+class PointMoveHistory(Base):
+    __tablename__ = "point_move_history"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, comment="修正履歴の内部ID。")
+    operation_uuid: Mapped[str] = mapped_column(Text, unique=True, nullable=False, comment="二重実行防止用の操作UUID。")
+    match_id: Mapped[int] = mapped_column(ForeignKey("matches.id"), nullable=False, index=True, comment="対象試合ID。")
+    source_set_no: Mapped[int] = mapped_column(Integer, nullable=False, comment="修正元セット番号。")
+    target_set_no: Mapped[int] = mapped_column(Integer, nullable=False, comment="修正先セット番号。")
+    changes_json: Mapped[str] = mapped_column(Text, nullable=False, comment="移動ポイントの修正前後状態。")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False, comment="修正日時。")
+    undone_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, comment="取り消し日時。")
+
+
 def init_match_store() -> None:
     """PostgreSQL に試合、ポイント、入力状態テーブルを作成する。"""
-    Base.metadata.create_all(get_engine(), tables=[Match.__table__, Point.__table__, InputState.__table__])
+    engine = get_engine()
+    Base.metadata.create_all(
+        engine,
+        tables=[Match.__table__, Point.__table__, InputState.__table__, PointMoveHistory.__table__],
+    )
+    with engine.begin() as connection:
+        connection.execute(text("ALTER TABLE matches ADD COLUMN IF NOT EXISTS venue TEXT NOT NULL DEFAULT ''"))
+        connection.execute(text("ALTER TABLE matches ADD COLUMN IF NOT EXISTS event_type TEXT NOT NULL DEFAULT 'シングルス'"))
+        connection.execute(text("ALTER TABLE matches ADD COLUMN IF NOT EXISTS memo TEXT NOT NULL DEFAULT ''"))
+        connection.execute(text("ALTER TABLE matches ADD COLUMN IF NOT EXISTS best_of INTEGER NOT NULL DEFAULT 5"))
+        connection.execute(text("ALTER TABLE matches DROP COLUMN IF EXISTS set_scores_json"))
 
 
 def init_tag_definition_store() -> None:
@@ -264,8 +291,13 @@ def update_match(
     initial_server: str | None = None,
     my_player_name: str | None = None,
     opponent_player_name: str | None = None,
+    created_at: str | None = None,
+    venue: str | None = None,
+    event_type: str | None = None,
+    memo: str | None = None,
+    best_of: int | None = None,
 ) -> dict[str, Any] | None:
-    """試合のタイトル、初期サーバー、選手名を更新する。"""
+    """試合の基本情報を更新する。"""
     init_match_store()
     with Session(get_engine()) as session:
         match = _fetch_match_row(session, match_ref)
@@ -279,6 +311,16 @@ def update_match(
             match.my_player_name = my_player_name
         if opponent_player_name is not None:
             match.opponent_player_name = opponent_player_name
+        if created_at is not None:
+            match.created_at = _parse_datetime(created_at)
+        if venue is not None:
+            match.venue = venue
+        if event_type is not None:
+            match.event_type = event_type
+        if memo is not None:
+            match.memo = memo
+        if best_of is not None:
+            match.best_of = best_of
         session.commit()
         session.refresh(match)
         serialized = _serialize_match(match)
@@ -472,6 +514,195 @@ def bulk_update_sort_orders(match_ref: int | str, orders: list[dict[str, Any]]) 
         session.commit()
 
 
+def move_points(
+    match_ref: int | str,
+    *,
+    point_ids: list[int],
+    target_set_no: int,
+    insertion: str,
+    insert_after_point_id: int | None,
+    client_operation_id: str,
+    expected_points: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """複数ポイントを同一トランザクションで別セットへ移動する。"""
+    init_match_store()
+    if insertion not in {"start", "end", "after"}:
+        raise ValueError("insertion must be start, end, or after")
+    if insertion == "after" and insert_after_point_id is None:
+        raise ValueError("insert_after_point_id is required")
+    if len(point_ids) != len(set(point_ids)):
+        raise ValueError("point_ids must not contain duplicates")
+
+    with Session(get_engine()) as session:
+        existing_history = (
+            session.query(PointMoveHistory)
+            .filter(PointMoveHistory.operation_uuid == client_operation_id)
+            .one_or_none()
+        )
+        if existing_history:
+            if existing_history.match_id != _require_match_row(session, match_ref).id:
+                raise ValueError("operation id already used for another match")
+            return _serialize_move_history(existing_history)
+
+        match = _require_match_row(session, match_ref)
+        points = (
+            session.query(Point)
+            .filter(Point.match_id == match.id, Point.is_deleted.is_(False))
+            .order_by(Point.sort_order.asc(), Point.id.asc())
+            .with_for_update()
+            .all()
+        )
+        # 同じ操作IDの同時リクエストがロック待ち中に完了した場合は、その結果を再利用する。
+        concurrent_history = (
+            session.query(PointMoveHistory)
+            .filter(PointMoveHistory.operation_uuid == client_operation_id)
+            .one_or_none()
+        )
+        if concurrent_history:
+            if concurrent_history.match_id != match.id:
+                raise ValueError("operation id already used for another match")
+            return _serialize_move_history(concurrent_history)
+        _assert_expected_point_state(points, expected_points)
+        points_by_id = {int(point.id): point for point in points}
+        try:
+            selected = [points_by_id[point_id] for point_id in point_ids]
+        except KeyError as exc:
+            raise ValueError("selected point does not belong to this match") from exc
+        source_sets = {int(point.set_no) for point in selected}
+        if len(source_sets) != 1:
+            raise ValueError("all selected points must belong to the same set")
+        source_set_no = next(iter(source_sets))
+        if source_set_no == target_set_no:
+            raise ValueError("source and target sets must be different")
+        if target_set_no > int(match.best_of or 5):
+            raise ValueError("target set is outside this match format")
+
+        selected_ids = set(point_ids)
+        target_points = [
+            point for point in points
+            if int(point.set_no) == target_set_no and int(point.id) not in selected_ids
+        ]
+        selected.sort(key=_sort_key)
+        before = [
+            {"id": int(point.id), "set_no": int(point.set_no), "sort_order": float(point.sort_order)}
+            for point in selected
+        ]
+        target_points = _insert_moved_points(
+            target_points,
+            selected,
+            insertion,
+            insert_after_point_id,
+        )
+        grouped: dict[int, list[Point]] = {}
+        for point in points:
+            if int(point.id) in selected_ids:
+                continue
+            grouped.setdefault(int(point.set_no), []).append(point)
+        grouped[target_set_no] = target_points
+        _apply_grouped_point_order(points, grouped, selected_ids, target_set_no)
+        _normalize_servers_in_session(session, match, {source_set_no, target_set_no})
+        session.flush()
+        after = [
+            {
+                "id": int(point.id),
+                "set_no": int(point.set_no),
+                "sort_order": float(point.sort_order),
+                "updated_at": point.updated_at.isoformat(),
+            }
+            for point in selected
+        ]
+        history = PointMoveHistory(
+            operation_uuid=client_operation_id,
+            match_id=match.id,
+            source_set_no=source_set_no,
+            target_set_no=target_set_no,
+            changes_json=json.dumps({"before": before, "after": after}),
+        )
+        session.add(history)
+        try:
+            session.commit()
+            session.refresh(history)
+        except IntegrityError as exc:
+            session.rollback()
+            raise ValueError("move operation conflicted with another request") from exc
+        return _serialize_move_history(history)
+
+
+def fetch_point_move_history(match_ref: int | str, limit: int = 20) -> list[dict[str, Any]]:
+    """指定試合のポイント移動履歴を新しい順に返す。"""
+    init_match_store()
+    with Session(get_engine()) as session:
+        match = _fetch_match_row(session, match_ref)
+        if not match:
+            return []
+        rows = (
+            session.query(PointMoveHistory)
+            .filter(PointMoveHistory.match_id == match.id)
+            .order_by(PointMoveHistory.id.desc())
+            .limit(max(1, min(limit, 100)))
+            .all()
+        )
+        return [_serialize_move_history(row) for row in rows]
+
+
+def undo_point_move(match_ref: int | str, operation_uuid: str) -> dict[str, Any]:
+    """移動後の状態が保たれている場合に限り、ポイント移動を取り消す。"""
+    init_match_store()
+    with Session(get_engine()) as session:
+        match = _require_match_row(session, match_ref)
+        history = (
+            session.query(PointMoveHistory)
+            .filter(
+                PointMoveHistory.match_id == match.id,
+                PointMoveHistory.operation_uuid == operation_uuid,
+            )
+            .with_for_update()
+            .one_or_none()
+        )
+        if not history:
+            raise ValueError("move history not found")
+        if history.undone_at is not None:
+            return _serialize_move_history(history)
+        changes = json.loads(history.changes_json)
+        before = changes.get("before", [])
+        after = changes.get("after", [])
+        points = (
+            session.query(Point)
+            .filter(Point.match_id == match.id, Point.is_deleted.is_(False))
+            .order_by(Point.sort_order.asc(), Point.id.asc())
+            .with_for_update()
+            .all()
+        )
+        points_by_id = {int(point.id): point for point in points}
+        for expected in after:
+            point = points_by_id.get(int(expected["id"]))
+            if (
+                not point
+                or int(point.set_no) != int(expected["set_no"])
+                or float(point.sort_order) != float(expected["sort_order"])
+                or not _same_datetime(point.updated_at, expected.get("updated_at"))
+            ):
+                raise RuntimeError("points changed after this correction; undo was cancelled")
+
+        before_by_id = {int(item["id"]): item for item in before}
+        for point_id, snapshot in before_by_id.items():
+            point = points_by_id[point_id]
+            point.set_no = int(snapshot["set_no"])
+            point.sort_order = float(snapshot["sort_order"])
+        # 新しく追加されたポイントを保持したまま、同順位を解消して全体順を連番化する。
+        for index, point in enumerate(sorted(points, key=_sort_key), start=1):
+            point.sort_order = float(index)
+        _normalize_servers_in_session(
+            session,
+            match,
+            {int(history.source_set_no), int(history.target_set_no)},
+        )
+        history.undone_at = func.now()
+        session.commit()
+        session.refresh(history)
+        return _serialize_move_history(history)
+
+
 def fetch_match_input_state(match_ref: int | str) -> dict[str, Any] | None:
     """試合入力画面の保存状態を取得する。"""
     init_match_store()
@@ -518,6 +749,13 @@ def _fetch_match_row(session: Session, match_ref: int | str) -> Match | None:
     )
 
 
+def _require_match_row(session: Session, match_ref: int | str) -> Match:
+    match = _fetch_match_row(session, match_ref)
+    if not match:
+        raise ValueError("match not found")
+    return match
+
+
 def _fetch_point_row(session: Session, match_id: int, point_id: int) -> Point | None:
     return (
         session.query(Point)
@@ -557,20 +795,96 @@ def _normalize_servers(match_ref: int | str, set_nos: set[int] | None = None) ->
         match = _fetch_match_row(session, match_ref)
         if not match:
             return
-        initial_server = str(match.initial_server or "me")
-        points = _list_points_raw(session, match.id)
-        grouped: dict[int, list[Point]] = {}
-        for point in points:
-            grouped.setdefault(int(point.set_no), []).append(point)
-        for set_no, set_points in grouped.items():
-            if set_nos is not None and set_no not in set_nos:
-                continue
-            set_points.sort(key=_sort_key)
-            for index, point in enumerate(set_points):
-                expected_server = _expected_server_for_index(index, set_no, initial_server)
-                if point.server != expected_server:
-                    point.server = expected_server
+        _normalize_servers_in_session(session, match, set_nos)
         session.commit()
+
+
+def _normalize_servers_in_session(
+    session: Session,
+    match: Match,
+    set_nos: set[int] | None = None,
+) -> None:
+    initial_server = str(match.initial_server or "me")
+    points = _list_points_raw(session, match.id)
+    grouped: dict[int, list[Point]] = {}
+    for point in points:
+        grouped.setdefault(int(point.set_no), []).append(point)
+    for set_no, set_points in grouped.items():
+        if set_nos is not None and set_no not in set_nos:
+            continue
+        set_points.sort(key=_sort_key)
+        for index, point in enumerate(set_points):
+            expected_server = _expected_server_for_index(index, set_no, initial_server)
+            if point.server != expected_server:
+                point.server = expected_server
+
+
+def _apply_grouped_point_order(
+    points: list[Point],
+    grouped: dict[int, list[Point]],
+    selected_ids: set[int],
+    target_set_no: int,
+) -> None:
+    for point in points:
+        if int(point.id) in selected_ids:
+            point.set_no = target_set_no
+    ordered: list[Point] = []
+    for set_no in sorted(grouped):
+        ordered.extend(grouped[set_no])
+    if len(ordered) != len(points):
+        raise RuntimeError("failed to preserve every point while moving")
+    for index, point in enumerate(ordered, start=1):
+        point.sort_order = float(index)
+
+
+def _insert_moved_points(
+    target_points: list[Point],
+    selected: list[Point],
+    insertion: str,
+    insert_after_point_id: int | None,
+) -> list[Point]:
+    result = list(target_points)
+    if insertion == "start":
+        insert_index = 0
+    elif insertion == "end":
+        insert_index = len(result)
+    else:
+        insert_index = next(
+            (index + 1 for index, point in enumerate(result) if int(point.id) == insert_after_point_id),
+            -1,
+        )
+        if insert_index < 0:
+            raise ValueError("insertion point does not belong to the target set")
+    result[insert_index:insert_index] = selected
+    return result
+
+
+def _assert_expected_point_state(points: list[Point], expected_points: list[dict[str, Any]]) -> None:
+    expected_by_id = {int(item["id"]): item for item in expected_points}
+    if len(expected_by_id) != len(expected_points):
+        raise RuntimeError("duplicate points in expected state")
+    actual_ids = {int(point.id) for point in points}
+    if actual_ids != set(expected_by_id):
+        raise RuntimeError("points changed after loading; reload before saving")
+    for point in points:
+        expected = expected_by_id[int(point.id)]
+        same_position = (
+            int(point.set_no) == int(expected["set_no"])
+            and float(point.sort_order) == float(expected["sort_order"])
+        )
+        if not same_position or not _same_datetime(point.updated_at, expected["updated_at"]):
+            raise RuntimeError("points changed after loading; reload before saving")
+
+
+def _same_datetime(actual: datetime, expected_value: Any) -> bool:
+    if expected_value is None:
+        return False
+    expected = _parse_datetime(expected_value)
+    if expected.tzinfo is None and actual.tzinfo is not None:
+        expected = expected.replace(tzinfo=actual.tzinfo)
+    if actual.tzinfo is None and expected.tzinfo is not None:
+        actual = actual.replace(tzinfo=expected.tzinfo)
+    return abs((actual - expected).total_seconds()) <= 0.001
 
 
 def _next_sort_order(session: Session, match_id: int, insert_after_point_id: int | None = None) -> float:
@@ -646,6 +960,10 @@ def _serialize_match(match: Match) -> dict[str, Any]:
         "initial_server": str(match.initial_server),
         "my_player_name": str(match.my_player_name),
         "opponent_player_name": str(match.opponent_player_name),
+        "venue": str(match.venue or ""),
+        "event_type": str(match.event_type or "シングルス"),
+        "memo": str(match.memo or ""),
+        "best_of": int(match.best_of or 5),
         "created_at": match.created_at,
         "updated_at": match.updated_at,
         "is_deleted": bool(match.is_deleted),
@@ -678,6 +996,22 @@ def _serialize_point(point: Point, match: Match) -> dict[str, Any]:
         "note": point.note,
         "created_at": point.created_at,
         "updated_at": point.updated_at,
+    }
+
+
+def _serialize_move_history(history: PointMoveHistory) -> dict[str, Any]:
+    changes = json.loads(history.changes_json)
+    before = changes.get("before", [])
+    after = changes.get("after", [])
+    return {
+        "operation_id": str(history.operation_uuid),
+        "source_set_no": int(history.source_set_no),
+        "target_set_no": int(history.target_set_no),
+        "point_ids": [int(item["id"]) for item in before],
+        "before": before,
+        "after": after,
+        "created_at": history.created_at,
+        "undone_at": history.undone_at,
     }
 
 

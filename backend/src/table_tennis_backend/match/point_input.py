@@ -96,8 +96,8 @@ def build_point_input(
         end_side=end_side,
         my_3rd=my_3rd if my_3rd else None,
         my_3rd_result=my_3rd_result if my_3rd_result else None,
-        t_start=float(t_start) if t_start else None,
-        t_end=float(t_end) if t_end else None,
+        t_start=float(t_start) if t_start is not None else None,
+        t_end=float(t_end) if t_end is not None else None,
         note=note if note else None,
         created_at=datetime.now().isoformat(timespec="seconds"),
     )

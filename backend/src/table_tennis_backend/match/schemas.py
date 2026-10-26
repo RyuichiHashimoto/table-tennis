@@ -19,6 +19,11 @@ class MatchUpdateRequest(BaseModel):
     initial_server: str | None = None
     my_player_name: str | None = None
     opponent_player_name: str | None = None
+    created_at: str | None = None
+    venue: str | None = None
+    event_type: str | None = None
+    memo: str | None = None
+    best_of: int | None = Field(default=None, ge=5, le=7)
 
 
 class MatchInputStateRequest(BaseModel):
@@ -80,6 +85,22 @@ class SortOrderItem(BaseModel):
 
 class BulkSortOrderRequest(BaseModel):
     orders: list[SortOrderItem]
+
+
+class PointMoveExpectedState(BaseModel):
+    id: int
+    set_no: int = Field(ge=1, le=7)
+    sort_order: float
+    updated_at: str
+
+
+class PointMoveRequest(BaseModel):
+    point_ids: list[int] = Field(min_length=1)
+    target_set_no: int = Field(ge=1, le=7)
+    insertion: str
+    insert_after_point_id: int | None = None
+    client_operation_id: str = Field(min_length=1, max_length=100)
+    expected_points: list[PointMoveExpectedState]
 
 
 class TagDefinitionCreateRequest(BaseModel):
