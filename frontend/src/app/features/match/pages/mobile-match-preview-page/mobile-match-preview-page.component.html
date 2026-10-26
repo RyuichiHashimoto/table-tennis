@@ -1,0 +1,12 @@
+<main class="preview-page">
+  <header>
+    <div><span>DESIGN PREVIEW</span><h1>試合後分析・モバイルUI</h1><p>実際のアプリと同じコンポーネントを390×844pxで表示しています。</p></div>
+    <a routerLink="../edit">アプリを開く</a>
+  </header>
+  <section class="preview-grid">
+    <article *ngFor="let item of screens">
+      <h2>{{ item.label }}</h2>
+      <app-mobile-match-app [fixedScreen]="item.screen" [preview]="true"></app-mobile-match-app>
+    </article>
+  </section>
+</main>

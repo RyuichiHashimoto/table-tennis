@@ -1,10 +1,20 @@
 <div class="app-shell">
   <header class="top-pane">
-    <div class="brand">YTC</div>
+    <a class="brand" routerLink="/" aria-label="トップページへ">YTC</a>
     <nav class="header-tabs">
-      <a routerLink="/matches" routerLinkActive="active">試合</a>
-      <a routerLink="/analysis" routerLinkActive="active">分析</a>
-      <a routerLink="/settings" routerLinkActive="active">設定</a>
+      <a routerLink="/schedule" routerLinkActive="active" aria-label="日程" title="日程">
+        <span class="tab-icon tab-icon-calendar" aria-hidden="true"></span>
+      </a>
+      <a routerLink="/matches" routerLinkActive="active" aria-label="戦績" title="戦績">
+        <span class="tab-icon tab-icon-list" aria-hidden="true"></span>
+      </a>
+      <!-- <a routerLink="/analysis" routerLinkActive="active">分析</a> -->
+      <a routerLink="/settings" routerLinkActive="active" aria-label="設定" title="設定">
+        <span class="tab-icon tab-icon-settings" aria-hidden="true"></span>
+      </a>
+      <a routerLink="/developer" routerLinkActive="active" aria-label="開発者" title="開発者">
+        <span class="tab-icon tab-icon-developer" aria-hidden="true"></span>
+      </a>
     </nav>
   </header>
 

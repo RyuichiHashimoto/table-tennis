@@ -1,0 +1,271 @@
+<main class="mobile-app" [class.is-preview]="preview" [attr.data-screen]="screen">
+  <div class="toast" *ngIf="toast" role="status" aria-live="polite">{{ toast }}</div>
+
+  <section class="loading-state" *ngIf="isLoading">
+    <span class="spinner" aria-hidden="true"></span>
+    <p>試合情報を読み込んでいます</p>
+  </section>
+
+  <section class="loading-state error" *ngIf="!isLoading && loadError">
+    <strong>読み込みに失敗しました</strong>
+    <p>{{ loadError }}</p>
+    <button type="button" (click)="goBack()">試合一覧へ戻る</button>
+  </section>
+
+  <!-- 記録 -->
+  <section class="screen screen-record" [hidden]="isLoading || !!loadError || screen !== 'record'" aria-label="試合記録">
+    <div class="scroll-content record-content">
+      <section class="video-card" aria-label="YouTube試合動画">
+        <div *ngIf="youtubeVideoId; else videoPlaceholder" class="youtube-frame">
+          <div id="match-youtube-player"></div>
+        </div>
+        <ng-template #videoPlaceholder>
+          <div class="video-placeholder">
+            <span class="play-mark" aria-hidden="true">▶</span>
+            <strong>YouTube動画を設定</strong>
+            <p>試合情報に保存するURLまたは動画IDを入力してください</p>
+            <div class="video-url-entry">
+              <label for="youtube-url-record">YouTube URL</label>
+              <input id="youtube-url-record" [(ngModel)]="youtubeDraft" placeholder="https://youtu.be/..." inputmode="url" />
+              <button type="button" [disabled]="isSavingVideo" (click)="saveYoutubeUrl()">{{ isSavingVideo ? '保存中…' : '動画を読み込む' }}</button>
+            </div>
+            <p class="video-form-error" *ngIf="formError" role="alert">{{ formError }}</p>
+          </div>
+        </ng-template>
+        <span class="ended-badge" *ngIf="videoEnded">再生終了</span>
+      </section>
+
+      <section class="score-card" aria-label="現在のスコア">
+        <div class="score-side me"><span>自分</span><strong>{{ score.me }}</strong></div>
+        <div class="score-middle">
+          <label class="game-select">
+            <span class="visually-hidden">記録するゲーム</span>
+            <select [ngModel]="selectedSet" (ngModelChange)="selectSet($event)" [disabled]="hasPendingRally" aria-label="記録するゲームを選択">
+              <option *ngFor="let setNo of availableSets" [ngValue]="setNo">第{{ setNo }}ゲーム</option>
+            </select>
+          </label>
+          <b>−</b>
+        </div>
+        <div class="score-side opponent"><span>相手</span><strong>{{ score.op }}</strong></div>
+        <div class="server-row"><span [class.opponent]="server === 'op'">{{ server === 'me' ? '自分' : '相手' }}サーブ</span></div>
+      </section>
+
+      <section class="rally-card" [class.recording]="recordingState !== 'idle'">
+        <div class="rally-meta">
+          <strong><lucide-icon class="rally-icon" [img]="FlagIcon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon>ラリー #{{ rallyNumber }}</strong>
+          <span>{{ recordingState === 'idle' ? '待機中' : recordingState === 'recording' ? '記録中' : '結果入力中' }}</span>
+        </div>
+        <button type="button" class="start-button" [disabled]="recordingState !== 'idle' || !isPlayerReady" (click)="startRally()">
+          <lucide-icon class="start-icon" [img]="PlayIcon" [size]="18" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon>
+          {{ recordingState === 'idle' ? 'ラリー開始' : 'ラリー記録中' }}
+        </button>
+
+        <div class="reset-rally-slot">
+          <button
+            type="button"
+            class="reset-rally"
+            [class.hidden]="recordingState !== 'recording'"
+            [attr.aria-hidden]="recordingState !== 'recording'"
+            [attr.tabindex]="recordingState === 'recording' ? 0 : -1"
+            (click)="resetRally()"
+          >開始時刻をリセット</button>
+        </div>
+
+        <div class="point-actions">
+          <button type="button" class="point-button me" [disabled]="recordingState !== 'recording'" (click)="openResultPanel('me')"><lucide-icon class="point-icon" [img]="PlusIcon" [size]="17" [strokeWidth]="2.2" aria-hidden="true"></lucide-icon><span>得点</span></button>
+          <button type="button" class="point-button opponent" [disabled]="recordingState !== 'recording'" (click)="openResultPanel('op')"><lucide-icon class="point-icon" [img]="MinusIcon" [size]="17" [strokeWidth]="2.2" aria-hidden="true"></lucide-icon><span>失点</span></button>
+        </div>
+
+        <div class="history-actions">
+          <button type="button" class="history-button undo" [disabled]="!lastRally || hasPendingRally" (click)="undo()">
+            <span class="history-heading"><lucide-icon class="history-icon" [img]="Undo2Icon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon><strong>元に戻す</strong></span>
+          </button>
+          <button type="button" class="history-button return" [disabled]="!lastRally || lastRally.tEnd === undefined || !isPlayerReady || hasPendingRally" (click)="returnToLastRally()">
+            <span class="history-heading"><lucide-icon class="history-icon" [img]="SkipBackIcon" [size]="16" [strokeWidth]="2" aria-hidden="true"></lucide-icon><strong>直前の記録へ</strong></span>
+          </button>
+        </div>
+      </section>
+    </div>
+    <ng-container *ngTemplateOutlet="bottomNav"></ng-container>
+  </section>
+
+  <!-- ポイント一覧 -->
+  <section class="screen screen-points" *ngIf="!isLoading && !loadError && screen === 'points'" aria-labelledby="points-title">
+    <div class="scroll-content points-content">
+      <div class="section-heading points-heading">
+        <div><h2 id="points-title">ポイント一覧</h2><span>{{ currentRallies.length }}件</span></div>
+        <button type="button" class="correction-toggle" *ngIf="!isCorrectionMode" [disabled]="hasPendingRally" (click)="startCorrection()">記録を修正</button>
+        <button type="button" class="correction-cancel" *ngIf="isCorrectionMode" [disabled]="isSavingCorrection" (click)="cancelCorrection()">キャンセル</button>
+      </div>
+      <div class="game-tabs compact" role="tablist" aria-label="ゲームを選択">
+        <button *ngFor="let setNo of availableSets" type="button" role="tab" [class.active]="selectedSet === setNo" [attr.aria-selected]="selectedSet === setNo" (click)="selectSet(setNo)">{{ setNo }}</button>
+      </div>
+
+      <section class="correction-panel" *ngIf="isCorrectionMode" aria-label="セット誤記録の修正">
+        <strong>修正方法</strong>
+        <div class="correction-modes">
+          <button type="button" [class.active]="correctionMode === 'boundary'" (click)="setCorrectionMode('boundary')">セット境界を修正</button>
+          <button type="button" [class.active]="correctionMode === 'points'" (click)="setCorrectionMode('points')">ポイントを移動</button>
+        </div>
+        <p *ngIf="correctionMode === 'boundary'">次のゲームが始まった最初のポイントを選んでください。そこから末尾までを移動します。</p>
+        <p *ngIf="correctionMode === 'points'">移動するポイントを選択してください。最初の選択後、「ここまで」で連続範囲も選べます。</p>
+        <div class="selection-actions" *ngIf="correctionMode === 'points'">
+          <button type="button" (click)="selectAllPoints()">すべて選択</button>
+          <button type="button" [disabled]="!selectedPointIds.size" (click)="clearPointSelection()">選択解除</button>
+          <span>{{ selectedPointIds.size }}件選択</span>
+        </div>
+
+        <div class="move-settings">
+          <label>移動先ゲーム
+            <select [ngModel]="targetSet" (ngModelChange)="changeTargetSet($event)">
+              <option *ngFor="let setNo of availableSets" [ngValue]="setNo" [disabled]="setNo === selectedSet">第{{ setNo }}ゲーム</option>
+            </select>
+          </label>
+          <fieldset>
+            <legend>挿入位置</legend>
+            <label><input type="radio" name="insertion" value="start" [ngModel]="insertion" (ngModelChange)="changeInsertion($event)" />先頭</label>
+            <label><input type="radio" name="insertion" value="end" [ngModel]="insertion" (ngModelChange)="changeInsertion($event)" />末尾</label>
+            <label><input type="radio" name="insertion" value="after" [ngModel]="insertion" (ngModelChange)="changeInsertion($event)" [disabled]="!targetSetPoints.length" />指定位置</label>
+          </fieldset>
+          <label *ngIf="insertion === 'after'">このポイントの後ろ
+            <select [(ngModel)]="insertAfterPointId">
+              <option *ngFor="let point of targetSetPoints; let index = index" [ngValue]="point.id">#{{ index + 1 }} {{ winnerLabel(point.pointWinner) }}</option>
+            </select>
+          </label>
+        </div>
+        <p class="correction-error" *ngIf="targetSet === selectedSet">修正元と移動先には別のゲームを選択してください。</p>
+        <p class="correction-error" *ngIf="correctionError" role="alert">{{ correctionError }}</p>
+        <button type="button" class="preview-button" [disabled]="!canPreviewCorrection" (click)="openMovePreview()">変更内容を確認</button>
+        <button type="button" class="undo-correction" *ngIf="latestMove && !latestMove.undoneAt" [disabled]="isSavingCorrection" (click)="undoLatestMove()">直前のセット修正を元に戻す</button>
+      </section>
+
+      <div class="point-list" *ngIf="pointRows.length; else emptyPoints">
+        <article class="point-row" *ngFor="let row of pointRows; trackBy: trackRally" [class.is-correcting]="isCorrectionMode" [class.correction-selected]="selectedPointIds.has(row.id)">
+          <button type="button" class="point-selector" *ngIf="isCorrectionMode" [attr.aria-pressed]="selectedPointIds.has(row.id)" [attr.aria-label]="'ポイント' + row.rallyNumber + 'を選択'" (click)="selectCorrectionPoint(row, $event)">{{ selectedPointIds.has(row.id) ? '✓' : '' }}</button>
+          <div class="row-number">#{{ row.rallyNumber }}</div>
+          <div class="row-content">
+            <div><strong [class.loss]="row.pointWinner === 'op'">{{ winnerLabel(row.pointWinner) }}</strong><span>{{ reasonLabel(row) }}</span></div>
+            <small>開始 {{ formatTime(row.tStart, true) }}</small>
+          </div>
+          <button type="button" class="range-select" *ngIf="isCorrectionMode && correctionMode === 'points' && selectionAnchorId && selectionAnchorId !== row.id" (click)="selectPointRange(row.id)">ここまで</button>
+          <div class="row-score"><strong>{{ row.myScore }} - {{ row.opponentScore }}</strong><button type="button" [disabled]="isCorrectionMode || row.tStart === undefined || !youtubeVideoId" (click)="seekVideo(row.tStart ?? 0)" aria-label="このラリーの動画へ移動">▶</button></div>
+        </article>
+      </div>
+      <ng-template #emptyPoints>
+        <div class="empty-state"><strong>このゲームの記録はありません</strong><span>記録画面からラリーを追加してください。</span><button type="button" (click)="navigate('record')">記録画面へ</button></div>
+      </ng-template>
+    </div>
+    <ng-container *ngTemplateOutlet="bottomNav"></ng-container>
+  </section>
+
+  <!-- 試合情報 -->
+  <section class="screen screen-info" *ngIf="!isLoading && !loadError && screen === 'info'" aria-label="試合情報">
+    <div class="scroll-content info-content">
+      <section class="info-card">
+        <span class="eyebrow">MATCH</span>
+        <h2>{{ matchTitle }}</h2>
+        <dl>
+          <div><dt>大会名</dt><dd>{{ match?.title || '未設定' }}</dd></div>
+          <div><dt>試合形式</dt><dd>{{ match?.bestOf }}ゲーム制</dd></div>
+          <div><dt>開始時サーブ</dt><dd>{{ match?.initialServer === 'me' ? '自分' : '相手' }}</dd></div>
+          <div><dt>記録数</dt><dd>{{ rallies.length }}ラリー</dd></div>
+        </dl>
+      </section>
+      <section class="info-card">
+        <span class="eyebrow">VIDEO</span>
+        <h2>YouTube動画</h2>
+        <label for="youtube-url-info">YouTube URLまたは動画ID</label>
+        <input id="youtube-url-info" [(ngModel)]="youtubeDraft" placeholder="https://www.youtube.com/watch?v=..." inputmode="url" />
+        <p class="form-error" *ngIf="formError">{{ formError }}</p>
+        <button type="button" class="primary-action" [disabled]="isSavingVideo" (click)="saveYoutubeUrl()">{{ isSavingVideo ? '保存中…' : '動画を保存して読み込む' }}</button>
+      </section>
+      <button type="button" class="detail-link" (click)="openSettings()">試合情報の編集・分析を開く <span>›</span></button>
+    </div>
+    <ng-container *ngTemplateOutlet="bottomNav"></ng-container>
+  </section>
+
+  <!-- セット修正プレビュー -->
+  <div class="sheet-backdrop" *ngIf="isMovePreviewOpen" (click)="closeMovePreview()"></div>
+  <section class="bottom-sheet correction-preview" *ngIf="isMovePreviewOpen" role="dialog" aria-modal="true" aria-labelledby="correction-preview-title">
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <header class="sheet-header">
+      <div><h2 id="correction-preview-title">変更内容の確認</h2><p>ポイントID・記録内容・動画位置は変更されません。</p></div>
+      <button type="button" aria-label="閉じる" [disabled]="isSavingCorrection" (click)="closeMovePreview()">×</button>
+    </header>
+    <div class="sheet-scroll preview-details">
+      <dl>
+        <div><dt>修正元</dt><dd>第{{ selectedSet }}ゲーム</dd></div>
+        <div><dt>移動先</dt><dd>第{{ targetSet }}ゲーム</dd></div>
+        <div><dt>移動対象</dt><dd>{{ movedPointRangeLabel }}（{{ selectedPointIds.size }}件）</dd></div>
+        <div><dt>修正元の件数</dt><dd>{{ currentRallies.length }}件 → {{ previewSourceRows.length }}件</dd></div>
+        <div><dt>移動先の件数</dt><dd>{{ targetSetPoints.length }}件 → {{ previewTargetRows.length }}件</dd></div>
+        <div><dt>修正後の元スコア</dt><dd>{{ scoreOf(previewSourceRows).me }} - {{ scoreOf(previewSourceRows).op }}</dd></div>
+        <div><dt>修正後の先スコア</dt><dd>{{ scoreOf(previewTargetRows).me }} - {{ scoreOf(previewTargetRows).op }}</dd></div>
+      </dl>
+      <div class="preview-order">
+        <strong>移動先の修正後ポイント順</strong>
+        <ol><li *ngFor="let point of previewTargetRows">{{ winnerLabel(point.pointWinner) }} <small>{{ formatTime(point.tStart, true) }}</small></li></ol>
+      </div>
+      <p class="correction-error" *ngIf="correctionError" role="alert">{{ correctionError }}</p>
+    </div>
+    <button type="button" class="sheet-save" [disabled]="isSavingCorrection" (click)="savePointMove()">{{ isSavingCorrection ? '保存中…' : '変更を保存' }}</button>
+  </section>
+
+  <!-- 得失点記録ボトムシート -->
+  <div class="sheet-backdrop" *ngIf="recordingState === 'editing' || recordingState === 'saving'" (click)="closeResultPanel()"></div>
+  <section
+    class="bottom-sheet"
+    *ngIf="recordingState === 'editing' || recordingState === 'saving'"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="result-sheet-title"
+    (keydown)="handleDialogKeydown($event)"
+  >
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <header class="sheet-header">
+      <div>
+        <h2 id="result-sheet-title">ラリーの結果を記録</h2>
+        <p>ラリー #{{ rallyNumber }}&nbsp;&nbsp; 開始 {{ formatTime(rallyStartTime, true) }}&nbsp;&nbsp; 終了 {{ formatTime(rallyEndTime, true) }}&nbsp;&nbsp; ({{ rallyDuration | number:'1.1-1' }}秒)</p>
+      </div>
+      <button type="button" aria-label="閉じる" [disabled]="recordingState === 'saving'" (click)="closeResultPanel()">×</button>
+    </header>
+
+    <div class="sheet-scroll">
+      <section class="sheet-step">
+        <h3><span>1</span> 得点・失点を選択</h3>
+        <div class="winner-options">
+          <button type="button" [class.active]="pendingWinner === 'me'" (click)="changeWinner('me')"><b><lucide-icon class="winner-icon" [img]="PlusIcon" [size]="18" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon></b>自分の得点</button>
+          <button type="button" class="loss" [class.active]="pendingWinner === 'op'" (click)="changeWinner('op')"><b><lucide-icon class="winner-icon" [img]="MinusIcon" [size]="18" [strokeWidth]="2.5" aria-hidden="true"></lucide-icon></b>自分の失点</button>
+        </div>
+      </section>
+
+      <section class="sheet-step">
+        <h3><span>2</span> {{ pendingWinner === 'me' ? '得点' : '失点' }}の理由を選択 <small>1つ選択</small></h3>
+        <div class="reason-grid">
+          <button *ngFor="let reason of reasons" type="button" [class.active]="selectedReason === reason.value" (click)="selectedReason = reason.value; formError = ''">
+            <b aria-hidden="true">{{ reason.icon }}</b><span>{{ reason.label }}</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="memo-field">
+        <label for="rally-note">メモ <small>（任意）</small></label>
+        <textarea id="rally-note" [(ngModel)]="note" rows="3" placeholder="気づいたことを記録できます…"></textarea>
+      </section>
+      <p class="form-error" *ngIf="formError" role="alert">{{ formError }}</p>
+    </div>
+
+    <button type="button" class="sheet-save" [disabled]="recordingState === 'saving'" (click)="saveRally()">
+      {{ recordingState === 'saving' ? '保存中…' : '✓ この内容で記録する' }}
+      <small *ngIf="recordingState !== 'saving'">スコアが加算され、次のラリーを記録できます</small>
+    </button>
+  </section>
+
+  <ng-template #bottomNav>
+    <nav class="bottom-nav" aria-label="試合入力メニュー">
+      <button type="button" [class.active]="screen === 'record'" (click)="navigate('record')"><span aria-hidden="true">●</span>記録</button>
+      <button type="button" [class.active]="screen === 'points'" (click)="navigate('points')"><span aria-hidden="true">☷</span>ポイント一覧</button>
+      <button type="button" [class.active]="screen === 'info'" (click)="navigate('info')"><lucide-icon class="nav-icon" [img]="InfoIcon" [size]="21" [strokeWidth]="2" aria-hidden="true"></lucide-icon>試合情報</button>
+    </nav>
+  </ng-template>
+</main>

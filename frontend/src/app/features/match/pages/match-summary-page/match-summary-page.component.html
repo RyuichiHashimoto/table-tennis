@@ -1,91 +1,172 @@
-<section class="summary-page">
-  <app-notice-chip *ngIf="isLoading">試合情報を読み込んでいます</app-notice-chip>
+<section class="detail-page">
+  <app-notice-chip *ngIf="isLoading && !match">試合情報を読み込んでいます</app-notice-chip>
   <app-notice-chip *ngIf="loadError" tone="danger">{{ loadError }}</app-notice-chip>
 
-  <app-match-page-header [match]="match" activeView="summary"></app-match-page-header>
-
-  <article class="match-overview-card" *ngIf="match">
-    <section class="overview-result" [class.win]="matchResultClass === 'win'" [class.loss]="matchResultClass === 'loss'">
-      <span>試合結果</span>
-      <strong>{{ matchResultLabel }}</strong>
-    </section>
-
-    <section class="overview-info">
-      <dl>
-        <div>
-          <dt>日時</dt>
-          <dd>{{ matchDateLabel }}</dd>
+  <ng-container *ngIf="match">
+    <main class="detail-content">
+      <article class="result-card">
+        <div class="result-meta">
+          <div class="result-state">
+            <span class="result-label">試合結果</span>
+            <app-match-result-badge [result]="matchResult"></app-match-result-badge>
+          </div>
+          <a class="point-edit-button" [routerLink]="['/match', match.uuid, 'edit']">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"></path></svg>
+            {{ rallies.length ? 'ポイントを編集' : 'ポイントを記録' }}
+          </a>
         </div>
-        <div>
-          <dt>試合名</dt>
-          <dd>{{ match.title }}</dd>
+
+        <div class="versus-row">
+          <div class="player player-me"><span>自分</span><strong>{{ match.myPlayerName || '未設定' }}</strong></div>
+          <div class="set-count" aria-label="セットカウント"><strong>{{ mySetWins }}</strong><span>–</span><strong>{{ opponentSetWins }}</strong></div>
+          <div class="player player-opponent"><span>対戦相手</span><strong>{{ match.opponentPlayerName || '未設定' }}</strong></div>
         </div>
-        <div>
-          <dt>選手</dt>
-          <dd>{{ match.myPlayerName }} vs {{ match.opponentPlayerName }}</dd>
+
+        <div class="score-list" *ngIf="displayScores.length; else noScores" role="list" aria-label="セット別スコア">
+          <span
+            class="score-pair"
+            *ngFor="let score of displayScores; index as index"
+            role="listitem"
+            [attr.aria-label]="'第' + (index + 1) + 'セット ' + score.myPoints + '対' + score.opponentPoints"
+          >
+            <strong [class.winner]="isMySetWinner(score)">{{ score.myPoints }}</strong><span>–</span><strong [class.winner]="isOpponentSetWinner(score)">{{ score.opponentPoints }}</strong>
+          </span>
         </div>
-      </dl>
-    </section>
+        <ng-template #noScores><p class="no-score">セットスコアはまだありません</p></ng-template>
 
-    <section class="overview-sets">
-      <h2>セット結果</h2>
-      <div class="overview-set-list">
-        <div class="overview-set-card" *ngFor="let set of setSummaries">
-          <span>セット {{ set.setNo }}</span>
-          <strong>{{ set.myPoints }} - {{ set.opPoints }}</strong>
-        </div>
-        <div class="set-score-empty" *ngIf="!setSummaries.length">記録されたセットがありません</div>
-      </div>
-    </section>
+        <button
+          type="button"
+          class="details-toggle"
+          [attr.aria-expanded]="isDetailsExpanded"
+          aria-controls="match-information"
+          (click)="toggleDetails()"
+        >
+          <span>{{ isDetailsExpanded ? '試合情報を隠す' : '試合情報を表示' }}</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" [class.expanded]="isDetailsExpanded"><path d="m6 9 6 6 6-6"></path></svg>
+        </button>
 
-    <section class="overview-note">
-      <h2>要約</h2>
-      <p>{{ matchSummaryText }}</p>
-    </section>
-  </article>
+        <section id="match-information" class="match-information" *ngIf="isDetailsExpanded">
+          <dl class="info-list">
+            <div><dt>大会名</dt><dd>{{ match.title || '未設定' }}</dd></div>
+            <div><dt>試合日時</dt><dd>{{ formattedDate }}</dd></div>
+            <div><dt>会場</dt><dd>{{ match.venue || '未設定' }}</dd></div>
+            <div><dt>種目</dt><dd>{{ match.eventType || '未設定' }}</dd></div>
+            <div><dt>試合形式</dt><dd>{{ match.bestOf }}ゲーム制</dd></div>
+          </dl>
+          <button type="button" class="secondary-button" (click)="openEdit()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"></path></svg>
+            試合情報を編集
+          </button>
+        </section>
+      </article>
 
-  <article class="summary-card score-line-card">
-    <app-score-line-chart
-      [points]="scoreLinePoints"
-      [segments]="scoreLineSegments"
-      [yMin]="-12"
-      [yMax]="12"
-      [yTickStep]="4"
-    ></app-score-line-chart>
-  </article>
+      <nav class="content-tabs" aria-label="試合詳細メニュー">
+        <button type="button" [class.active]="activeTab === 'analysis'" (click)="setTab('analysis')">分析</button>
+        <button type="button" [class.active]="activeTab === 'memo'" (click)="setTab('memo')">メモ</button>
+      </nav>
 
-  <div class="filter-card" *ngIf="setSummaries.length > 0">
-    <span class="filter-label">分析対象</span>
-    <div class="filter-set-buttons">
-      <button
-        *ngFor="let set of setSummaries"
-        type="button"
-        class="filter-btn"
-        [class.active]="selectedSetNos.has(set.setNo)"
-        (click)="toggleSetNo(set.setNo)"
-      >
-        セット {{ set.setNo }}
-      </button>
+      <app-notice-chip *ngIf="saveMessage">{{ saveMessage }}</app-notice-chip>
+
+      <section class="analysis-section" *ngIf="activeTab === 'analysis'">
+        <article class="content-card empty-panel" *ngIf="!rallies.length">
+          <div class="empty-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"></path><path d="m7 16 4-5 4 3 5-7"></path></svg></div>
+          <h2>分析データはまだありません</h2>
+          <p>ポイントデータが記録されると分析結果が表示されます。</p>
+          <a class="secondary-button compact" [routerLink]="['/match', match.uuid, 'edit']">ポイントを記録する</a>
+        </article>
+        <ng-container *ngIf="rallies.length">
+          <article class="analysis-dashboard" aria-label="試合分析">
+            <section class="analysis-panel outcome-panel score-outcome" aria-labelledby="score-analysis-title">
+              <header class="outcome-heading">
+                <h3 id="score-analysis-title">得点</h3>
+                <p class="outcome-total"><strong>{{ pointsWon }}</strong><span>点</span></p>
+              </header>
+
+              <div class="factor-group score-factors">
+                <div class="factor-bar" role="img" [attr.aria-label]="'得点の内訳、全' + pointsWon + '点'">
+                  <i *ngFor="let factor of scoreFactorRows; index as index" [class]="'factor-color-' + (index % 4)" [style.flex-basis.%]="factor.percent"></i>
+                </div>
+                <ul class="factor-legend">
+                  <li *ngFor="let factor of scoreFactorRows; index as index"><i [class]="'factor-color-' + (index % 4)"></i><span>{{ factor.label }} <b>{{ factor.count }}</b></span></li>
+                </ul>
+              </div>
+            </section>
+
+            <section class="analysis-panel outcome-panel loss-outcome" aria-labelledby="loss-analysis-title">
+              <header class="outcome-heading">
+                <h3 id="loss-analysis-title">失点</h3>
+                <p class="outcome-total"><strong>{{ pointsLost }}</strong><span>点</span></p>
+              </header>
+
+              <div class="factor-group loss-factors">
+                <div class="factor-bar" role="img" [attr.aria-label]="'失点の内訳、全' + pointsLost + '点'">
+                  <i *ngFor="let factor of lossFactorRows; index as index" [class]="'factor-color-' + (index % 4)" [style.flex-basis.%]="factor.percent"></i>
+                </div>
+                <ul class="factor-legend">
+                  <li *ngFor="let factor of lossFactorRows; index as index"><i [class]="'factor-color-' + (index % 4)"></i><span>{{ factor.label }} <b>{{ factor.count }}</b></span></li>
+                </ul>
+              </div>
+            </section>
+
+            <section class="analysis-panel serve-panel" aria-labelledby="serve-analysis-title">
+              <h3 id="serve-analysis-title">サーブ・レシーブ</h3>
+              <div class="rate-grid">
+                <div class="rate-item">
+                  <span>サーブ得点率</span>
+                  <strong><span class="rate-value">{{ myServePointRate }}</span><span class="rate-unit">%</span></strong>
+                  <div class="rate-track" role="img" [attr.aria-label]="'サーブ得点率 ' + myServePointRate + '%'"><i [style.width.%]="myServePointRate"></i></div>
+                </div>
+                <div class="rate-item">
+                  <span>レシーブ得点率</span>
+                  <strong><span class="rate-value">{{ receivePointRate }}</span><span class="rate-unit">%</span></strong>
+                  <div class="rate-track" role="img" [attr.aria-label]="'レシーブ得点率 ' + receivePointRate + '%'"><i [style.width.%]="receivePointRate"></i></div>
+                </div>
+              </div>
+            </section>
+          </article>
+        </ng-container>
+      </section>
+
+      <article class="content-card memo-card" *ngIf="activeTab === 'memo'">
+        <div class="card-heading"><div><span class="eyebrow">REFLECTION</span><h2>試合メモ</h2></div><span class="draft-label" *ngIf="memoDraft !== match.memo">未保存</span></div>
+        <label for="match-memo">振り返り</label>
+        <textarea id="match-memo" [(ngModel)]="memoDraft" (ngModelChange)="onMemoChange()" rows="8" placeholder="良かった点、次回試したいことなど"></textarea>
+        <button type="button" class="primary-button" [disabled]="isSaving || memoDraft === match.memo" (click)="saveMemo()">{{ isSaving ? '保存中…' : 'メモを保存' }}</button>
+      </article>
+    </main>
+
+    <div class="modal-backdrop" *ngIf="isEditing" (click)="closeEdit()">
+      <section class="edit-sheet" role="dialog" aria-modal="true" aria-labelledby="edit-title" (click)="$event.stopPropagation()">
+        <header class="sheet-header">
+          <button type="button" class="sheet-text-button" (click)="closeEdit()">キャンセル</button>
+          <h2 id="edit-title">試合情報を編集</h2>
+          <button type="button" class="sheet-text-button save" [disabled]="isSaving" (click)="saveDetails()">保存</button>
+        </header>
+
+        <form class="edit-form" (ngSubmit)="saveDetails()" (input)="onFormChange()" (change)="onFormChange()">
+          <p class="form-error" *ngIf="formError">{{ formError }}</p>
+          <fieldset>
+            <legend>基本情報</legend>
+            <label>対戦相手<input name="opponent" [(ngModel)]="editForm.opponentPlayerName" placeholder="未設定"></label>
+            <label>自分の名前<input name="myPlayer" [(ngModel)]="editForm.myPlayerName" placeholder="自分"></label>
+            <label>大会名<input name="title" [(ngModel)]="editForm.title" required></label>
+            <label>日時<input type="datetime-local" name="createdAt" [(ngModel)]="editForm.createdAt" required></label>
+            <label>会場<input name="venue" [(ngModel)]="editForm.venue" placeholder="未設定"></label>
+            <label>種目
+              <select name="eventType" [(ngModel)]="editForm.eventType">
+                <option value="">未設定</option><option value="シングルス">シングルス</option><option value="ダブルス">ダブルス</option><option value="団体戦">団体戦</option>
+              </select>
+            </label>
+            <label>試合形式
+              <select name="bestOf" [(ngModel)]="editForm.bestOf">
+                <option [ngValue]="5">5ゲーム制</option><option [ngValue]="7">7ゲーム制</option>
+              </select>
+            </label>
+          </fieldset>
+
+          <button type="submit" class="primary-button sheet-save" [disabled]="isSaving">{{ isSaving ? '保存中…' : '変更を保存' }}</button>
+        </form>
+      </section>
     </div>
-  </div>
-
-  <section class="analysis-grid">
-    <app-factor-bar-chart
-      title="得点要因"
-      [rows]="scoreFactorRows"
-    ></app-factor-bar-chart>
-
-    <app-factor-bar-chart
-      title="失点要因"
-      totalLabel="合計失点"
-      [rows]="lossFactorRows"
-    ></app-factor-bar-chart>
-
-    <app-split-bar-chart
-      title="サーブ・レシーブ分析"
-      leftLabel="自分"
-      rightLabel="相手"
-      [rows]="serveReceiveRows"
-    ></app-split-bar-chart>
-  </section>
+  </ng-container>
 </section>

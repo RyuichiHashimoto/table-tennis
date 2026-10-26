@@ -7,24 +7,31 @@ import { DisplaySettingsPageComponent } from './features/settings/pages/display-
 import { SettingsPageComponent } from './features/settings/pages/settings-page/settings-page.component';
 import { TagDefinitionsPageComponent } from './features/settings/pages/tag-definitions-page/tag-definitions-page.component';
 import { UiPreviewPageComponent } from './features/settings/pages/ui-preview-page/ui-preview-page.component';
+import { SchedulePageComponent } from './features/schedule/pages/schedule-page.component';
+import { TournamentSettingsPageComponent } from './features/settings/pages/tournament-settings-page/tournament-settings-page.component';
+import { MobileMatchPreviewPageComponent } from './features/match/pages/mobile-match-preview-page/mobile-match-preview-page.component';
 
 export const appRoutes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'matches' },
   { path: 'matches', component: MatchesListPageComponent },
+  { path: 'schedule', component: SchedulePageComponent },
   { path: 'analysis', component: AnalysisPageComponent },
-  { path: 'debug', pathMatch: 'full', redirectTo: 'settings/ui-preview' },
+  { path: 'developer', component: UiPreviewPageComponent },
+  { path: 'debug', pathMatch: 'full', redirectTo: 'developer' },
+  { path: 'settings/ui-preview', pathMatch: 'full', redirectTo: 'developer' },
+  { path: 'settings/debugs', pathMatch: 'full', redirectTo: 'developer' },
   {
     path: 'settings',
     component: SettingsPageComponent,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'tags' },
       { path: 'tags', component: TagDefinitionsPageComponent },
+      { path: 'tournaments', component: TournamentSettingsPageComponent },
       { path: 'display', component: DisplaySettingsPageComponent },
-      { path: 'ui-preview', component: UiPreviewPageComponent },
-      { path: 'debugs', pathMatch: 'full', redirectTo: 'ui-preview' },
     ],
   },
   { path: 'match/:uuid/summary', component: MatchSummaryPageComponent },
   { path: 'match/:uuid/edit', component: MatchInputPageComponent },
+  { path: 'match/:uuid/mobile-preview', component: MobileMatchPreviewPageComponent },
   { path: '**', redirectTo: 'matches' },
 ];

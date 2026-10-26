@@ -1,5 +1,8 @@
 .ui-preview-page {
+  height: 100%;
   padding: 18px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .ui-preview-head p {

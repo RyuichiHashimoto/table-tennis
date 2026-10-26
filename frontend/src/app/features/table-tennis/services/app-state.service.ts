@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { runtimeConfig } from '../../../core/config/runtime-config';
-import { Match, Rally, RallyResultTag, RallySegment, RallyTagDefinition, ScoringPatternSlice, Segment, Summary, TagPhase, TagPlayerSide, TagShotType } from '../models/models';
+import { Match, PointInsertion, PointMoveHistory, Rally, RallyResultTag, RallySegment, RallyTagDefinition, ScoringPatternSlice, Segment, Summary, TagPhase, TagPlayerSide, TagShotType } from '../models/models';
 
 export interface MatchVideoState {
   youtubeUrl: string;
@@ -225,6 +225,39 @@ export class AppStateService {
     return match;
   }
 
+  async updateMatchDetails(
+    matchUuid: string,
+    input: {
+      title: string;
+      myPlayerName: string;
+      opponentPlayerName: string;
+      createdAt: string;
+      venue: string;
+      eventType: string;
+      memo: string;
+      bestOf: 5 | 7;
+    },
+  ): Promise<Match> {
+    const row = await this.requestJson<Record<string, unknown>>(`/matches/${matchUuid}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        title: input.title,
+        my_player_name: input.myPlayerName,
+        opponent_player_name: input.opponentPlayerName,
+        created_at: input.createdAt,
+        venue: input.venue,
+        event_type: input.eventType,
+        memo: input.memo,
+        best_of: input.bestOf,
+      }),
+    });
+    const match = this.mapMatch(row);
+    const index = this.matches.findIndex((existing) => existing.uuid === match.uuid);
+    if (index === -1) this.matches = [match, ...this.matches];
+    else this.matches[index] = match;
+    return match;
+  }
+
   getSelectedMatchUuid(): string | undefined {
     return this.selectedMatchUuid;
   }
@@ -244,7 +277,7 @@ export class AppStateService {
     return [...(this.ralliesByMatch.get(matchUuid) ?? [])];
   }
 
-  async addRally(input: Omit<Rally, 'id' | 'uuid' | 'createdAt'>, insertAfterRallyId?: number): Promise<Rally> {
+  async addRally(input: Omit<Rally, 'id' | 'uuid' | 'createdAt' | 'updatedAt'>, insertAfterRallyId?: number): Promise<Rally> {
     const row = await this.requestJson<Record<string, unknown>>(`/matches/${input.matchUuid}/rallies`, {
       method: 'POST',
       body: JSON.stringify({
@@ -261,6 +294,7 @@ export class AppStateService {
         t_start: input.tStart ?? 0,
         t_end: input.tEnd ?? 0,
         note: input.note ?? '',
+        result_tags: input.resultTags ?? [],
         insert_after_rally_id: insertAfterRallyId,
       }),
     });
@@ -276,6 +310,53 @@ export class AppStateService {
       body: JSON.stringify({ orders }),
     });
     return result.ok;
+  }
+
+  async moveRallies(
+    matchUuid: string,
+    input: {
+      pointIds: number[];
+      targetSetNo: number;
+      insertion: PointInsertion;
+      insertAfterPointId?: number;
+      clientOperationId: string;
+      expectedPoints: Rally[];
+    },
+  ): Promise<PointMoveHistory> {
+    const row = await this.requestJson<Record<string, unknown>>(`/matches/${matchUuid}/rallies/moves`, {
+      method: 'POST',
+      body: JSON.stringify({
+        point_ids: input.pointIds,
+        target_set_no: input.targetSetNo,
+        insertion: input.insertion,
+        insert_after_point_id: input.insertAfterPointId,
+        client_operation_id: input.clientOperationId,
+        expected_points: input.expectedPoints.map((rally) => ({
+          id: rally.id,
+          set_no: rally.setNo,
+          sort_order: rally.sortOrder ?? rally.id,
+          updated_at: rally.updatedAt,
+        })),
+      }),
+    });
+    await this.loadRallies(matchUuid);
+    return this.mapPointMoveHistory(row);
+  }
+
+  async loadPointMoveHistory(matchUuid: string, limit = 20): Promise<PointMoveHistory[]> {
+    const rows = await this.requestJson<Array<Record<string, unknown>>>(
+      `/matches/${matchUuid}/rallies/moves?limit=${limit}`,
+    );
+    return rows.map((row) => this.mapPointMoveHistory(row));
+  }
+
+  async undoPointMove(matchUuid: string, operationId: string): Promise<PointMoveHistory> {
+    const row = await this.requestJson<Record<string, unknown>>(
+      `/matches/${matchUuid}/rallies/moves/${encodeURIComponent(operationId)}/undo`,
+      { method: 'POST' },
+    );
+    await this.loadRallies(matchUuid);
+    return this.mapPointMoveHistory(row);
   }
 
   async deleteLastRally(matchUuid: string): Promise<boolean> {
@@ -457,7 +538,22 @@ export class AppStateService {
       initialServer: (row['initial_server'] ?? 'me') as 'me' | 'op',
       myPlayerName: String(row['my_player_name'] ?? '自分'),
       opponentPlayerName: String(row['opponent_player_name'] ?? '相手'),
+      venue: String(row['venue'] ?? ''),
+      eventType: String(row['event_type'] ?? 'シングルス'),
+      memo: String(row['memo'] ?? ''),
+      bestOf: Number(row['best_of']) === 7 ? 7 : 5,
       createdAt: String(row['created_at']),
+    };
+  }
+
+  private mapPointMoveHistory(row: Record<string, unknown>): PointMoveHistory {
+    return {
+      operationId: String(row['operation_id']),
+      sourceSetNo: Number(row['source_set_no']),
+      targetSetNo: Number(row['target_set_no']),
+      pointIds: Array.isArray(row['point_ids']) ? row['point_ids'].map(Number) : [],
+      createdAt: String(row['created_at']),
+      undoneAt: row['undone_at'] ? String(row['undone_at']) : undefined,
     };
   }
 
@@ -484,6 +580,7 @@ export class AppStateService {
       tEnd: row['t_end'] === null || row['t_end'] === undefined ? undefined : Number(row['t_end']),
       note: this.optionalString(row['note']),
       createdAt: String(row['created_at']),
+      updatedAt: String(row['updated_at']),
     };
   }
 

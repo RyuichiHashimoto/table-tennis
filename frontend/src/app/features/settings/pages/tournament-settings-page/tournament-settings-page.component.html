@@ -1,0 +1,83 @@
+<div class="tournament-settings">
+  <section class="settings-card ui-card">
+    <div class="section-head">
+      <div>
+        <h4>参照サイト</h4>
+        <p>大会情報を取得するWebサイトを管理します。</p>
+      </div>
+      <button type="button" class="ui-button add-button" (click)="openCreate()">
+        <ui-add-icon [size]="16"></ui-add-icon>追加
+      </button>
+    </div>
+
+    <ui-standard-table [empty]="sites.length === 0" emptyMessage="参照サイトがありません。「追加」から登録してください。">
+      <table class="ui-table sites-table">
+        <thead><tr><th>サイト名</th><th>URL</th><th>有効／無効</th><th>対象地域</th><th>最終取得日時</th><th>取得状態</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let site of sites">
+            <td class="site-name">{{ site.name }}</td>
+            <td><a [href]="site.url" target="_blank" rel="noopener">{{ site.url }}</a></td>
+            <td><button type="button" class="toggle" [class.active]="site.enabled" (click)="toggleEnabled(site)" [attr.aria-label]="site.name + 'の有効状態を切り替え'"><span></span></button><span class="toggle-label">{{ site.enabled ? '有効' : '無効' }}</span></td>
+            <td>{{ site.region }}</td><td>{{ site.lastFetchedAt }}</td>
+            <td><span class="status-chip" [ngClass]="statusClass(site.status)">{{ site.status }}</span></td>
+            <td><div class="row-actions">
+              <button type="button" class="ui-button ui-button-sm" (click)="updateNow(site)">手動更新</button>
+              <button type="button" class="ui-button ui-button-sm icon-action" aria-label="編集" (click)="openEdit(site)"><ui-edit-icon [size]="16"></ui-edit-icon></button>
+              <button type="button" class="ui-button ui-button-sm ui-button-danger icon-action" aria-label="削除" (click)="pendingDelete = site"><ui-delete-icon [size]="16"></ui-delete-icon></button>
+            </div></td>
+          </tr>
+        </tbody>
+      </table>
+    </ui-standard-table>
+  </section>
+
+  <section class="settings-card ui-card">
+    <div class="section-head"><div><h4>表示条件</h4><p>日程ページに表示する大会の範囲と並び順を設定します。</p></div></div>
+    <div class="conditions-grid">
+      <label class="field"><span>表示対象期間</span><select class="ui-input" [(ngModel)]="conditions.period"><option>今後1か月</option><option>3か月</option><option>6か月</option></select></label>
+      <label class="field"><span>地域による絞り込み</span><select class="ui-input" [(ngModel)]="conditions.region"><option>すべて</option><option>全国</option><option>都道府県</option><option>市区町村</option></select></label>
+      <label class="field"><span>大会種別</span><select class="ui-input" [(ngModel)]="conditions.tournamentType"><option>すべて</option><option>オープン大会</option><option>選手権</option><option>リーグ戦</option></select></label>
+      <label class="field"><span>並び順</span><select class="ui-input" [(ngModel)]="conditions.sortOrder"><option>申込締切が近い順</option><option>開催日順</option></select></label>
+    </div>
+    <div class="check-list">
+      <label><input type="checkbox" [(ngModel)]="conditions.showClosed"> 締切済み大会を表示する</label>
+      <label><input type="checkbox" [(ngModel)]="conditions.showUnknownDeadline"> 締切日不明の大会を表示する</label>
+      <label><input type="checkbox" [(ngModel)]="conditions.deduplicate"> 同一大会を重複除外する</label>
+    </div>
+    <div class="save-row"><button type="button" class="ui-button btn-primary" (click)="saveConditions()">表示条件を保存</button></div>
+  </section>
+</div>
+
+<div class="edit-overlay" *ngIf="modalOpen" (click)="closeModal()">
+  <section class="edit-modal ui-panel" role="dialog" aria-modal="true" aria-label="参照サイト設定" (click)="$event.stopPropagation()">
+    <header><div><h3>{{ editingId === undefined ? '参照サイトを追加' : '参照サイトを編集' }}</h3><p>大会情報の参照先と取得方法を設定します。</p></div><button type="button" class="close-button" aria-label="閉じる" (click)="closeModal()">×</button></header>
+    <div class="modal-scroll">
+      <h4>基本設定</h4>
+      <div class="form-grid">
+        <label class="field"><span>サイト名 <b>必須</b></span><input class="ui-input" [(ngModel)]="form.name" placeholder="例：○○県卓球協会"></label>
+        <label class="field full"><span>参照先URL <b>必須</b></span><input type="url" class="ui-input" [(ngModel)]="form.url" placeholder="https://example.com/tournaments"></label>
+        <label class="field"><span>対象競技</span><input class="ui-input" [(ngModel)]="form.sport"></label>
+        <label class="field"><span>対象地域</span><input class="ui-input" [(ngModel)]="form.region" placeholder="全国、東京都など"></label>
+        <label class="field full"><span>メモ</span><textarea class="ui-input" rows="3" [(ngModel)]="form.memo" placeholder="管理用のメモ"></textarea></label>
+      </div>
+      <label class="enabled-check"><input type="checkbox" [(ngModel)]="form.enabled"> このサイトを有効にして日程ページへ反映する</label>
+
+      <button type="button" class="advanced-toggle" (click)="showAdvanced = !showAdvanced">{{ showAdvanced ? '−' : '＋' }} 詳細設定（自動取得）</button>
+      <div class="advanced-panel" *ngIf="showAdvanced">
+        <label class="field"><span>取得頻度</span><select class="ui-input" [(ngModel)]="form.frequency"><option>手動のみ</option><option>毎日</option><option>毎週</option><option>毎月</option></select></label>
+        <p class="hint">ページ内の取得箇所を指定します。サイトの構造が分かる場合のみ入力してください。</p>
+        <div class="form-grid">
+          <label class="field"><span>大会名の取得箇所</span><input class="ui-input" [(ngModel)]="form.tournamentSelector" placeholder="例：.event-title"></label>
+          <label class="field"><span>開催日の取得箇所</span><input class="ui-input" [(ngModel)]="form.eventDateSelector" placeholder="例：.event-date"></label>
+          <label class="field"><span>申込締切日の取得箇所</span><input class="ui-input" [(ngModel)]="form.deadlineSelector" placeholder="例：.deadline"></label>
+          <label class="field"><span>詳細ページURLの取得方法</span><select class="ui-input" [(ngModel)]="form.detailUrlMethod"><option>一覧ページのリンクを使用</option><option>参照先URLを使用</option><option>取得しない</option></select></label>
+        </div>
+        <div class="test-box"><div><strong>取得テスト</strong><p>現在の設定で取得できる内容を確認します。</p></div><button type="button" class="ui-button" [disabled]="!form.url || testState === 'running'" (click)="runFetchTest()">{{ testState === 'running' ? '確認中…' : '取得をテスト' }}</button></div>
+        <div class="preview" *ngIf="testState === 'done'"><strong>取得結果プレビュー</strong><p>接続設定を確認しました。保存後の自動取得時に大会情報がここに表示されます。</p><span>プレビュー 0件</span></div>
+      </div>
+    </div>
+    <footer><button type="button" class="ui-button" (click)="closeModal()">キャンセル</button><button type="button" class="ui-button btn-primary" [disabled]="!form.name.trim() || !form.url.trim()" (click)="saveSite()">保存</button></footer>
+  </section>
+</div>
+
+<app-confirm-modal [open]="!!pendingDelete" title="参照サイトを削除" [message]="'「' + pendingDelete?.name + '」を削除します。'" confirmLabel="削除する" cancelLabel="キャンセル" tone="danger" (cancelled)="pendingDelete = undefined" (confirmed)="confirmDelete()"></app-confirm-modal>

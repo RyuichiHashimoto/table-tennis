@@ -1,62 +1,112 @@
-<section class="panel-stack ui-stack">
-  <article class="panel ui-panel">
-    <div class="section-head ui-section-head">
-      <h2>試合一覧</h2>
-      <button type="button" class="icon-button ui-button ui-button-icon" (click)="createMatch()">+</button>
+<section class="matches-page">
+  <nav class="category-tabs" aria-label="試合形式">
+    <button type="button" [class.active]="activeCategory === 'all'" (click)="setCategory('all')">すべて</button>
+    <button type="button" [class.active]="activeCategory === 'singles'" (click)="setCategory('singles')">シングル</button>
+    <button type="button" [class.active]="activeCategory === 'doubles'" (click)="setCategory('doubles')">ダブル</button>
+  </nav>
+
+  <section class="record-summary" aria-label="戦績サマリー">
+    <div class="summary-table">
+      <div class="summary-card">
+        <span class="summary-label">通算</span>
+        <div class="summary-metrics">
+          <strong class="win-rate">{{ lifetimeStats.winRate }}%</strong>
+          <span class="match-total">{{ lifetimeStats.total }}試合</span>
+        </div>
+      </div>
+
+      <div class="summary-card recent">
+        <label class="period-cell" for="summary-period">
+          <span class="visually-hidden">集計期間</span>
+          <select id="summary-period" [(ngModel)]="summaryPeriod">
+            <option value="3months">直近3か月</option>
+            <option value="6months">直近6か月</option>
+            <option value="year">直近1年</option>
+            <option value="all">全期間</option>
+          </select>
+        </label>
+        <div class="summary-metrics">
+          <strong class="win-rate accent">{{ periodStats.winRate }}%</strong>
+          <span class="match-total">{{ periodStats.total }}試合</span>
+        </div>
+      </div>
     </div>
-    <ui-standard-table [empty]="matches.length === 0" emptyMessage="試合がありません。">
-      <table class="matches-table ui-table">
-        <thead><tr><th>ID</th><th>タイトル</th><th>作成日時</th><th>操作</th></tr></thead>
-        <tbody>
-          <tr *ngFor="let m of matches">
-            <td>{{ m.id }}</td>
-            <td>{{ m.title }}</td>
-            <td>{{ m.createdAt }}</td>
-            <td class="row-actions">
-              <ui-icon-button
-                src="/assets/icons/detail.svg"
-                alt="詳細"
-                ariaLabel="詳細"
-                [showBorder]="false"
-                (clicked)="openMatch(m.uuid)"
-              ></ui-icon-button>
-              <ui-icon-button
-                src="/assets/icons/edit.svg"
-                alt="編集"
-                ariaLabel="編集"
-                [showBorder]="false"
-                (clicked)="editMatch(m.uuid)"
-              ></ui-icon-button>
-              <ui-icon-button
-                src="/assets/icons/danger-trashbox.svg"
-                alt=""
-                ariaLabel="削除"
-                [danger]="true"
-                [showBorder]="false"
-                (clicked)="deleteMatch(m.uuid)"
-              ></ui-icon-button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </ui-standard-table>
-  </article>
+  </section>
+
+  <section class="match-history" aria-label="試合一覧">
+    <ui-search-filter-bar
+      [(query)]="searchQuery"
+      placeholder="対戦相手・大会名を検索"
+      searchLabel="対戦相手または大会名で検索"
+      [filterOptions]="resultFilterOptions"
+      [activeFilter]="activeResultFilter"
+      (activeFilterChange)="setResultFilter($event)"
+      [toggleable]="false"
+    ></ui-search-filter-bar>
+
+    <div class="list-controls">
+      <label>
+        <span class="visually-hidden">表示期間</span>
+        <select [(ngModel)]="listPeriod">
+          <option value="all">全期間</option>
+          <option value="3months">直近3か月</option>
+          <option value="6months">直近6か月</option>
+          <option value="year">直近1年</option>
+        </select>
+      </label>
+      <label class="sort-control">
+        <span class="visually-hidden">並び順</span>
+        <select [(ngModel)]="sortOrder">
+          <option value="newest">新しい順</option>
+          <option value="oldest">古い順</option>
+        </select>
+      </label>
+      <button
+        type="button"
+        class="mobile-sort-button"
+        [attr.aria-label]="sortOrder === 'newest' ? '新しい順。古い順に変更' : '古い順。新しい順に変更'"
+        [attr.title]="sortOrder === 'newest' ? '新しい順' : '古い順'"
+        (click)="toggleSortOrder()"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 6h10M8 10h7M8 14h4M5 5v14m0 0-2.5-2.5M5 19l2.5-2.5"></path>
+        </svg>
+      </button>
+    </div>
+
+    <p class="loading-state" *ngIf="loading">戦績を読み込んでいます…</p>
+
+    <div class="match-list" *ngIf="!loading && visibleRecords.length; else emptyState">
+      <article class="match-card" *ngFor="let record of visibleRecords; trackBy: trackMatch">
+        <button
+          type="button"
+          class="card-link"
+          [attr.aria-label]="record.match.title + 'の詳細を表示'"
+          (click)="openMatch(record.match.uuid)"
+        ></button>
+
+        <div class="match-meta">
+          <time [attr.datetime]="record.match.createdAt">{{ record.match.createdAt | date: 'yyyy/MM/dd' }}</time>
+          <span aria-hidden="true">・</span>
+          <span>{{ record.match.title }}</span>
+        </div>
+
+        <app-match-result-badge class="result-badge-position" [result]="record.result"></app-match-result-badge>
+
+        <strong class="opponent-name">{{ record.match.opponentPlayerName || '対戦相手未設定' }}</strong>
+
+        <strong class="final-score">{{ record.mySetWins }}－{{ record.opponentSetWins }}</strong>
+
+        <svg class="card-chevron" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m9 5 7 7-7 7"></path>
+        </svg>
+      </article>
+    </div>
+
+    <ng-template #emptyState>
+      <p class="empty-state" *ngIf="!loading">条件に一致する試合がありません。</p>
+    </ng-template>
+
+    <button type="button" class="show-more" *ngIf="canShowMore" (click)="showMore()">さらに試合を表示</button>
+  </section>
 </section>
-
-<app-confirm-modal
-  [open]="!!pendingDeleteMatch"
-  title="試合を削除"
-  [message]="'「' + pendingDeleteMatch?.title + '」を削除します。\n関連するラリーと保存内容も削除されます。'"
-  confirmLabel="削除する"
-  cancelLabel="キャンセル"
-  tone="danger"
-  (cancelled)="cancelDelete()"
-  (confirmed)="confirmDelete()"
-></app-confirm-modal>
-
-<app-match-title-modal
-  [open]="!!pendingEditMatch"
-  [currentTitle]="pendingEditMatch?.title ?? ''"
-  (cancelled)="cancelEdit()"
-  (saved)="confirmEdit($event)"
-></app-match-title-modal>

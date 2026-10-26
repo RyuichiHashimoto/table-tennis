@@ -4,7 +4,7 @@ import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 type SettingsSection = {
-  id: 'tags' | 'display' | 'ui-preview';
+  id: 'tags' | 'tournaments' | 'display';
   path: string;
   label: string;
   title: string;
@@ -30,20 +30,20 @@ export class SettingsPageComponent {
       items: ['タグ一覧', '表示順', '既定タグ候補'],
     },
     {
+      id: 'tournaments',
+      path: '/settings/tournaments',
+      label: '大会情報設定',
+      title: '大会情報設定',
+      description: '大会情報の参照サイトと、日程ページへの表示条件を設定します。',
+      items: ['参照サイト', '表示条件'],
+    },
+    {
       id: 'display',
       path: '/settings/display',
       label: '表示設定',
       title: '表示設定',
       description: 'テーマや画面表示に関する設定を行います。',
       items: ['テーマ'],
-    },
-    {
-      id: 'ui-preview',
-      path: '/settings/ui-preview',
-      label: 'UIプレビュー',
-      title: 'UIプレビュー',
-      description: '共通UI部品やテーマの見た目を確認します。',
-      items: ['ボタン', '入力欄', 'テーブル'],
     },
   ];
 

@@ -1,5 +1,6 @@
 .app-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--bg-main);
 }
 
@@ -24,6 +25,8 @@
   letter-spacing: 0.08em;
   font-weight: 700;
   font-size: clamp(20px, 2.5vw, 28px);
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .header-tabs {
@@ -34,6 +37,9 @@
 }
 
 .header-tabs a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   border: 0;
   border-bottom: 2px solid transparent;
   padding: 8px 4px;
@@ -46,6 +52,40 @@
   cursor: pointer;
 }
 
+.tab-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  background-color: currentColor;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+}
+
+.tab-icon-calendar {
+  mask-image: url('/assets/icons/calendar-days.svg');
+  -webkit-mask-image: url('/assets/icons/calendar-days.svg');
+}
+
+.tab-icon-list {
+  mask-image: url('/assets/icons/list.svg');
+  -webkit-mask-image: url('/assets/icons/list.svg');
+}
+
+.tab-icon-settings {
+  mask-image: url('/assets/icons/settings.svg');
+  -webkit-mask-image: url('/assets/icons/settings.svg');
+}
+
+.tab-icon-developer {
+  mask-image: url('/assets/icons/code-xml.svg');
+  -webkit-mask-image: url('/assets/icons/code-xml.svg');
+}
+
 .header-tabs a.active {
   border-bottom-color: var(--primary);
   color: var(--text-strong);
@@ -53,6 +93,7 @@
 
 .bottom-pane {
   height: calc(100vh - 60px);
+  height: calc(100dvh - 60px);
   border: 1px solid var(--line);
   border-top: 0;
   background: var(--bg-section);

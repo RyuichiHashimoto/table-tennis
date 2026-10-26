@@ -1,0 +1,46 @@
+.tournament-settings { display: grid; gap: 18px; }
+.settings-card { min-width: 0; }
+.section-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.section-head h4, .edit-modal h4 { margin: 0; font-size: calc(var(--font-size-body-lg) + 2px); font-weight: 600; }
+.section-head p, .edit-modal header p, .test-box p, .preview p { margin: 5px 0 0; color: var(--text-sub); font-size: var(--font-size-label); line-height: 1.5; }
+.add-button { flex: 0 0 auto; }
+.sites-table th, .sites-table td { white-space: nowrap; }
+.sites-table a { display: block; max-width: 220px; overflow: hidden; color: var(--primary); text-overflow: ellipsis; }
+.site-name { font-weight: 600; }
+.toggle { position: relative; width: 38px; height: 22px; margin-right: 7px; padding: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-surface); vertical-align: middle; cursor: pointer; }
+.toggle span { position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: var(--text-sub); transition: .15s; }
+.toggle.active { border-color: var(--primary); background: var(--bg-selection); }
+.toggle.active span { left: 19px; background: var(--primary); }
+.toggle-label { font-size: var(--font-size-label); }
+.status-chip { padding: 4px 8px; border: 1px solid var(--line); font-size: var(--font-size-label); }
+.status-ok { border-color: var(--primary); background: var(--bg-selection); color: var(--primary-deep); }
+.status-error { border-color: var(--danger); background: var(--danger-soft); color: var(--danger); }
+.status-idle { color: var(--text-sub); }
+.row-actions { display: flex; gap: 6px; }
+.icon-action { min-width: 34px; padding-inline: 7px; }
+.conditions-grid, .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.field { display: grid; gap: 6px; }
+.field > span { color: var(--text-sub); font-size: var(--font-size-label); font-weight: 600; }
+.field b { color: var(--danger); font-size: 10px; }
+.field.full { grid-column: 1 / -1; }
+textarea.ui-input { resize: vertical; font-family: inherit; }
+.check-list { display: flex; flex-wrap: wrap; gap: 12px 24px; padding: 4px 0; color: var(--text-main); font-size: var(--font-size-label); }
+.check-list label, .enabled-check { cursor: pointer; }
+.save-row { display: flex; justify-content: flex-end; }
+.edit-overlay { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; padding: 24px; background: var(--bg-overlay); }
+.edit-modal { width: min(760px, 100%); max-height: calc(100vh - 48px); padding: 0; gap: 0; box-shadow: 0 24px 56px rgba(0,0,0,.22); }
+.edit-modal > header, .edit-modal > footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 20px; }
+.edit-modal > header { border-bottom: 1px solid var(--line); }
+.edit-modal > header h3 { margin: 0; font-size: var(--font-size-metric); }
+.edit-modal > footer { justify-content: flex-end; border-top: 1px solid var(--line); }
+.close-button { border: 0; background: transparent; color: var(--text-sub); font-size: 26px; cursor: pointer; }
+.modal-scroll { display: grid; gap: 16px; padding: 20px; overflow: auto; }
+.enabled-check { padding: 12px; border: 1px solid var(--line); background: var(--bg-surface-soft); font-size: var(--font-size-label); }
+.advanced-toggle { padding: 10px 0; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--primary); text-align: left; font-weight: 600; cursor: pointer; }
+.advanced-panel { display: grid; gap: 14px; padding-top: 2px; }
+.hint { margin: 0; color: var(--text-sub); font-size: var(--font-size-label); }
+.test-box { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px; border: 1px solid var(--line); }
+.preview { padding: 14px; border-left: 3px solid var(--primary); background: var(--bg-selection); }
+.preview span { color: var(--text-sub); font-size: var(--font-size-label); }
+button:disabled { cursor: not-allowed; opacity: .55; }
+@media (max-width: 760px) { .conditions-grid, .form-grid { grid-template-columns: 1fr; } .field.full { grid-column: auto; } .edit-overlay { padding: 10px; } .edit-modal { max-height: calc(100vh - 20px); } }

@@ -1,0 +1,10 @@
+:host { display: block; min-height: 100%; }
+.preview-page { min-height: 100%; overflow: auto; padding: 30px; background: #eef1f3; color: #151b22; }
+header { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; max-width: 1280px; margin: 0 auto 26px; }
+header span { color: #079955; font-size: 12px; font-weight: 800; letter-spacing: .12em; }
+header h1 { margin: 4px 0; font-size: 28px; }
+header p { margin: 0; color: #5d6873; }
+header a { flex: 0 0 auto; padding: 12px 18px; border-radius: 9px; background: #08b768; color: #fff; font-weight: 800; text-decoration: none; }
+.preview-grid { display: grid; grid-template-columns: repeat(3, 390px); justify-content: center; gap: 28px; min-width: max-content; }
+article h2 { margin: 0 0 10px 8px; font-size: 17px; }
+@media (max-width: 720px) { .preview-page { padding: 18px 12px; } header { align-items: flex-start; flex-direction: column; } .preview-grid { justify-content: start; } }

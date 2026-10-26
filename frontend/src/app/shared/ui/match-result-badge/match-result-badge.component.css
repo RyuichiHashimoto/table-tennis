@@ -1,0 +1,35 @@
+:host {
+  display: inline-flex;
+}
+
+.match-result-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 68px;
+  min-height: 32px;
+  border-radius: 999px;
+  padding: 5px 11px;
+  background: var(--bg-surface-soft);
+  color: var(--text-sub);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.match-result-badge.win {
+  background: var(--bg-highlight);
+  color: var(--primary-deep);
+}
+
+.match-result-badge.loss {
+  background: var(--op-bg);
+  color: var(--danger);
+}
+
+.match-result-badge.pending {
+  background: var(--bg-surface-soft);
+  color: var(--text-sub);
+}

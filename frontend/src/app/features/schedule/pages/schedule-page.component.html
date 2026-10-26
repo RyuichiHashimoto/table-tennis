@@ -1,0 +1,59 @@
+<section class="schedule-page">
+  <header class="schedule-tools">
+    <ui-search-filter-bar
+      [(query)]="searchQuery"
+      placeholder="大会名・開催地で検索"
+      searchLabel="大会名または開催地で検索"
+      [filterOptions]="filterOptions"
+      [activeFilter]="activeFilter"
+      (activeFilterChange)="activeFilter = $any($event)"
+      [(showFilters)]="showFilters"
+    ></ui-search-filter-bar>
+  </header>
+
+  <p *ngIf="error" class="error" role="alert">{{ error }}</p>
+  <p *ngIf="loading" class="loading-state">日程を読み込んでいます…</p>
+
+  <div class="date-groups" *ngIf="!loading && groupedMatches.length; else emptyState">
+    <section class="date-group" *ngFor="let group of groupedMatches">
+      <header class="date-heading">
+        <h2>{{ group.label }}</h2>
+      </header>
+
+      <div class="match-list">
+        <a
+          class="schedule-card"
+          *ngFor="let match of group.matches"
+          [href]="match.source_url"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <time [attr.datetime]="match.starts_at">{{ formatTime(match.starts_at) }}</time>
+
+          <div class="match-info">
+            <h3>{{ match.title }}</h3>
+            <p *ngIf="match.competition">{{ match.competition }}</p>
+            <p class="venue" *ngIf="match.venue">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+                <circle cx="12" cy="10" r="2.5"></circle>
+              </svg>
+              <span>{{ match.venue }}</span>
+            </p>
+          </div>
+
+          <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m9 5 7 7-7 7"></path>
+          </svg>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="empty-state" *ngIf="!loading">
+      <strong>{{ matches.length ? '該当する試合はありません' : '予定はまだありません' }}</strong>
+      <span>{{ matches.length ? '検索条件を変更してください。' : '日程が登録されると、ここに表示されます。' }}</span>
+    </div>
+  </ng-template>
+</section>

@@ -1,0 +1,42 @@
+<div class="search-filter-bar" [class.without-toggle]="!toggleable">
+  <label class="search-box">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="11" cy="11" r="6"></circle>
+      <path d="m16 16 4 4"></path>
+    </svg>
+    <span class="visually-hidden">{{ searchLabel }}</span>
+    <input
+      type="search"
+      [ngModel]="query"
+      (ngModelChange)="queryChange.emit($event)"
+      [placeholder]="placeholder"
+      autocomplete="off"
+    />
+  </label>
+
+  <button
+    *ngIf="toggleable"
+    type="button"
+    class="filter-toggle"
+    [class.active]="showFilters"
+    [attr.aria-expanded]="showFilters"
+    aria-label="絞り込み項目を表示"
+    (click)="toggleFilters()"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 7h10M18 7h2M14 4v6M4 17h2M10 17h10M10 14v6"></path>
+    </svg>
+  </button>
+
+  <div class="filter-chips" *ngIf="showFilters && filterOptions.length">
+    <button
+      type="button"
+      *ngFor="let option of filterOptions"
+      [class.active]="activeFilter === option.value"
+      [attr.aria-pressed]="activeFilter === option.value"
+      (click)="activeFilterChange.emit(option.value)"
+    >
+      {{ option.label }}
+    </button>
+  </div>
+</div>
